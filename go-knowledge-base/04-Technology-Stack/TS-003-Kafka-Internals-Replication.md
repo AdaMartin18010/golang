@@ -53,7 +53,7 @@
 ### Topic 与 Partition
 
 | 概念 | 说明 | 类比 |
-|------|------|------|
+| ------ | ------ | ------ |
 | Topic | 消息类别 | 数据库表 |
 | Partition | 有序、不可变的消息序列 | 表的分片 |
 | Offset | 消息在分区内的唯一标识 | 自增 ID |
@@ -245,7 +245,7 @@ consumer.commitSync();  // or commitAsync()
 ## 性能优化
 
 | 配置项 | 默认值 | 优化建议 |
-|--------|--------|---------|
+| -------- | -------- | --------- |
 | batch.size | 16KB | 32-64KB for throughput |
 | linger.ms | 0 | 5-10ms for batching |
 | compression.type | none | lz4/snappy for network |
@@ -290,7 +290,7 @@ consumer.commitSync();  // or commitAsync()
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -303,7 +303,9 @@ consumer.commitSync();  // or commitAsync()
 ### 配置优化
 
 `yaml
+
 # 生产环境推荐配置
+
 performance:
   max_connections: 1000
   buffer_pool_size: 8GB
@@ -329,7 +331,7 @@ client := NewClient(Config{
 ### 性能基准
 
 | 指标 | 数值 | 说明 |
-|------|------|------|
+| ------ | ------ | ------ |
 | 吞吐量 | 10K QPS | 单节点 |
 | 延迟 | p99 < 10ms | 本地网络 |
 | 可用性 | 99.99% | 集群模式 |
@@ -342,5 +344,5 @@ client := NewClient(Config{
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02

@@ -7,7 +7,7 @@ Terraform is an open-source infrastructure as code (IaC) tool created by HashiCo
 ### 1.1 Core Capabilities
 
 | Capability | Description | Use Case |
-|------------|-------------|----------|
+| ------------ | ------------- | ---------- |
 | Infrastructure Provisioning | Create/modify/destroy resources | Multi-cloud deployment |
 | State Management | Track infrastructure state | Team collaboration |
 | Module System | Reusable infrastructure components | Standardization |
@@ -1234,7 +1234,7 @@ jobs:
 ## 7. Comparison with Alternatives
 
 | Feature | Terraform | Pulumi | CloudFormation | ARM/Bicep |
-|---------|-----------|--------|----------------|-----------|
+| --------- | ----------- | -------- | ---------------- | ----------- |
 | Multi-Cloud | Yes | Yes | AWS only | Azure only |
 | Language | HCL | TypeScript/Python/Go | YAML/JSON | Bicep/JSON |
 | State Management | Required | Service | AWS-managed | Azure-managed |

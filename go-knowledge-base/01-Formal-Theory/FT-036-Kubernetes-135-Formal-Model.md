@@ -20,7 +20,7 @@
 ### 1.2 发布统计
 
 | 类别 | 数量 |
-|------|------|
+| ------ | ------ |
 | 总增强 | 60 |
 | Stable (GA) | 17 |
 | Beta | 19 |
@@ -204,7 +204,7 @@ spec:
 **状态**: Feature gate locked to enabled-by-default
 
 | 特性 | KEP | 状态 | 描述 |
-|------|-----|------|------|
+| ------ | ----- | ------ | ------ |
 | Device Binding Conditions | #5007 | Beta | 硬件就绪前等待 |
 | Partitionable Devices | #4815 | Alpha | 动态分区(MIG切片) |
 | Prioritized Alternatives | #4816 | Beta | 备用设备请求 |
@@ -337,7 +337,7 @@ spec:
 **路由策略对比**:
 
 | 策略 | 描述 |
-|------|------|
+| ------ | ------ |
 | PreferSameNode | 优先同节点Pod (最低延迟) |
 | PreferSameZone | 优先同可用区Pod |
 | ClusterDefault | 集群默认策略 |
@@ -497,7 +497,7 @@ kubectl get nodes
 ### 10.2 关键变更清单
 
 | 变更 | 行动 |
-|------|------|
+| ------ | ------ |
 | cgroup v1移除 | 迁移到v2 |
 | Ingress NGINX退役 | 迁移到Gateway API |
 | 旧API移除 | 更新manifests |

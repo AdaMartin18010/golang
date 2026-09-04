@@ -7,7 +7,7 @@ Envoy is a high-performance C++ distributed proxy designed for single services a
 ### 1.1 Core Capabilities
 
 | Capability | Description | Use Case |
-|------------|-------------|----------|
+| ------------ | ------------- | ---------- |
 | L3/L4 Proxy | TCP/UDP proxy with TLS termination | Edge gateway |
 | HTTP L7 Proxy | Advanced HTTP routing and manipulation | API gateway |
 | gRPC Support | Native gRPC proxy and transcoding | Microservices |
@@ -25,16 +25,16 @@ flowchart TB
         CLIENT2["Mobile App"]
         CLIENT3["Service A"]
     end
-    
+
     subgraph Envoy["Envoy Proxy"]
         LISTENER["Listener<br/>0.0.0.0:8443"]
-        
+
         subgraph Filters["Filter Chain"]
             TLS["TLS Inspector"]
             HTTP["HTTP Connection Manager"]
             ROUTER["Router Filter"]
         end
-        
+
         subgraph HTTPFilters["HTTP Filters"]
             CORS["CORS"]
             RBAC["RBAC"]
@@ -42,35 +42,35 @@ flowchart TB
             JWT["JWT Auth"]
             EXT["Ext Authz"]
         end
-        
+
         subgraph Clusters["Clusters"]
             CLUSTER1["Cluster: user-service"]
             CLUSTER2["Cluster: order-service"]
             CLUSTER3["Cluster: payment-service"]
         end
-        
+
         subgraph LB["Load Balancing"]
             EDS1["EDS<br/>Endpoint Discovery"]
             HEALTH["Health Checks"]
         end
     end
-    
+
     subgraph Upstream["Upstream Services"]
         UP1["User Service<br/>Pods 1-3"]
         UP2["Order Service<br/>Pods 1-3"]
         UP3["Payment Service<br/>Pods 1-3"]
     end
-    
+
     subgraph Control["Control Plane"]
         XDS["xDS API<br/>CDS/RDS/EDS/LDS/SDS"]
     end
-    
+
     subgraph Observability["Observability"]
         PROM["Prometheus Metrics"]
         ZIPKIN["Zipkin Traces"]
         ACCESS["Access Logs"]
     end
-    
+
     CLIENT1 --> LISTENER
     CLIENT2 --> LISTENER
     CLIENT3 --> LISTENER
@@ -107,22 +107,22 @@ type Listener struct {
     FilterChains    []*listener.FilterChain
     DefaultFilterChain *listener.FilterChain
     PerConnectionBufferLimitBytes *wrappers.UInt32Value
-    
+
     // Drain settings
     DrainType       listener.Listener_DrainType
-    
+
     // Deprecated v1 TLS config
     DeprecatedV1    *listener.Listener_DeprecatedV1
-    
+
     // Listener filters (before protocol detection)
     ListenerFilters []*listener.ListenerFilter
-    
+
     // Connection limit
     ConnectionLimit *listener.ConnectionLimit
-    
+
     // Enable reuse port
     EnableReusePort *wrappers.BoolValue
-    
+
     // Transport socket (TLS)
     TransportSocket *core.TransportSocket
 }
@@ -131,22 +131,22 @@ type Listener struct {
 type FilterChainMatch struct {
     // Application protocol to match
     ApplicationProtocols []string
-    
+
     // Destination port to match
     DestinationPort *wrappers.UInt32Value
-    
+
     // Server name (SNI) to match
     ServerNames []string
-    
+
     // Transport protocol to match
     TransportProtocol string
-    
+
     // Source type (Any/Local/External)
     SourceType core.FilterChainMatch_ConnectionSourceType
-    
+
     // Source IP prefix ranges
     SourcePrefixRanges []*core.CidrRange
-    
+
     // Source ports
     SourcePorts []uint32
 }
@@ -159,52 +159,52 @@ type FilterChainMatch struct {
 type HttpConnectionManager struct {
     // Codec type: AUTO, HTTP1, HTTP2, HTTP3
     CodecType HttpConnectionManager_CodecType
-    
+
     // Stat prefix for metrics
     StatPrefix string
-    
+
     // Route specification
     RouteSpecifier *HttpConnectionManager_Rds
-    
+
     // HTTP filters chain
     HttpFilters []*HttpFilter
-    
+
     // Add user agent
     AddUserAgent *wrappers.BoolValue
-    
+
     // Common HTTP protocol options
     CommonHttpProtocolOptions *core.HttpProtocolOptions
-    
+
     // HTTP/1 specific options
     HttpProtocolOptions *core.Http1ProtocolOptions
-    
+
     // HTTP/2 specific options
     Http2ProtocolOptions *core.Http2ProtocolOptions
-    
+
     // Server name header
     ServerName string
-    
+
     // Max request headers size
     MaxRequestHeadersKb *wrappers.UInt32Value
-    
+
     // Idle timeout
     IdleTimeout *duration.Duration
-    
+
     // Stream idle timeout
     StreamIdleTimeout *duration.Duration
-    
+
     // Request timeout
     RequestTimeout *duration.Duration
-    
+
     // Drain timeout
     DrainTimeout *duration.Duration
-    
+
     // Generate request ID
     GenerateRequestId *wrappers.BoolValue
-    
+
     // Tracing configuration
     Tracing *HttpConnectionManager_Tracing
-    
+
     // Access logging
     AccessLog []*accesslog.AccessLog
 }
@@ -233,29 +233,29 @@ type Cluster struct {
     MaxRequestsPerConnection *wrappers.UInt32Value
     CircuitBreakers      *circuitbreakers.CircuitBreakers
     TransportSocket      *core.TransportSocket
-    
+
     // Load balancing subset configuration
     LbSubsetConfig *Cluster_LbSubsetConfig
-    
+
     // Ring hash or Maglev configuration
     RingHashLbConfig *Cluster_RingHashLbConfig
     MaglevLbConfig   *Cluster_MaglevLbConfig
-    
+
     // Original destination load balancing
     OriginalDstLbConfig *Cluster_OriginalDstLbConfig
-    
+
     // Least request configuration
     LeastRequestLbConfig *Cluster_LeastRequestLbConfig
-    
+
     // Common configuration for all load balancers
     CommonLbConfig *Cluster_CommonLbConfig
-    
+
     // Upstream connection options
     UpstreamConnectionOptions *Cluster_UpstreamConnectionOptions
-    
+
     // Close connections on host health failure
     CloseConnectionsOnHostHealthFailure bool
-    
+
     // Consistent hashing for HTTP headers
     CommonHttpProtocolOptions *core.HttpProtocolOptions
     HttpProtocolOptions       *core.Http1ProtocolOptions
@@ -270,16 +270,16 @@ type Cluster struct {
 type DiscoveryRequest struct {
     // Node making the request
     Node *core.Node
-    
+
     // List of resources to subscribe/unsubscribe
     ResourceNames []string
-    
+
     // Type of resource (type.googleapis.com/envoy.config.cluster.v3.Cluster)
     TypeUrl string
-    
+
     // Version info of last accepted response
     ResponseNonce string
-    
+
     // Error details if last response failed
     ErrorDetail *status.Status
 }
@@ -288,19 +288,19 @@ type DiscoveryRequest struct {
 type DiscoveryResponse struct {
     // Version info for cache validation
     VersionInfo string
-    
+
     // List of resources
     Resources []*any.Any
-    
+
     // Canary to test new config
     Canary bool
-    
+
     // Type URL for resources
     TypeUrl string
-    
+
     // Nonce for ACK/NACK
     Nonce string
-    
+
     // Control plane identifier
     ControlPlane *core.ControlPlane
 }
@@ -318,17 +318,17 @@ func (cp *XDSControlPlane) StreamClusters(stream cds.ClusterDiscoveryService_Str
         if err != nil {
             return err
         }
-        
+
         // Get snapshot for node
         snapshot := cp.snapshots[req.Node.Id]
-        
+
         // Send resources
         resp := &discovery.DiscoveryResponse{
             VersionInfo: snapshot.Version,
             Resources:   snapshot.Resources[resource.ClusterType],
             TypeUrl:     resource.ClusterType,
         }
-        
+
         if err := stream.Send(resp); err != nil {
             return err
         }
@@ -358,19 +358,19 @@ static_resources:
                 "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
                 stat_prefix: ingress_http
                 codec_type: AUTO
-                
+
                 # Route configuration
                 rds:
                   route_config_name: local_route
                   config_source:
                     path: /etc/envoy/routes.yaml
-                
+
                 # HTTP filters
                 http_filters:
                   - name: envoy.filters.http.cors
                     typed_config:
                       "@type": type.googleapis.com/envoy.extensions.filters.http.cors.v3.Cors
-                  
+
                   - name: envoy.filters.http.ext_authz
                     typed_config:
                       "@type": type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthz
@@ -379,7 +379,7 @@ static_resources:
                           cluster_name: ext_authz
                         timeout: 0.5s
                       include_peer_certificate: true
-                  
+
                   - name: envoy.filters.http.local_ratelimit
                     typed_config:
                       "@type": type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
@@ -393,11 +393,11 @@ static_resources:
                         default_value:
                           numerator: 100
                           denominator: HUNDRED
-                  
+
                   - name: envoy.filters.http.router
                     typed_config:
                       "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
-                
+
                 # Access logging
                 access_log:
                   - name: envoy.access_loggers.stdout
@@ -420,12 +420,12 @@ static_resources:
                           request_id: "%REQ(X-REQUEST-ID)%"
                           authority: "%REQ(:AUTHORITY)%"
                           upstream_host: "%UPSTREAM_HOST%"
-                
+
                 # Timeouts
                 request_timeout: 30s
                 stream_idle_timeout: 300s
                 drain_timeout: 30s
-                
+
                 # Tracing
                 tracing:
                   provider:
@@ -436,7 +436,7 @@ static_resources:
                       collector_endpoint: /api/v2/spans
                       collector_endpoint_version: HTTP_JSON
                       shared_span_context: false
-          
+
           # TLS termination
           transport_socket:
             name: envoy.transport_sockets.tls
@@ -451,7 +451,7 @@ static_resources:
                   name: validation_context
                   sds_config:
                     path: /etc/envoy/validation_context_sds_secret.yaml
-  
+
   clusters:
     - name: user_service
       connect_timeout: 5s
@@ -493,7 +493,7 @@ static_resources:
           keepalive_time: 300
           keepalive_interval: 75
           keepalive_probes: 9
-    
+
     - name: order_service
       connect_timeout: 5s
       type: EDS
@@ -512,7 +512,7 @@ static_resources:
         active_request_bias:
           runtime_key: least_request_active_request_bias
           default_value: 1.0
-    
+
     - name: ext_authz
       connect_timeout: 1s
       type: STRICT_DNS
@@ -527,7 +527,7 @@ static_resources:
                     socket_address:
                       address: authz-service
                       port_value: 9001
-    
+
     - name: zipkin
       connect_timeout: 1s
       type: STRICT_DNS
@@ -629,7 +629,7 @@ virtual_hosts:
                 - remote_address: {}
                 - generic_key:
                     descriptor_value: api_limit
-      
+
       # Order service routes with weighted traffic split
       - match:
           prefix: /api/v1/orders
@@ -655,7 +655,7 @@ virtual_hosts:
             - cookie:
                 name: session_id
                 ttl: 3600s
-      
+
       # Payment service with header-based routing
       - match:
           prefix: /api/v1/payments
@@ -673,7 +673,7 @@ virtual_hosts:
                   numerator: 10
                   denominator: HUNDRED
                 runtime_key: payment.shadow_enabled
-      
+
       # Direct response for health checks
       - match:
           path: /health
@@ -685,7 +685,7 @@ virtual_hosts:
           - header:
               key: content-type
               value: application/json
-      
+
       # Redirect HTTP to HTTPS
       - match:
           prefix: /
@@ -695,7 +695,7 @@ virtual_hosts:
         redirect:
           https_redirect: true
           port_redirect: 443
-      
+
       # Default route
       - match:
           prefix: /
@@ -707,7 +707,7 @@ virtual_hosts:
             allow_methods: GET, POST, PUT, DELETE, OPTIONS
             allow_headers: authorization,content-type,x-request-id
             max_age: "86400"
-  
+
   - name: internal
     domains:
       - "internal.local"
@@ -739,7 +739,7 @@ import (
     "net"
     "sync"
     "time"
-    
+
     cluster "github.com/envoyproxy/go-control-plane/envoy/config/cluster/v3"
     endpoint "github.com/envoyproxy/go-control-plane/envoy/config/endpoint/v3"
     listener "github.com/envoyproxy/go-control-plane/envoy/config/listener/v3"
@@ -758,7 +758,7 @@ import (
 type ControlPlane struct {
     snapshots cache.SnapshotCache
     server    server.Server
-    
+
     mu        sync.RWMutex
     services  map[string]*Service
     nodes     map[string]*Node
@@ -787,29 +787,29 @@ type Node struct {
 // NewControlPlane creates new xDS control plane
 func NewControlPlane(ctx context.Context) *ControlPlane {
     snapshots := cache.NewSnapshotCache(false, cache.IDHash{}, nil)
-    
+
     cp := &ControlPlane{
         snapshots: snapshots,
         server:    server.NewServer(ctx, snapshots, nil),
         services:  make(map[string]*Service),
         nodes:     make(map[string]*Node),
     }
-    
+
     return cp
 }
 
 // Start starts the gRPC server
 func (cp *ControlPlane) Start(port int) error {
     grpcServer := grpc.NewServer()
-    
+
     // Register xDS services
     server.RegisterServer(grpcServer, cp.server)
-    
+
     lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
     if err != nil {
         return err
     }
-    
+
     return grpcServer.Serve(lis)
 }
 
@@ -817,52 +817,52 @@ func (cp *ControlPlane) Start(port int) error {
 func (cp *ControlPlane) AddService(svc *Service) error {
     cp.mu.Lock()
     defer cp.mu.Unlock()
-    
+
     cp.services[svc.Name] = svc
-    
+
     // Update snapshots for all nodes
     for nodeID := range cp.nodes {
         if err := cp.updateSnapshot(nodeID); err != nil {
             return err
         }
     }
-    
+
     return nil
 }
 
 // updateSnapshot generates and updates snapshot for a node
 func (cp *ControlPlane) updateSnapshot(nodeID string) error {
     node := cp.nodes[nodeID]
-    
+
     // Build clusters
     clusters := make([]types.Resource, 0)
     endpoints := make([]types.Resource, 0)
     routes := make([]types.Resource, 0)
     listeners := make([]types.Resource, 0)
-    
+
     for _, svcName := range node.Services {
         svc := cp.services[svcName]
         if svc == nil {
             continue
         }
-        
+
         // Create cluster
         c := cp.makeCluster(svc)
         clusters = append(clusters, c)
-        
+
         // Create endpoints
         e := cp.makeEndpoints(svc)
         endpoints = append(endpoints, e)
-        
+
         // Create route
         r := cp.makeRoute(svc)
         routes = append(routes, r)
     }
-    
+
     // Create listener
     listener := cp.makeListener(node)
     listeners = append(listeners, listener)
-    
+
     // Create snapshot
     snapshot, err := cache.NewSnapshot(
         time.Now().Format(time.RFC3339Nano),
@@ -876,7 +876,7 @@ func (cp *ControlPlane) updateSnapshot(nodeID string) error {
     if err != nil {
         return err
     }
-    
+
     return cp.snapshots.SetSnapshot(context.Background(), nodeID, snapshot)
 }
 
@@ -912,7 +912,7 @@ func (cp *ControlPlane) makeCluster(svc *Service) *cluster.Cluster {
 
 func (cp *ControlPlane) makeEndpoints(svc *Service) *endpoint.ClusterLoadAssignment {
     lbEndpoints := make([]*endpoint.LbEndpoint, 0, len(svc.Endpoints))
-    
+
     for _, ep := range svc.Endpoints {
         lbEndpoints = append(lbEndpoints, &endpoint.LbEndpoint{
             HostIdentifier: &endpoint.LbEndpoint_Endpoint{
@@ -936,7 +936,7 @@ func (cp *ControlPlane) makeEndpoints(svc *Service) *endpoint.ClusterLoadAssignm
             LoadBalancingWeight: &wrappers.UInt32Value{Value: ep.Weight},
         })
     }
-    
+
     return &endpoint.ClusterLoadAssignment{
         ClusterName: svc.Name,
         Endpoints: []*endpoint.LocalityLbEndpoints{
@@ -999,9 +999,9 @@ func (cp *ControlPlane) makeListener(node *Node) *listener.Listener {
             },
         },
     }
-    
+
     hcmAny, _ := anypb.New(hcm)
-    
+
     return &listener.Listener{
         Name: "listener_0",
         Address: &core.Address{
@@ -1052,41 +1052,41 @@ static_resources:
             - name: envoy.filters.network.http_connection_manager
               typed_config:
                 "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
-                
+
                 # Connection limits
                 common_http_protocol_options:
                   idle_timeout: 3600s
                   max_headers_count: 100
                   max_stream_duration: 0s
-                
+
                 http2_protocol_options:
                   max_concurrent_streams: 100
                   initial_stream_window_size: 65536
                   initial_connection_window_size: 1048576
                   allow_connect: true
-                
+
                 # Request buffer
                 per_request_buffer_limit_bytes: 65536
-                
+
                 # Timeouts
                 request_timeout: 300s
                 stream_idle_timeout: 300s
-  
+
   clusters:
     - name: service_cluster
       connect_timeout: 5s
       per_connection_buffer_limit_bytes: 32768
-      
+
       # Connection pool settings
       common_http_protocol_options:
         idle_timeout: 3600s
-      
+
       upstream_connection_options:
         tcp_keepalive:
           keepalive_time: 300
           keepalive_interval: 75
           keepalive_probes: 9
-      
+
       # Circuit breaker settings
       circuit_breakers:
         thresholds:
@@ -1099,7 +1099,7 @@ static_resources:
               budget_percent:
                 value: 25.0
               min_retry_concurrency: 10
-      
+
       # Outlier detection
       outlier_detection:
         consecutive_5xx: 5
@@ -1122,7 +1122,7 @@ clusters:
       active_request_bias:
         runtime_key: least_request_active_request_bias
         default_value: 1.0
-  
+
   # Ring Hash for session affinity
   - name: websocket_cluster
     lb_policy: RING_HASH
@@ -1130,7 +1130,7 @@ clusters:
       minimum_ring_size: 1024
       maximum_ring_size: 8388608
       use_std_hash: false
-    
+
   # Maglev for consistent hashing with better distribution
   - name: cache_cluster
     lb_policy: MAGLEV
@@ -1150,26 +1150,26 @@ flowchart TB
         USER["Users"]
         CDN["CDN"]
     end
-    
+
     subgraph Edge["Edge Layer"]
         LB1["Global Load Balancer<br/>Cloudflare/GCP"]
     end
-    
+
     subgraph DMZ["DMZ"]
         ENVOY1["Envoy Edge<br/>SSL Termination<br/>Rate Limiting<br/>WAF"]
         ENVOY2["Envoy Edge"]
     end
-    
+
     subgraph Internal["Internal"]
         ENVOY3["Envoy Internal<br/>Service Mesh Gateway"]
         ENVOY4["Envoy Internal"]
     end
-    
+
     subgraph Services["Backend Services"]
         SVC1["API Services"]
         SVC2["Web Services"]
     end
-    
+
     USER --> CDN
     CDN --> LB1
     LB1 --> ENVOY1
@@ -1185,7 +1185,7 @@ flowchart TB
 ## 7. Comparison with Alternatives
 
 | Feature | Envoy | NGINX | HAProxy | Traefik |
-|---------|-------|-------|---------|---------|
+| --------- | ------- | ------- | --------- | --------- |
 | Dynamic Config | Full xDS | Reload | Partial | Full |
 | gRPC Support | Native | Limited | Limited | Good |
 | Observability | Excellent | Good | Good | Good |

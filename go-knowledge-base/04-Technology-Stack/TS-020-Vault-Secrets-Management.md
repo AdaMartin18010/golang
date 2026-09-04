@@ -7,7 +7,7 @@ HashiCorp Vault is an identity-based secrets and encryption management system. I
 ### 1.1 Core Capabilities
 
 | Capability | Description | Use Case |
-|------------|-------------|----------|
+| ------------ | ------------- | ---------- |
 | Static Secrets | Store and retrieve static secrets | API keys, passwords |
 | Dynamic Secrets | Generate on-demand credentials | Database credentials |
 | PKI Certificates | Certificate lifecycle management | TLS/SSL certificates |
@@ -23,25 +23,25 @@ flowchart TB
         APP2["App B<br/>SDK"]
         K8S["Kubernetes<br/>Injector"]
     end
-    
+
     subgraph Access["Access Methods"]
         API["HTTP API"]
         CLI["Vault CLI"]
         SDK["Go SDK"]
     end
-    
+
     subgraph Vault["Vault Cluster"]
         V1["Vault Server 1<br/>Active"]
         V2["Vault Server 2<br/>Standby"]
         V3["Vault Server 3<br/>Standby"]
     end
-    
+
     subgraph Storage["Storage Backends"]
         CONSUL[("Consul<br/>HA Backend")]
         RAFT[("Integrated Raft<br/>Built-in Storage")]
         S3[("S3/Azure Blob<br/>Cloud Storage")]
     end
-    
+
     subgraph Secrets["Secret Engines"]
         KV["KV v2<br/>Static Secrets"]
         DB["Database<br/>Dynamic Credentials"]
@@ -49,14 +49,14 @@ flowchart TB
         AWS["AWS<br/>IAM Credentials"]
         TRANSIT["Transit<br/>Encryption"]
     end
-    
+
     subgraph Auth["Auth Methods"]
         K8SAUTH["Kubernetes Auth"]
         APPROLE["AppRole"]
         JWT["JWT/OIDC"]
         USERPASS["User/Password"]
     end
-    
+
     APP1 --> API
     APP2 --> SDK
     K8S --> API
@@ -88,15 +88,15 @@ type VaultServer struct {
     Core        *Core           // Core vault logic
     HA          *HAController   // High availability
     Seal        Seal            // Seal/unseal mechanism
-    
+
     // Storage
     Storage     PhysicalBackend // Physical storage
     Barrier     SecurityBarrier // Encryption barrier
-    
+
     // Authentication and authorization
     TokenStore  *TokenStore     // Token management
     PolicyStore *PolicyStore    // Policy management
-    
+
     // Plugin system
     Catalog     *PluginCatalog  // Plugin management
     Router      *Router         // Request routing
@@ -107,12 +107,12 @@ type Core struct {
     state         CoreState      // Sealed/Unsealed
     masterKey     []byte         // Master encryption key
     sealConfig    *SealConfig    // Seal configuration
-    
+
     // Mount tables
     authMount     *MountTable    // Auth method mounts
     credentialMount *MountTable  // Credential backends
     secretMount   *MountTable    // Secret engine mounts
-    
+
     // Replication
     replicationState *ReplicationState
 }
@@ -151,13 +151,13 @@ func (a *AutoUnseal) Unseal(ctx context.Context, _ []byte) error {
     if err != nil {
         return err
     }
-    
+
     // 2. Decrypt using cloud KMS
     plaintext, err := a.kmsClient.Decrypt(ctx, a.kmsKeyName, blob)
     if err != nil {
         return err
     }
-    
+
     // 3. Restore keyring
     return a.keyring.Restore(plaintext)
 }
@@ -198,22 +198,22 @@ func (e *KVv2Engine) Write(ctx context.Context, path string, data map[string]int
             return nil, ErrCheckAndSetFailed
         }
     }
-    
+
     // 2. Encrypt data
     ciphertext, err := e.barrier.Encrypt(ctx, serialize(data))
     if err != nil {
         return nil, err
     }
-    
+
     // 3. Store with new version
     version := e.incrementVersion(path)
     if err := e.storeVersion(ctx, path, version, ciphertext); err != nil {
         return nil, err
     }
-    
+
     // 4. Cleanup old versions
     e.cleanupOldVersions(ctx, path)
-    
+
     return e.Read(ctx, path)
 }
 ```
@@ -244,17 +244,17 @@ func (e *DatabaseEngine) GenerateCredentials(ctx context.Context, role string) (
     if err != nil {
         return nil, err
     }
-    
+
     // 2. Generate unique credentials
     username := generateUsername(role)
     password := generateSecurePassword(roleConfig.PasswordLength)
-    
+
     // 3. Create user in database
     conn := e.connections[roleConfig.Connection]
     if err := conn.plugin.CreateUser(ctx, username, password, roleConfig); err != nil {
         return nil, err
     }
-    
+
     // 4. Schedule revocation
     cred := &DynamicCredential{
         Username:    username,
@@ -264,9 +264,9 @@ func (e *DatabaseEngine) GenerateCredentials(ctx context.Context, role string) (
         MaxTTL:      roleConfig.MaxTTL,
         RevokeAfter: time.Now().Add(roleConfig.DefaultTTL),
     }
-    
+
     e.scheduleRevocation(cred)
-    
+
     return cred, nil
 }
 ```
@@ -297,37 +297,37 @@ func (k *KubernetesAuth) Login(ctx context.Context, req *KubernetesLoginRequest)
     if err != nil {
         return nil, ErrInvalidToken
     }
-    
+
     // 2. Validate with TokenReview API
     review := &authv1.TokenReview{
         Spec: authv1.TokenReviewSpec{
             Token: req.JWT,
         },
     }
-    
+
     reviewed, err := k.k8sClient.AuthenticationV1().TokenReviews().Create(ctx, review, metav1.CreateOptions{})
     if err != nil {
         return nil, err
     }
-    
+
     if !reviewed.Status.Authenticated {
         return nil, ErrAuthenticationFailed
     }
-    
+
     // 3. Get role configuration
     role, err := k.getRole(req.Role)
     if err != nil {
         return nil, err
     }
-    
+
     // 4. Validate service account name and namespace
     saName := reviewed.Status.User.Username
     namespace := reviewed.Status.User.Extra["authentication.kubernetes.io/pod-uid"]
-    
+
     if !role.allowedServiceAccount(saName) || !role.allowedNamespace(namespace) {
         return nil, ErrUnauthorized
     }
-    
+
     // 5. Generate Vault token
     return k.generateToken(role, saName, namespace)
 }
@@ -369,10 +369,10 @@ audit_file {
 storage "raft" {
   path    = "/opt/vault/data"
   node_id = "vault-node-1"
-  
+
   retry_leader_election = true
   retry_raft_leader_election = true
-  
+
   autopilot {
     cleanup_dead_servers = true
     last_contact_threshold = "200ms"
@@ -388,10 +388,10 @@ listener "tcp" {
   tls_cert_file = "/opt/vault/tls/vault.crt"
   tls_key_file  = "/opt/vault/tls/vault.key"
   tls_min_version = "tls12"
-  
+
   # TLS cipher suites
   tls_cipher_suites = "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256"
-  
+
   # X-Forwarded-For support
   x_forwarded_for_authorized_addrs = "10.0.0.0/8"
   x_forwarded_for_hop_skips = 1
@@ -556,7 +556,7 @@ import (
     "fmt"
     "os"
     "time"
-    
+
     vault "github.com/hashicorp/vault/api"
     "github.com/hashicorp/vault/api/auth/kubernetes"
 )
@@ -566,19 +566,19 @@ type Config struct {
     Address         string
     Token           string
     AuthMethod      string // token, kubernetes, approle
-    
+
     // Kubernetes auth
     K8sRole         string
     K8sTokenPath    string
-    
+
     // AppRole auth
     RoleID          string
     SecretID        string
-    
+
     // TLS configuration
     CACertPath      string
     InsecureSkipVerify bool
-    
+
     // Timeouts
     Timeout         time.Duration
     MaxRetries      int
@@ -589,7 +589,7 @@ func NewClient(cfg Config) (*vault.Client, error) {
     // Configure Vault client
     vConfig := vault.DefaultConfig()
     vConfig.Address = cfg.Address
-    
+
     // Configure TLS
     if cfg.CACertPath != "" {
         tlsConfig := &vault.TLSConfig{
@@ -600,32 +600,32 @@ func NewClient(cfg Config) (*vault.Client, error) {
             return nil, fmt.Errorf("failed to configure TLS: %w", err)
         }
     }
-    
+
     // Configure timeouts
     vConfig.Timeout = cfg.Timeout
     vConfig.MaxRetries = cfg.MaxRetries
-    
+
     // Create client
     client, err := vault.NewClient(vConfig)
     if err != nil {
         return nil, fmt.Errorf("failed to create vault client: %w", err)
     }
-    
+
     // Authenticate
     if err := authenticate(client, cfg); err != nil {
         return nil, fmt.Errorf("authentication failed: %w", err)
     }
-    
+
     return client, nil
 }
 
 func authenticate(client *vault.Client, cfg Config) error {
     ctx := context.Background()
-    
+
     switch cfg.AuthMethod {
     case "token":
         client.SetToken(cfg.Token)
-        
+
     case "kubernetes":
         k8sAuth, err := kubernetes.NewKubernetesAuth(
             cfg.K8sRole,
@@ -634,36 +634,36 @@ func authenticate(client *vault.Client, cfg Config) error {
         if err != nil {
             return err
         }
-        
+
         secret, err := client.Auth().Login(ctx, k8sAuth)
         if err != nil {
             return err
         }
-        
+
         if secret == nil || secret.Auth == nil {
             return fmt.Errorf("no auth info returned")
         }
-        
+
         client.SetToken(secret.Auth.ClientToken)
-        
+
     case "approle":
         // Implement AppRole authentication
         data := map[string]interface{}{
             "role_id":   cfg.RoleID,
             "secret_id": cfg.SecretID,
         }
-        
+
         secret, err := client.Logical().Write("auth/approle/login", data)
         if err != nil {
             return err
         }
-        
+
         client.SetToken(secret.Auth.ClientToken)
-        
+
     default:
         return fmt.Errorf("unknown auth method: %s", cfg.AuthMethod)
     }
-    
+
     return nil
 }
 ```
@@ -678,7 +678,7 @@ import (
     "encoding/json"
     "fmt"
     "time"
-    
+
     vault "github.com/hashicorp/vault/api"
 )
 
@@ -701,7 +701,7 @@ func (sm *SecretManager) GetSecret(ctx context.Context, path string) (map[string
     if err != nil {
         return nil, fmt.Errorf("failed to get secret: %w", err)
     }
-    
+
     return secret.Data, nil
 }
 
@@ -711,7 +711,7 @@ func (sm *SecretManager) GetSecretWithVersion(ctx context.Context, path string, 
     if err != nil {
         return nil, fmt.Errorf("failed to get secret version: %w", err)
     }
-    
+
     return secret.Data, nil
 }
 
@@ -721,7 +721,7 @@ func (sm *SecretManager) PutSecret(ctx context.Context, path string, data map[st
     if err != nil {
         return fmt.Errorf("failed to put secret: %w", err)
     }
-    
+
     return nil
 }
 
@@ -730,12 +730,12 @@ func (sm *SecretManager) PutSecretWithCAS(ctx context.Context, path string, data
     opts := vault.KVOption{
         CAS: casVersion,
     }
-    
+
     _, err := sm.client.KVv2(sm.prefix).Put(ctx, path, data, opts)
     if err != nil {
         return fmt.Errorf("CAS failed: %w", err)
     }
-    
+
     return nil
 }
 
@@ -745,7 +745,7 @@ func (sm *SecretManager) DeleteSecret(ctx context.Context, path string) error {
     if err != nil {
         return fmt.Errorf("failed to delete secret: %w", err)
     }
-    
+
     return nil
 }
 
@@ -755,7 +755,7 @@ func (sm *SecretManager) DestroySecret(ctx context.Context, path string) error {
     if err != nil {
         return fmt.Errorf("failed to destroy secret: %w", err)
     }
-    
+
     return nil
 }
 
@@ -765,17 +765,17 @@ func (sm *SecretManager) ListSecrets(ctx context.Context, path string) ([]string
     if err != nil {
         return nil, fmt.Errorf("failed to list secrets: %w", err)
     }
-    
+
     keys, ok := secret.Data["keys"].([]interface{})
     if !ok {
         return nil, nil
     }
-    
+
     result := make([]string, len(keys))
     for i, k := range keys {
         result[i] = k.(string)
     }
-    
+
     return result, nil
 }
 ```
@@ -791,7 +791,7 @@ import (
     "fmt"
     "sync"
     "time"
-    
+
     _ "github.com/lib/pq"
     vault "github.com/hashicorp/vault/api"
 )
@@ -801,7 +801,7 @@ type DynamicDBCredentials struct {
     client     *vault.Client
     role       string
     dbPath     string
-    
+
     mu         sync.RWMutex
     creds      *DBCredentials
     leaseExpiry time.Time
@@ -819,10 +819,10 @@ func NewDynamicDBCredentials(client *vault.Client, dbPath, role string) *Dynamic
         role:   role,
         dbPath: dbPath,
     }
-    
+
     // Start background renewal
     go d.renewalLoop()
-    
+
     return d
 }
 
@@ -834,44 +834,44 @@ func (d *DynamicDBCredentials) GetCredentials(ctx context.Context) (*DBCredentia
         return d.creds, nil
     }
     d.mu.RUnlock()
-    
+
     return d.generateCredentials(ctx)
 }
 
 func (d *DynamicDBCredentials) generateCredentials(ctx context.Context) (*DBCredentials, error) {
     d.mu.Lock()
     defer d.mu.Unlock()
-    
+
     // Double-check after acquiring lock
     if d.creds != nil && time.Now().Before(d.leaseExpiry.Add(-5*time.Minute)) {
         return d.creds, nil
     }
-    
+
     path := fmt.Sprintf("%s/creds/%s", d.dbPath, d.role)
     secret, err := d.client.Logical().ReadWithContext(ctx, path)
     if err != nil {
         return nil, fmt.Errorf("failed to generate credentials: %w", err)
     }
-    
+
     if secret == nil || secret.Data == nil {
         return nil, fmt.Errorf("no credentials returned")
     }
-    
+
     d.creds = &DBCredentials{
         Username: secret.Data["username"].(string),
         Password: secret.Data["password"].(string),
         LeaseID:  secret.LeaseID,
     }
-    
+
     d.leaseExpiry = time.Now().Add(time.Duration(secret.LeaseDuration) * time.Second)
-    
+
     return d.creds, nil
 }
 
 func (d *DynamicDBCredentials) renewalLoop() {
     ticker := time.NewTicker(1 * time.Minute)
     defer ticker.Stop()
-    
+
     for range ticker.C {
         d.mu.RLock()
         if d.creds == nil || d.creds.LeaseID == "" {
@@ -880,7 +880,7 @@ func (d *DynamicDBCredentials) renewalLoop() {
         }
         leaseID := d.creds.LeaseID
         d.mu.RUnlock()
-        
+
         // Renew if close to expiry
         if time.Now().After(d.leaseExpiry.Add(-10 * time.Minute)) {
             if err := d.renewLease(context.Background(), leaseID); err != nil {
@@ -898,11 +898,11 @@ func (d *DynamicDBCredentials) renewLease(ctx context.Context, leaseID string) e
     if err != nil {
         return err
     }
-    
+
     d.mu.Lock()
     d.leaseExpiry = time.Now().Add(time.Duration(secret.LeaseDuration) * time.Second)
     d.mu.Unlock()
-    
+
     return nil
 }
 
@@ -912,14 +912,14 @@ func (d *DynamicDBCredentials) OpenDB(ctx context.Context, connStr string) (*sql
     if err != nil {
         return nil, err
     }
-    
+
     connStr = fmt.Sprintf(connStr, creds.Username, creds.Password)
-    
+
     db, err := sql.Open("postgres", connStr)
     if err != nil {
         return nil, err
     }
-    
+
     return db, nil
 }
 ```
@@ -933,7 +933,7 @@ import (
     "context"
     "encoding/base64"
     "fmt"
-    
+
     vault "github.com/hashicorp/vault/api"
 )
 
@@ -953,109 +953,109 @@ func NewTransitEncryption(client *vault.Client, mountPath string) *TransitEncryp
 // Encrypt encrypts plaintext using specified key
 func (t *TransitEncryption) Encrypt(ctx context.Context, keyName string, plaintext []byte) (string, error) {
     path := fmt.Sprintf("%s/encrypt/%s", t.mountPath, keyName)
-    
+
     data := map[string]interface{}{
         "plaintext": base64.StdEncoding.EncodeToString(plaintext),
     }
-    
+
     secret, err := t.client.Logical().WriteWithContext(ctx, path, data)
     if err != nil {
         return "", fmt.Errorf("encryption failed: %w", err)
     }
-    
+
     ciphertext, ok := secret.Data["ciphertext"].(string)
     if !ok {
         return "", fmt.Errorf("no ciphertext in response")
     }
-    
+
     return ciphertext, nil
 }
 
 // Decrypt decrypts ciphertext
 func (t *TransitEncryption) Decrypt(ctx context.Context, keyName string, ciphertext string) ([]byte, error) {
     path := fmt.Sprintf("%s/decrypt/%s", t.mountPath, keyName)
-    
+
     data := map[string]interface{}{
         "ciphertext": ciphertext,
     }
-    
+
     secret, err := t.client.Logical().WriteWithContext(ctx, path, data)
     if err != nil {
         return nil, fmt.Errorf("decryption failed: %w", err)
     }
-    
+
     plaintextB64, ok := secret.Data["plaintext"].(string)
     if !ok {
         return nil, fmt.Errorf("no plaintext in response")
     }
-    
+
     return base64.StdEncoding.DecodeString(plaintextB64)
 }
 
 // RotateKey rotates the specified encryption key
 func (t *TransitEncryption) RotateKey(ctx context.Context, keyName string) error {
     path := fmt.Sprintf("%s/keys/%s/rotate", t.mountPath, keyName)
-    
+
     _, err := t.client.Logical().WriteWithContext(ctx, path, nil)
     if err != nil {
         return fmt.Errorf("key rotation failed: %w", err)
     }
-    
+
     return nil
 }
 
 // Rewrap re-encrypts ciphertext with latest key version
 func (t *TransitEncryption) Rewrap(ctx context.Context, keyName string, ciphertext string) (string, error) {
     path := fmt.Sprintf("%s/rewrap/%s", t.mountPath, keyName)
-    
+
     data := map[string]interface{}{
         "ciphertext": ciphertext,
     }
-    
+
     secret, err := t.client.Logical().WriteWithContext(ctx, path, data)
     if err != nil {
         return "", fmt.Errorf("rewrap failed: %w", err)
     }
-    
+
     newCiphertext, ok := secret.Data["ciphertext"].(string)
     if !ok {
         return "", fmt.Errorf("no ciphertext in response")
     }
-    
+
     return newCiphertext, nil
 }
 
 // BatchEncrypt encrypts multiple items efficiently
 func (t *TransitEncryption) BatchEncrypt(ctx context.Context, keyName string, plaintexts [][]byte) ([]string, error) {
     path := fmt.Sprintf("%s/encrypt/%s", t.mountPath, keyName)
-    
+
     batchItems := make([]map[string]interface{}, len(plaintexts))
     for i, pt := range plaintexts {
         batchItems[i] = map[string]interface{}{
             "plaintext": base64.StdEncoding.EncodeToString(pt),
         }
     }
-    
+
     data := map[string]interface{}{
         "batch_input": batchItems,
     }
-    
+
     secret, err := t.client.Logical().WriteWithContext(ctx, path, data)
     if err != nil {
         return nil, fmt.Errorf("batch encryption failed: %w", err)
     }
-    
+
     results, ok := secret.Data["batch_results"].([]interface{})
     if !ok {
         return nil, fmt.Errorf("no batch results in response")
     }
-    
+
     ciphertexts := make([]string, len(results))
     for i, result := range results {
         r := result.(map[string]interface{})
         ciphertexts[i] = r["ciphertext"].(string)
     }
-    
+
     return ciphertexts, nil
 }
 ```
@@ -1070,7 +1070,7 @@ func (t *TransitEncryption) BatchEncrypt(ctx context.Context, keyName string, pl
 // Optimized Vault client configuration
 func NewOptimizedClient(cfg Config) (*vault.Client, error) {
     vConfig := vault.DefaultConfig()
-    
+
     // HTTP client tuning
     httpClient := &http.Client{
         Timeout: cfg.Timeout,
@@ -1083,11 +1083,11 @@ func NewOptimizedClient(cfg Config) (*vault.Client, error) {
             DisableCompression:  false,
         },
     }
-    
+
     vConfig.HttpClient = httpClient
     vConfig.Timeout = cfg.Timeout
     vConfig.MaxRetries = cfg.MaxRetries
-    
+
     return vault.NewClient(vConfig)
 }
 ```
@@ -1114,28 +1114,28 @@ func (m *SmartLeaseManager) RenewIfNeeded(ctx context.Context, leaseID string) e
     m.mu.RLock()
     info, exists := m.leases[leaseID]
     m.mu.RUnlock()
-    
+
     if !exists {
         return fmt.Errorf("unknown lease: %s", leaseID)
     }
-    
+
     // Check if renewal is needed
     if time.Until(info.Expiry) > m.renewWindow {
         return nil // Not yet time to renew
     }
-    
+
     // Perform renewal
     secret, err := m.client.Sys().RenewWithContext(ctx, leaseID, 0)
     if err != nil {
         return fmt.Errorf("lease renewal failed: %w", err)
     }
-    
+
     m.mu.Lock()
     info.Expiry = time.Now().Add(time.Duration(secret.LeaseDuration) * time.Second)
     info.LastRenewed = time.Now()
     info.RenewCount++
     m.mu.Unlock()
-    
+
     return nil
 }
 ```
@@ -1162,11 +1162,11 @@ func (c *VaultCache) GetSecret(ctx context.Context, path string) (map[string]int
     c.mu.RLock()
     entry, exists := c.cache[path]
     c.mu.RUnlock()
-    
+
     if exists && time.Now().Before(entry.Expiry) {
         return entry.Data, nil
     }
-    
+
     // Fetch from Vault
     secret, err := c.client.KVv2("secret").Get(ctx, path)
     if err != nil {
@@ -1176,7 +1176,7 @@ func (c *VaultCache) GetSecret(ctx context.Context, path string) (map[string]int
         }
         return nil, err
     }
-    
+
     // Update cache
     c.mu.Lock()
     c.cache[path] = &CacheEntry{
@@ -1184,7 +1184,7 @@ func (c *VaultCache) GetSecret(ctx context.Context, path string) (map[string]int
         Expiry: time.Now().Add(c.ttl),
     }
     c.mu.Unlock()
-    
+
     return secret.Data, nil
 }
 ```
@@ -1200,29 +1200,29 @@ flowchart TB
     subgraph LB["Load Balancer"]
         HAProxy["HAProxy<br/>TLS Termination"]
     end
-    
+
     subgraph VaultCluster["Vault Cluster"]
         V1["Vault Active<br/>Leader"]
         V2["Vault Standby<br/>Follower"]
         V3["Vault Standby<br/>Follower"]
     end
-    
+
     subgraph Storage["Raft Storage"]
         R1["Node 1 Data"]
         R2["Node 2 Data"]
         R3["Node 3 Data"]
     end
-    
+
     subgraph Clients["Applications"]
         APP1["App A"]
         APP2["App B"]
         K8S["Kubernetes"]
     end
-    
+
     subgraph KMS["Cloud KMS"]
         AWSKMS["AWS KMS<br/>Auto-unseal"]
     end
-    
+
     APP1 --> HAProxy
     APP2 --> HAProxy
     K8S --> HAProxy
@@ -1256,13 +1256,13 @@ func EnableDRReplication(client *vault.Client, cfg DRConfig) error {
     if err != nil {
         return err
     }
-    
+
     // 2. Generate secondary token
     tokenData := map[string]interface{}{
         "id":           cfg.DRCluster,
         "mount_filter": cfg.MountFilter,
     }
-    
+
     secret, err := client.Logical().Write(
         "sys/replication/performance/primary/secondary-token",
         tokenData,
@@ -1270,16 +1270,16 @@ func EnableDRReplication(client *vault.Client, cfg DRConfig) error {
     if err != nil {
         return err
     }
-    
+
     token := secret.Data["token"].(string)
-    
+
     // 3. On DR cluster, enable secondary
     drClient, _ := vault.NewClient(&vault.Config{Address: cfg.DRCluster})
     _, err = drClient.Logical().Write("sys/replication/performance/secondary/enable", map[string]interface{}{
         "token":   token,
         "ca_file": "/path/to/ca.crt",
     })
-    
+
     return err
 }
 
@@ -1288,12 +1288,12 @@ func PromoteDR(client *vault.Client, force bool) error {
     data := map[string]interface{}{
         "force": force,
     }
-    
+
     _, err := client.Logical().Write(
         "sys/replication/performance/secondary/promote",
         data,
     )
-    
+
     return err
 }
 ```
@@ -1303,7 +1303,7 @@ func PromoteDR(client *vault.Client, force bool) error {
 ## 7. Comparison with Alternatives
 
 | Feature | Vault | AWS Secrets Manager | Azure Key Vault | CyberArk |
-|---------|-------|---------------------|-----------------|----------|
+| --------- | ------- | --------------------- | ----------------- | ---------- |
 | Multi-cloud | Yes | AWS only | Azure only | Yes |
 | Dynamic Secrets | Yes | Limited | Limited | Yes |
 | PKI | Built-in | ACM | Yes | Limited |
@@ -1352,7 +1352,7 @@ path "auth/token/renew-self" {
 // Enable audit logging
 func EnableAudit(client *vault.Client) error {
     auditPath := "audit/file"
-    
+
     _, err := client.Logical().Write(fmt.Sprintf("sys/audit/%s", auditPath), map[string]interface{}{
         "type": "file",
         "options": map[string]string{
@@ -1360,7 +1360,7 @@ func EnableAudit(client *vault.Client) error {
         },
         "description": "Primary audit log",
     })
-    
+
     return err
 }
 ```

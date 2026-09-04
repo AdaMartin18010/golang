@@ -350,7 +350,7 @@ const (
 ## 5. Comparison with Alternatives
 
 | Approach | Latency | Complexity | Use Case |
-|----------|---------|------------|----------|
+| ---------- | --------- | ------------ | ---------- |
 | **WebSocket** | Very low | Medium | Real-time bidirectional |
 | **Server-Sent Events** | Low | Low | Server push only |
 | **Long Polling** | Medium | Low | Fallback option |
@@ -418,5 +418,5 @@ const (
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02

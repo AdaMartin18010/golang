@@ -7,7 +7,7 @@ OpenTelemetry is a vendor-neutral, open-source observability framework for instr
 ### 1.1 Core Components
 
 | Component | Description | Go Package |
-|-----------|-------------|------------|
+| ----------- | ------------- | ------------ |
 | API | Provides interfaces for instrumentation | go.opentelemetry.io/otel |
 | SDK | Implements the API, exports telemetry | go.opentelemetry.io/otel/sdk |
 | Collector | Receives, processes, and exports data | opentelemetry-collector |
@@ -1160,7 +1160,7 @@ spec:
 ### 7.1 Feature Matrix
 
 | Feature | OpenTelemetry | Jaeger SDK | Zipkin | New Relic |
-|---------|---------------|------------|--------|-----------|
+| --------- | --------------- | ------------ | -------- | ----------- |
 | Open Standard | Yes | No | Partial | No |
 | Multi-signal | Yes (T+M+L) | Traces only | Traces only | Yes |
 | Vendor Lock-in | No | Low | Low | High |

@@ -669,7 +669,7 @@ func (ss *SessionStore) Cleanup(maxAge time.Duration) {
 ## Protocol Comparison
 
 | Aspect | Session Guarantees | Linearizability | Causal Consistency | Eventual Consistency |
-|--------|-------------------|-----------------|-------------------|---------------------|
+| -------- | ------------------- | ----------------- | ------------------- | --------------------- |
 | **Latency** | Low | High | Low | Lowest |
 | **Availability** | High | Lower | High | Highest |
 | **Client Complexity** | Medium | Low | Medium | Low |

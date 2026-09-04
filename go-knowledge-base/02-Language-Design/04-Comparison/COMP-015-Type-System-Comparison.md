@@ -813,7 +813,7 @@ type CloneableResetable = Cloneable & Resetable
 ## Feature Matrix
 
 | Feature | Go | Haskell | TypeScript | Rust | Python | Java | Scala |
-|---------|-----|---------|------------|------|--------|------|-------|
+| --------- | ----- | --------- | ------------ | ------ | -------- | ------ | ------- |
 | Static Checking | Yes | Yes | Optional | Yes | Optional | Yes | Yes |
 | Inference | Yes | Yes | Yes | Yes | N/A | Partial | Yes |
 | Generics | Yes | Yes | Yes | Yes | Yes | Yes | Yes |

@@ -264,7 +264,7 @@ func As(err error, target interface{}) bool {
 ### 4.1 错误类型内存开销
 
 | 错误类型 | 内存开销 | 适用场景 |
-|----------|----------|----------|
+| ---------- | ---------- | ---------- |
 | errors.New | ~16 bytes | 简单错误 |
 | fmt.Errorf | ~32+ bytes | 格式化错误 |
 | fmt.Errorf(%w) | ~48+ bytes | 包装错误 |
@@ -302,7 +302,7 @@ func BenchmarkErrorsIs(b *testing.B) {
 **预期性能**
 
 | 基准测试 | 操作/纳秒 | 分配 |
-|----------|-----------|------|
+| ---------- | ----------- | ------ |
 | SimpleError | ~30ns | 1 allocs/op |
 | WrappedError | ~80ns | 2 allocs/op |
 | ErrorsIs | ~50ns | 0 allocs/op |

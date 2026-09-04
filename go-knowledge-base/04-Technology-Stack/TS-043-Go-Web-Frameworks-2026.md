@@ -11,7 +11,7 @@
 ## 1. Framework Comparison
 
 | Framework | Performance | Features |
-|-----------|-------------|----------|
+| ----------- | ------------- | ---------- |
 | Gin | 380K req/s | Rich |
 | Echo | 375K req/s | Rich |
 | Fiber | 420K req/s | Medium |

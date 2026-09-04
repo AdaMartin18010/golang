@@ -70,7 +70,7 @@ $$\text{State} ::= \text{Follower} \mid \text{Candidate} \mid \text{Leader}$$
 **定义 2.2 (持久化状态)**
 
 | 变量 | 类型 | 说明 |
-|------|------|------|
+| ------ | ------ | ------ |
 | $currentTerm$ | $\mathbb{N}^+$ | 最新任期，单调递增 |
 | $votedFor$ | $\Pi \cup \{\text{nil}\}$ | 当前任期投给的候选者 |
 | $\log$ | $\text{List}\langle\langle\text{Command}, \text{Term}\rangle\rangle$ | 日志条目序列 |
@@ -78,7 +78,7 @@ $$\text{State} ::= \text{Follower} \mid \text{Candidate} \mid \text{Leader}$$
 **定义 2.3 (易失性状态)**
 
 | 变量 | 类型 | 说明 |
-|------|------|------|
+| ------ | ------ | ------ |
 | $commitIndex$ | $\mathbb{N}$ | 已知提交的最高日志索引 |
 | $lastApplied$ | $\mathbb{N}$ | 应用到状态机的最高索引 |
 | $nextIndex$ | $\Pi \to \mathbb{N}$ | 对每个 follower，下一个发送的日志索引 |
@@ -220,7 +220,7 @@ $$\forall i, j: (\log_i[k].term = \log_j[k].term) \Rightarrow \forall m < k: \lo
 ### 3.3 多维对比矩阵 (Comparison Matrix)
 
 | 属性 | Raft | Multi-Paxos | PBFT | Zab | Paxos | Viewstamped Replication |
-|------|------|-------------|------|-----|-------|------------------------|
+| ------ | ------ | ------------- | ------ | ----- | ------- | ------------------------ |
 | **理论起源** | Stanford'14 | Lamport'98 | Castro-Liskov'02 | Yahoo'11 | Lamport'89 | Oki-Liskov'88 |
 | **容错数** | ⌊(n-1)/2⌋ | ⌊(n-1)/2⌋ | ⌊(n-1)/3⌋ | ⌊(n-1)/2⌋ | ⌊(n-1)/2⌋ | ⌊(n-1)/2⌋ |
 | **故障模型** | Crash-Stop | Crash-Stop | Byzantine | Crash-Stop | Crash-Stop | Crash-Stop |
@@ -422,7 +422,7 @@ AppendEntries(i, j) ==
 ### 6.1 Raft vs Paxos 形式对比
 
 | 维度 | Paxos | Raft |
-|------|-------|------|
+| ------ | ------- | ------ |
 | **问题分解** | Single-decree (一次一个值) | Log replication (连续日志) |
 | **角色** | Proposer/Acceptor/Learner | Leader/Follower/Candidate |
 | **活性保证** | 需外部 Leader 选举 | 内置 Leader 选举 |
@@ -505,7 +505,7 @@ RafturePrune(i, entryId) ==
 **关键创新**
 
 | 特性 | CRaft (2020) | FlexRaft (2024) | Rafture (2026) |
-|------|-------------|-----------------|----------------|
+| ------ | ------------- | ----------------- | ---------------- |
 | 编码方案 | $(F+1, N)$ | $(F+1, N)$ adaptive | $(F+1, (F+1)(N-1))$ fixed |
 | 故障处理 | 降级全复制 | 动态调整 | 传播后剪枝 |
 | 恢复复杂度 | 高 (多变元数据) | 中 | 低 (统一 $F+1$ 片段恢复) |
@@ -568,7 +568,7 @@ AdjustTimeout(i) ==
 **实验结果** (IEEE Access 2025)
 
 | 指标 | Raft (静态) | Dynatune | 改进 |
-|------|------------|----------|------|
+| ------ | ------------ | ---------- | ------ |
 | 平均检测时间 | 1205 ms | 237 ms | **-80%** |
 | 平均 OTS 时间 | 1449 ms | 797 ms | **-45%** |
 | 峰值吞吐 | 13678 req/s | 12800 req/s | -6.4% |
@@ -646,7 +646,7 @@ ClientMulticast(client, entry) ==
 **性能对比**
 
 | 场景 | 经典 Raft | Fast Raft | DSH-Raft (分层) |
-|------|-----------|-----------|-----------------|
+| ------ | ----------- | ----------- | ----------------- |
 | 提交延迟 (低丢包) | 3 RTT | 2 RTT | 2-3 RTT |
 | 提交延迟 (>5% 丢包) | 3 RTT | 3+ RTT (回退) | 3 RTT |
 | 20 节点吞吐 | Baseline | +30% | **+65%** |
@@ -672,7 +672,7 @@ $$\text{Memory}_{v3.6} \leq 0.5 \times \text{Memory}_{v3.5}$$
 **吞吐量提升**
 
 | 读写比例 | 读吞吐提升 | 写吞吐提升 |
-|----------|-----------|-----------|
+| ---------- | ----------- | ----------- |
 | 高写 (1:128) | 3.21% - 25.59% | 2.95% - 24.24% |
 | 高读 (8:1) | 4.38% - 27.20% | 3.86% - 28.37% |
 | 平均 | ~10% | ~10% |
@@ -680,7 +680,7 @@ $$\text{Memory}_{v3.6} \leq 0.5 \times \text{Memory}_{v3.5}$$
 **etcd v3.7 路线图 (2026)**
 
 | 特性 | 描述 | 预期收益 |
-|------|------|----------|
+| ------ | ------ | ---------- |
 | **RangeStream** | 流式范围查询 (KEP-5116) | 避免 OOM，支持大范围查询 |
 | **Async Raft** | 异步存储写入 | 降低写入延迟 |
 | **Catchup 优化** | 传播最慢成员索引 | 减少 50%+ 内存使用 |
@@ -781,7 +781,7 @@ $$\text{SendSnapshot} \iff \text{nextIndex}[i][j] < \text{lastSnapshotIndex} - T
 **分块传输优化**
 
 | 参数 | 说明 | 典型值 |
-|------|------|--------|
+| ------ | ------ | -------- |
 | `snapshot-chunk-size` | 每块大小 | 64KB - 1MB |
 | `snapshot-chunk-timeout` | 块超时 | 30s |
 | `max-concurrent-snapshots` | 最大并发快照传输 | 1-3 |

@@ -718,7 +718,7 @@ func sortProducts(products []Product, sortBy string) []Product {
 ### Strategy Comparison
 
 | Strategy | Latency | Completeness | Complexity | Best For |
-|----------|---------|--------------|------------|----------|
+| ---------- | --------- | -------------- | ------------ | ---------- |
 | WaitForAll | Highest | 100% | Low | Critical transactions |
 | FirstN | Configurable | N/M | Medium | Quorum-based systems |
 | Timeout | Bounded | Variable | Medium | Real-time systems |

@@ -7,7 +7,7 @@ Linkerd is an ultralight, security-first service mesh for Kubernetes. It provide
 ### 1.1 Core Capabilities
 
 | Capability | Description | Implementation |
-|------------|-------------|----------------|
+| ------------ | ------------- | ---------------- |
 | mTLS | Automatic mutual TLS | Linkerd-proxy (Rust) |
 | Load Balancing | EWMA-based | Proxy auto-configuration |
 | Retries & Timeouts | Configurable per route | CRD-based |
@@ -844,7 +844,7 @@ metadata:
 ## 7. Comparison with Alternatives
 
 | Feature | Linkerd | Istio | Consul Connect | Kuma |
-|---------|---------|-------|----------------|------|
+| --------- | --------- | ------- | ---------------- | ------ |
 | Resource Usage | Very Low | High | Medium | Medium |
 | Sidecar Proxy | linkerd-proxy (Rust) | Envoy | Envoy | Envoy |
 | mTLS by Default | Yes | Yes | Yes | Yes |

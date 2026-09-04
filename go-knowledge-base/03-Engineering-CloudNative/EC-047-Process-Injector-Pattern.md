@@ -25,9 +25,9 @@ Let $\mathcal{P} = \{P_1, P_2, ..., P_n\}$ be a set of application pods where ea
 **System Constraints:**
 
 | Constraint | Formal Definition | Impact |
-|------------|-------------------|--------|
+| ------------ | ------------------- | -------- |
 | **Container Isolation** | $\forall C_i, C_j: C_i \perp C_j$ (namespace isolation) | Cannot directly share memory or signals |
-| **Single Responsibility** | $|C_{concerns}| = 1$ per container image | Cross-cutting concerns need externalization |
+| **Single Responsibility** | $ | C_{concerns} | = 1$ per container image | Cross-cutting concerns need externalization |
 | **Immutable Infrastructure** | $\nexists modify(C_{image})$ at runtime | Runtime extensions must be external |
 | **Resource Boundaries** | $\sum_{C \in P} r(C) \leq R_{limit}$ | Additional processes compete for resources |
 | **Security Posture** | $privilege(C_{sidecar}) \neq privilege(C_{app})$ | Privilege separation required |
@@ -1101,7 +1101,7 @@ func (hc *HealthChecker) Check(ctx context.Context, pod *corev1.Pod) error {
 ### 6.2 Security vs Functionality Trade-offs
 
 | Aspect | High Security | High Functionality | Balance |
-|--------|---------------|-------------------|---------|
+| -------- | --------------- | ------------------- | --------- |
 | **Privileges** | Non-root, read-only FS | Privileged, host access | Capabilities-based |
 | **Network** | Deny all, explicit allow | Full access | Service mesh proxy |
 | **Storage** | EmptyDir only | HostPath mounts | VolumeClaim templates |

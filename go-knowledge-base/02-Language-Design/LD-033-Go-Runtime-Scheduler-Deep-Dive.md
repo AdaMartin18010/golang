@@ -258,7 +258,7 @@ func runqsteal(_p_, p2 *p) *g {
 **Performance Characteristics**:
 
 | Operation | Latency | Complexity |
-|-----------|---------|------------|
+| ----------- | --------- | ------------ |
 | Local queue access | ~25ns | O(1) |
 | Global queue access | ~100ns (with lock) | O(1) |
 | Work stealing | ~150-300ns | O(1) |
@@ -454,7 +454,7 @@ func handoffp(_p_ *p) {
 The Go scheduler achieves near-linear scalability for **embarrassingly parallel** workloads:
 
 | GOMAXPROCS | Speedup (ideal) | Speedup (actual) | Efficiency |
-|------------|-----------------|------------------|------------|
+| ------------ | ----------------- | ------------------ | ------------ |
 | 1 | 1.0x | 1.0x | 100% |
 | 2 | 2.0x | 1.95x | 97.5% |
 | 4 | 4.0x | 3.85x | 96.3% |
@@ -486,7 +486,7 @@ BenchmarkContextSwitch-8      50000000    235 ns/op    0 B/op    0 allocs/op
 **Comparison with OS Threads**:
 
 | Metric | Goroutine | OS Thread |
-|--------|-----------|-----------|
+| -------- | ----------- | ----------- |
 | Creation time | ~1.5μs | ~100μs |
 | Stack size (initial) | 2KB | 2MB |
 | Context switch | ~200ns | ~1-2μs |

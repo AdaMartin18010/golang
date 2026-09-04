@@ -211,7 +211,7 @@ Both tuples in same page → No index update needed!
 ### 4.1 Snapshot Types
 
 | Snapshot Type | Use Case | Visibility |
-|--------------|----------|------------|
+| -------------- | ---------- | ------------ |
 | `SNAPSHOT_MVCC` | Default SELECT | Consistent snapshot |
 | `SNAPSHOT_SELF` | DDL, catalog | See own changes |
 | `SNAPSHOT_ANY` | VACUUM | See all committed |
@@ -364,7 +364,7 @@ WHERE name LIKE 'autovacuum%';
 ### 6.1 ANSI Isolation Levels
 
 | Isolation Level | PostgreSQL Implementation | Phenomena Allowed |
-|----------------|---------------------------|-------------------|
+| ---------------- | --------------------------- | ------------------- |
 | READ UNCOMMITTED | Same as READ COMMITTED | None (dirty read impossible) |
 | READ COMMITTED | Default, new snapshot per query | Non-repeatable read, phantom |
 | REPEATABLE READ | Snapshot at transaction start | Phantom (mostly prevented) |

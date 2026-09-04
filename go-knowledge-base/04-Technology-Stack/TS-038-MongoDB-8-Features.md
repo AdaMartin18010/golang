@@ -1,9 +1,9 @@
 # TS-038-MongoDB-8-Features
 
-> **Dimension**: 04-Technology-Stack  
-> **Status**: S-Level Academic  
-> **Created**: 2026-04-03  
-> **Version**: MongoDB 8.0  
+> **Dimension**: 04-Technology-Stack
+> **Status**: S-Level Academic
+> **Created**: 2026-04-03
+> **Version**: MongoDB 8.0
 > **Size**: >20KB
 
 ---

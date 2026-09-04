@@ -137,7 +137,7 @@ func Repeat(b []byte, count int) []byte {
 **性能特征**:
 
 | 操作 | 时间复杂度 | 空间复杂度 | 备注 |
-|------|-----------|-----------|------|
+| ------ | ----------- | ----------- | ------ |
 | IndexByte | O(n) | O(1) | 汇编优化，SIMD |
 | Index | O(n+m) | O(1) | Rabin-Karp/Two-Way |
 | Equal | O(n) | O(1) | 可能提前返回 |
@@ -483,7 +483,7 @@ func GeneratedMarshal(v interface{}) ([]byte, error) {
 ### 6.1 标准库并发安全性
 
 | 类型 | 并发安全 | 备注 |
-|------|---------|------|
+| ------ | --------- | ------ |
 | `sync.Map` | ✅ | 专为并发设计 |
 | `sync.Pool` | ✅ | 并发安全的对象池 |
 | `atomic.Value` | ✅ | 原子值交换 |

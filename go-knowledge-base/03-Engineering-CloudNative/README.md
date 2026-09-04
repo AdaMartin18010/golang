@@ -5,7 +5,7 @@
 ## 子目录
 
 | 目录 | 文档数 | 内容 |
-|------|--------|------|
+| ------ | -------- | ------ |
 | [01-Methodology/](01-Methodology/) | 4 | 工程方法论 |
 | [02-Cloud-Native/](02-Cloud-Native/) | 4 | 云原生技术 |
 | [03-Performance/](03-Performance/) | 3 | 性能优化 |
@@ -734,7 +734,7 @@ volumes:
 ### 7. 监控指标
 
 | 指标名称 | 类型 | 描述 | 告警阈值 |
-|----------|------|------|----------|
+| ---------- | ------ | ------ | ---------- |
 | request_duration | Histogram | 请求处理时间 | p99 > 100ms |
 | request_total | Counter | 总请求数 | - |
 | error_total | Counter | 错误总数 | rate > 1% |

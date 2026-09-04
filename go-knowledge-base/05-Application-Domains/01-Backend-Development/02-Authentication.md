@@ -23,7 +23,7 @@
 ### 1.2 Authentication Factors
 
 | Factor | Examples |
-|--------|----------|
+| -------- | ---------- |
 | Something you know | Password, PIN |
 | Something you have | Phone, security key |
 | Something you are | Fingerprint, face |
@@ -307,7 +307,7 @@ func (m *RefreshTokenManager) Refresh(tokenString string) (*TokenPair, error) {
 ### 4.1 OAuth2 Flows
 
 | Flow | Use Case | User Present? |
-|------|----------|---------------|
+| ------ | ---------- | --------------- |
 | Authorization Code | Web apps, mobile apps | Yes |
 | Implicit (deprecated) | SPAs | Yes |
 | Password | Trusted apps | Yes |

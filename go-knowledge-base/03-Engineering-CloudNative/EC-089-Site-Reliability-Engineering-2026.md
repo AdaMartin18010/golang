@@ -1,9 +1,9 @@
 # EC-089-Site-Reliability-Engineering-2026
 
-> **Dimension**: 03-Engineering-CloudNative  
-> **Status**: S-Level Academic  
-> **Created**: 2026-04-03  
-> **Version**: SRE 2026  
+> **Dimension**: 03-Engineering-CloudNative
+> **Status**: S-Level Academic
+> **Created**: 2026-04-03
+> **Version**: SRE 2026
 > **Size**: >20KB
 
 ---
@@ -11,7 +11,7 @@
 ## 1. SLI/SLO/SLA
 
 | Term | Definition | Example |
-|------|------------|---------|
+| ------ | ------------ | --------- |
 | SLI | Indicator | Latency, error rate |
 | SLO | Objective | 99.9% availability |
 | SLA | Agreement | Refund if SLO missed |
@@ -43,6 +43,7 @@ Error Budget = 0.1% * 30 days = 43 minutes
 ## 4. Chaos Engineering
 
 Principles:
+
 1. Define steady state
 2. Hypothesize
 3. Inject failure

@@ -737,7 +737,7 @@ suspend fun increment() {
 ## Comparison Matrix
 
 | Feature | Go | Erlang | JS/TS | Java | C# | Rust | Kotlin |
-|---------|-----|--------|-------|------|-----|------|--------|
+| --------- | ----- | -------- | ------- | ------ | ----- | ------ | -------- |
 | Model | CSP | Actor | Event Loop | Threads | TPL | Ownership | Coroutines |
 | Lightweight | Yes (2KB) | Yes (300B) | Yes | No | Yes (async) | Yes | Yes |
 | Compile-time Safe | Partial | Yes | No | Yes | Yes | Yes | Yes |

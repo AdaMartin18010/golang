@@ -194,7 +194,7 @@ $$\text{Else (no Partition)} \rightarrow \text{(Latency or Consistency)}$$
 ### 3.2 决策矩阵
 
 | 场景 | 形式化条件 | 系统选择 | 典型系统 |
-|------|-----------|----------|----------|
+| ------ | ----------- | ---------- | ---------- |
 | P + C | $\text{Partition} \land \text{Consistency}$ | $\neg \text{Availability}$ | Spanner, etcd, ZooKeeper |
 | P + A | $\text{Partition} \land \text{Availability}$ | $\neg \text{Consistency}$ | Cassandra, DynamoDB, Riak |
 | E + L | $\neg\text{Partition} \land \text{LowLatency}$ | $\neg \text{Consistency}$ | DNS, CDN, 本地缓存 |
@@ -250,7 +250,7 @@ $$\text{AP}: (\text{Partition} \Rightarrow (\text{Availability} \land \neg\text{
 ### 4.3 系统分类表
 
 | 系统 | 类型 | 一致性模型 | 分区行为 | 冲突解决 |
-|------|------|-----------|----------|----------|
+| ------ | ------ | ----------- | ---------- | ---------- |
 | Spanner | CP | 外部一致性 | 阻塞 | 2PC + Paxos |
 | etcd | CP | 线性一致 | 只读/拒绝 | Raft |
 | ZooKeeper | CP | 顺序一致 | 只读 | Zab |
@@ -355,7 +355,7 @@ $$\text{AP}: (\text{Partition} \Rightarrow (\text{Availability} \land \neg\text{
 ### 5.3 系统对比矩阵
 
 | 维度 | CP 系统 | AP 系统 | 混合系统 |
-|------|---------|---------|----------|
+| ------ | --------- | --------- | ---------- |
 | **代表** | etcd, Spanner | Cassandra, DynamoDB | MongoDB, CockroachDB |
 | **一致性** | 强一致 | 可调/最终 | 可调 |
 | **分区行为** | 阻塞/降级 | 继续服务 | 可配置 |

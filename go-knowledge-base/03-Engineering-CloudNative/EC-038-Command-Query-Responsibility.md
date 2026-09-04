@@ -754,7 +754,7 @@ func (b *InMemoryBus) RegisterEventHandler(eventType interface{}, handler EventH
 ### 4.2 与 Materialized View 的关系
 
 | CQRS | Materialized View |
-|------|-------------------|
+| ------ | ------------------- |
 | 完整的架构模式 | 数据库特性 |
 | 包含命令端 | 仅针对查询优化 |
 | 事件驱动同步 | 定时刷新或触发器 |

@@ -344,7 +344,7 @@ func customHTTPErrorHandler(err error, c echo.Context) {
 ## 5. Comparison with Alternatives
 
 | Framework | Performance | Features | Learning Curve | Use Case |
-|-----------|-------------|----------|----------------|----------|
+| ----------- | ------------- | ---------- | ---------------- | ---------- |
 | **Echo** | Excellent | Rich | Low | APIs, microservices |
 | **Gin** | Excellent | Rich | Low | APIs, web apps |
 | **Fiber** | Fastest | Growing | Low | High performance |

@@ -173,7 +173,7 @@ type mspan struct {
 **大小分级**
 
 | 类别 | 大小范围 | 用途 |
-|------|----------|------|
+| ------ | ---------- | ------ |
 | Tiny | ≤ 16B | 小对象合并 |
 | Small | 16B - 32KB | 按大小分级分配 |
 | Large | > 32KB | 直接分配 span |
@@ -350,7 +350,7 @@ GC CPU 目标 = GOGC / (GOGC + 100)
 ### 5.2 停顿时间分解
 
 | 阶段 | 目标 | 实际 (Go 1.20+) | 主要工作 |
-|------|------|-----------------|----------|
+| ------ | ------ | ----------------- | ---------- |
 | STW 1 | < 10μs | ~1-5μs | 停止 goroutines，准备标记 |
 | Mark Setup | < 50μs | ~5-20μs | 启用写屏障，扫描根对象 |
 | Concurrent Mark | N/A | ~1-10ms | 并发标记对象图 |
@@ -361,7 +361,7 @@ GC CPU 目标 = GOGC / (GOGC + 100)
 ### 5.3 内存开销
 
 | 组件 | 开销 | 说明 |
-|------|------|------|
+| ------ | ------ | ------ |
 | GC 位图 | 1/64 堆大小 | 每对象 2 bits |
 | Work buffer | 可变 | 标记工作队列 |
 | Stack barrier | 栈大小 | 扫描 goroutine 栈 |
@@ -370,7 +370,7 @@ GC CPU 目标 = GOGC / (GOGC + 100)
 **内存分配延迟**
 
 | 操作 | 时间 | 说明 |
-|------|------|------|
+| ------ | ------ | ------ |
 | Tiny alloc | ~5ns | 无锁，直接偏移 |
 | Small alloc | ~25ns | mcache，无锁 |
 | Large alloc | ~100ns | 需要锁，可能 mmap |
@@ -443,7 +443,7 @@ GC CPU 目标 = GOGC / (GOGC + 100)
 ### 6.3 GC 算法对比
 
 | 算法 | 停顿 | 吞吐量 | 内存碎片 | 实现复杂度 |
-|------|------|--------|----------|------------|
+| ------ | ------ | -------- | ---------- | ------------ |
 | 标记-清除 | 长 | 中 | 有 | 低 |
 | 引用计数 | 无 | 高 | 无 | 中 |
 | 复制 | 中 | 高 | 无 | 中 |
@@ -814,9 +814,9 @@ func leaky() *[]int {
 ### Academic Papers
 
 1. **Jones, R., & Lins, R.** (1996). *Garbage Collection: Algorithms for Automatic Dynamic Memory Management*. Wiley. ISBN: 978-0471941484
-2. **Hudson, R.** (2015). Go 1.5 Concurrent Garbage Collector. *Go Blog*. https://go.dev/blog/go15gc
+2. **Hudson, R.** (2015). Go 1.5 Concurrent Garbage Collector. *Go Blog*. <https://go.dev/blog/go15gc>
 3. **Detlefs, D., et al.** (2004). Garbage-First Garbage Collection. *ACM ISMM*. DOI: [10.1145/1028973.1028979](https://doi.org/10.1145/1028973.1028979)
-4. **Clements, A.** (2015). Go 1.5 Garbage Collection. *GopherCon*. https://go.dev/s/gcslides
+4. **Clements, A.** (2015). Go 1.5 Garbage Collection. *GopherCon*. <https://go.dev/s/gcslides>
 
 ### Video Tutorials
 
@@ -829,7 +829,7 @@ func leaky() *[]int {
 
 1. **Jones, R., et al.** (2016). *The Garbage Collection Handbook: The Art of Automatic Memory Management* (2nd ed.). CRC Press.
 2. **Wilson, P. R.** (1992). Uniprocessor Garbage Collection Techniques. *IWMM*. DOI: [10.1007/BFb0017182](https://doi.org/10.1007/BFb0017182)
-3. **Go Authors.** (2023). *Go Runtime: GC Guide*. https://go.dev/doc/gc-guide
+3. **Go Authors.** (2023). *Go Runtime: GC Guide*. <https://go.dev/doc/gc-guide>
 4. **Dijkstra, E. W., et al.** (1978). On-the-Fly Garbage Collection: An Exercise in Cooperation. *CACM*, 21(11), 966-975.
 
 ### Online Courses

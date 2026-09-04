@@ -37,17 +37,17 @@ public class Application {
 @RestController
 @RequestMapping("/api")
 public class UserController {
-    
+
     @Autowired
     private UserService userService;
-    
+
     @GetMapping("/users/{id}")
     public ResponseEntity<User> getUser(@PathVariable Long id) {
         return userService.findById(id)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
-    
+
     @PostMapping("/users")
     public ResponseEntity<User> createUser(@Valid @RequestBody UserDTO dto) {
         User user = userService.create(dto);
@@ -62,6 +62,7 @@ public class UserController {
 ```
 
 **Java Ecosystem Strengths:**
+
 - **Spring Framework**: De facto standard for enterprise
 - **Jakarta EE**: Enterprise specifications
 - **Hibernate/JPA**: ORM standard
@@ -152,14 +153,14 @@ func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
         Name  string `json:"name"`
         Email string `json:"email"`
     }
-    
+
     if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
         http.Error(w, err.Error(), http.StatusBadRequest)
         return
     }
 
     user := s.userService.Create(req.Name, req.Email)
-    
+
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusCreated)
     json.NewEncoder(w).Encode(user)
@@ -183,6 +184,7 @@ func main() {
 ```
 
 **Go Ecosystem Strengths:**
+
 - **Standard Library**: Comprehensive out-of-the-box
 - **Gin/Echo**: Lightweight web frameworks
 - **Database/sql**: Simple, consistent database access
@@ -203,12 +205,12 @@ Java dominates traditional enterprises:
 @Service
 @Transactional
 public class OrderService {
-    
+
     private final OrderRepository orderRepository;
     private final InventoryClient inventoryClient;
     private final PaymentGateway paymentGateway;
     private final EventPublisher eventPublisher;
-    
+
     // Constructor injection - testable, explicit dependencies
     public OrderService(
             OrderRepository orderRepository,
@@ -220,30 +222,30 @@ public class OrderService {
         this.paymentGateway = paymentGateway;
         this.eventPublisher = eventPublisher;
     }
-    
+
     public Order createOrder(CreateOrderRequest request) {
         // Check inventory
         InventoryResponse inventory = inventoryClient.checkAvailability(
-            request.getProductId(), 
+            request.getProductId(),
             request.getQuantity()
         );
-        
+
         if (!inventory.isAvailable()) {
             throw new InsufficientInventoryException(
                 "Product not available: " + request.getProductId()
             );
         }
-        
+
         // Process payment
         PaymentResult payment = paymentGateway.charge(
             request.getPaymentMethod(),
             request.getAmount()
         );
-        
+
         if (!payment.isSuccessful()) {
             throw new PaymentFailedException("Payment failed");
         }
-        
+
         // Create order
         Order order = Order.builder()
             .customerId(request.getCustomerId())
@@ -253,18 +255,19 @@ public class OrderService {
             .paymentId(payment.getTransactionId())
             .status(OrderStatus.CONFIRMED)
             .build();
-        
+
         Order saved = orderRepository.save(order);
-        
+
         // Publish event
         eventPublisher.publish(new OrderCreatedEvent(saved));
-        
+
         return saved;
     }
 }
 ```
 
 **Enterprise Java Characteristics:**
+
 - Heavy use of annotations and frameworks
 - Strong typing with generics
 - Comprehensive ORM solutions
@@ -335,7 +338,7 @@ func (s *Service) CreateOrder(ctx context.Context, req CreateOrderRequest) (*Ord
     if !inv.Available {
         return nil, fmt.Errorf("insufficient inventory for product %s", req.ProductID)
     }
-    
+
     // Process payment
     payResult, err := s.payment.Charge(ctx, req.PaymentMethod, req.Amount)
     if err != nil {
@@ -344,7 +347,7 @@ func (s *Service) CreateOrder(ctx context.Context, req CreateOrderRequest) (*Ord
     if !payResult.Successful {
         return nil, fmt.Errorf("payment declined")
     }
-    
+
     // Create and save order
     order := &Order{
         CustomerID: req.CustomerID,
@@ -354,28 +357,29 @@ func (s *Service) CreateOrder(ctx context.Context, req CreateOrderRequest) (*Ord
         PaymentID:  payResult.TransactionID,
         Status:     StatusConfirmed,
     }
-    
+
     if err := s.repo.Save(ctx, order); err != nil {
         // TODO: Handle payment reversal
         return nil, fmt.Errorf("failed to save order: %w", err)
     }
-    
+
     // Publish event asynchronously
     go func() {
         eventCtx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
         defer cancel()
-        
+
         if err := s.events.Publish(eventCtx, OrderCreatedEvent{Order: order}); err != nil {
             // Log error, potentially alert
             log.Printf("Failed to publish order created event: %v", err)
         }
     }()
-    
+
     return order, nil
 }
 ```
 
 **Enterprise Go Characteristics:**
+
 - Explicit dependencies via constructor injection
 - Interface-based design
 - Context propagation for cancellation
@@ -389,19 +393,21 @@ func (s *Service) CreateOrder(ctx context.Context, req CreateOrderRequest) (*Ord
 ### Java Tooling
 
 **IDE Support:**
+
 - IntelliJ IDEA (industry standard)
 - Eclipse (enterprise favorite)
 - VS Code with Java extensions
 - NetBeans
 
 **Build Tools:**
+
 ```xml
 <!-- Maven: pom.xml -->
 <project>
     <groupId>com.example</groupId>
     <artifactId>my-app</artifactId>
     <version>1.0.0</version>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -409,7 +415,7 @@ func (s *Service) CreateOrder(ctx context.Context, req CreateOrderRequest) (*Ord
             <version>3.2.0</version>
         </dependency>
     </dependencies>
-    
+
     <build>
         <plugins>
             <plugin>
@@ -422,18 +428,19 @@ func (s *Service) CreateOrder(ctx context.Context, req CreateOrderRequest) (*Ord
 ```
 
 **Testing:**
+
 ```java
 // JUnit 5 with Mockito
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
-    
+
     @Mock private OrderRepository orderRepository;
     @Mock private InventoryClient inventoryClient;
     @Mock private PaymentGateway paymentGateway;
     @Mock private EventPublisher eventPublisher;
-    
+
     @InjectMocks private OrderService orderService;
-    
+
     @Test
     void shouldCreateOrderSuccessfully() {
         // Given
@@ -443,17 +450,17 @@ class OrderServiceTest {
             .quantity(2)
             .amount(new BigDecimal("100.00"))
             .build();
-        
+
         when(inventoryClient.checkAvailability(any(), anyInt()))
             .thenReturn(new InventoryResponse(true, 10));
         when(paymentGateway.charge(any(), any()))
             .thenReturn(new PaymentResult(true, "tx-789"));
         when(orderRepository.save(any()))
             .thenAnswer(inv -> inv.getArgument(0));
-        
+
         // When
         Order result = orderService.createOrder(request);
-        
+
         // Then
         assertThat(result.getStatus()).isEqualTo(OrderStatus.CONFIRMED);
         verify(eventPublisher).publish(any(OrderCreatedEvent.class));
@@ -464,12 +471,14 @@ class OrderServiceTest {
 ### Go Tooling
 
 **IDE Support:**
+
 - GoLand (JetBrains)
 - VS Code with Go extension
 - Vim/Neovim with LSP
 - LiteIDE
 
 **Build Tools:**
+
 ```go
 // go.mod
 module github.com/example/myapp
@@ -488,13 +497,14 @@ require (
 ```
 
 **Testing:**
+
 ```go
 package orders
 
 import (
     "context"
     "testing"
-    
+
     "github.com/stretchr/testify/assert"
     "github.com/stretchr/testify/mock"
 )
@@ -535,16 +545,16 @@ func TestService_CreateOrder_Success(t *testing.T) {
     inventory := new(mockInventory)
     payment := new(mockPaymentGateway)
     events := new(mockEventPublisher)
-    
+
     svc := NewService(repo, inventory, payment, events)
-    
+
     req := CreateOrderRequest{
         CustomerID: "cust-123",
         ProductID:  "prod-456",
         Quantity:   2,
         Amount:     Money{Amount: 10000, Currency: "USD"}, // $100.00
     }
-    
+
     inventory.On("CheckAvailability", mock.Anything, "prod-456", 2).
         Return(&InventoryResponse{Available: true, Quantity: 10}, nil)
     payment.On("Charge", mock.Anything, req.PaymentMethod, req.Amount).
@@ -553,16 +563,16 @@ func TestService_CreateOrder_Success(t *testing.T) {
         Return(nil)
     events.On("Publish", mock.Anything, mock.AnythingOfType("orders.OrderCreatedEvent")).
         Return(nil)
-    
+
     // Act
     order, err := svc.CreateOrder(context.Background(), req)
-    
+
     // Assert
     assert.NoError(t, err)
     assert.NotNil(t, order)
     assert.Equal(t, StatusConfirmed, order.Status)
     assert.Equal(t, "tx-789", order.PaymentID)
-    
+
     repo.AssertExpectations(t)
     inventory.AssertExpectations(t)
     payment.AssertExpectations(t)
@@ -576,7 +586,7 @@ func TestService_CreateOrder_Success(t *testing.T) {
 ### Benchmark Results
 
 | Metric | Java (OpenJDK 21) | Go 1.21 | Notes |
-|--------|-------------------|---------|-------|
+| -------- | ------------------- | --------- | ------- |
 | Startup Time | 2-5 seconds | 50-100ms | Go 20-50x faster |
 | Memory (idle) | 150-300MB | 10-20MB | Go much lighter |
 | Hello World RPS | 120,000 | 180,000 | Go 1.5x faster |
@@ -588,6 +598,7 @@ func TestService_CreateOrder_Success(t *testing.T) {
 ### Memory Allocation Patterns
 
 **Java:**
+
 ```java
 // Object allocation on heap
 public List<User> processUsers(List<UserDTO> dtos) {
@@ -602,6 +613,7 @@ public List<User> processUsers(List<UserDTO> dtos) {
 ```
 
 **Go:**
+
 ```go
 // Escape analysis may stack-allocate
 func processUsers(dtos []UserDTO) []*User {
@@ -623,10 +635,10 @@ func processUsers(dtos []UserDTO) []*User {
 
 ## Decision Matrix
 
-### Choose Java When...
+### Choose Java When
 
 | Criterion | Weight | Score | Rationale |
-|-----------|--------|-------|-----------|
+| ----------- | -------- | ------- | ----------- |
 | Existing Java codebase | Critical | 10/10 | Migration cost |
 | Complex business logic | High | 9/10 | Rich modeling capabilities |
 | Spring ecosystem needed | High | 10/10 | Unmatched features |
@@ -634,10 +646,10 @@ func processUsers(dtos []UserDTO) []*User {
 | Large team (50+) | Medium | 8/10 | Easier hiring |
 | IDE refactoring | Medium | 10/10 | Best-in-class tools |
 
-### Choose Go When...
+### Choose Go When
 
 | Criterion | Weight | Score | Rationale |
-|-----------|--------|-------|-----------|
+| ----------- | -------- | ------- | ----------- |
 | Microservices | Critical | 10/10 | Fast startup, small memory |
 | Cloud-native/K8s | High | 10/10 | Built for this |
 | Fast CI/CD needed | High | 9/10 | Quick compilation |
@@ -698,27 +710,27 @@ func NewJavaOrderClient(baseURL string) *JavaOrderClient {
 
 func (c *JavaOrderClient) GetOrder(ctx context.Context, id string) (*Order, error) {
     url := fmt.Sprintf("%s/api/orders/%s", c.baseURL, id)
-    
+
     req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
     if err != nil {
         return nil, err
     }
-    
+
     resp, err := c.client.Do(req)
     if err != nil {
         return nil, err
     }
     defer resp.Body.Close()
-    
+
     if resp.StatusCode != http.StatusOK {
         return nil, fmt.Errorf("unexpected status: %d", resp.StatusCode)
     }
-    
+
     var order Order
     if err := json.NewDecoder(resp.Body).Decode(&order); err != nil {
         return nil, err
     }
-    
+
     return &order, nil
 }
 ```
@@ -726,7 +738,7 @@ func (c *JavaOrderClient) GetOrder(ctx context.Context, id string) (*Order, erro
 #### Step 3: Data Model Mapping
 
 | Java | Go | Notes |
-|------|-----|-------|
+| ------ | ----- | ------- |
 | `Optional<T>` | `*T` | Pointer for nullable |
 | `Stream<T>` | Slices + loops | Go is more verbose |
 | `CompletableFuture<T>` | Channels/Goroutines | Different patterns |
@@ -744,11 +756,11 @@ Rare but happens for enterprise integration:
 @Service
 public class GoOrderClient {
     private final WebClient webClient;
-    
+
     public GoOrderClient(WebClient.Builder builder) {
         this.webClient = builder.baseUrl("http://go-service:8080").build();
     }
-    
+
     public Mono<Order> getOrder(String id) {
         return webClient.get()
             .uri("/api/orders/{id}", id)
@@ -764,7 +776,7 @@ public class GoOrderClient {
 ## Summary
 
 | Aspect | Java | Go | Recommendation |
-|--------|------|-----|----------------|
+| -------- | ------ | ----- | ---------------- |
 | Enterprise Legacy | Excellent | Good | Java |
 | Cloud Native | Good | Excellent | Go |
 | Developer Experience | Very Good | Excellent | Go |
@@ -775,6 +787,7 @@ public class GoOrderClient {
 | Hiring | Easy | Moderate | Java |
 
 **Final Recommendation:**
+
 - Start new cloud-native projects in Go
 - Maintain existing Java systems
 - Use Go for microservices, Java for monoliths

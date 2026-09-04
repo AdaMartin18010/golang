@@ -918,7 +918,7 @@ func TestComposer_RequiredFailure(t *testing.T) {
 ### 4.2 与 Backend-for-Frontend (BFF) 的关系
 
 | API Composition | BFF |
-|-----------------|-----|
+| ----------------- | ----- |
 | 通用聚合逻辑 | 特定客户端逻辑 |
 | 多个客户端复用 | 一个 BFF 对应一个客户端类型 |
 | 关注数据聚合 | 关注用户体验 |

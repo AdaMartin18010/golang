@@ -46,7 +46,7 @@ No way to distinguish! Therefore no agreement possible. ∎
 ### 1.3 Security Properties
 
 | Property | Definition |
-|----------|------------|
+| ---------- | ------------ |
 | **Safety** | No two correct replicas commit different values |
 | **Liveness** | All correct replicas eventually commit |
 | **Accountability** | Faulty replicas can be identified |

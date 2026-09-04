@@ -24,7 +24,7 @@ Let $\mathcal{E} = \{Blue, Green\}$ be two identical production environments whe
 **System Constraints:**
 
 | Constraint | Formal Definition | Impact |
-|------------|-------------------|--------|
+| ------------ | ------------------- | -------- |
 | **Zero Downtime** | $downtime(swap) = 0$ | Must maintain availability |
 | **Quick Rollback** | $T_{rollback} < 1min$ | Instant switch required |
 | **Resource Cost** | $resources(\mathcal{E}) = 2 \times resources(single)$ | Double infrastructure |
@@ -52,7 +52,7 @@ $$\forall user: downtime(user) = 0 \land detect(failure) \Rightarrow swap(E_{act
 ### 2.1 Blue-Green States
 
 | State | Blue | Green | Router |
-|-------|------|-------|--------|
+| ------- | ------ | ------- | -------- |
 | **Initial** | Active (v1) | Idle | Blue |
 | **Preparing** | Active (v1) | Deploying v2 | Blue |
 | **Ready** | Active (v1) | Ready (v2) | Blue |
@@ -340,7 +340,7 @@ func (c *Controller) getDeployment(env Environment) *Deployment {
 ## 5. Failure Scenarios and Mitigations
 
 | Scenario | Impact | Detection | Mitigation |
-|----------|--------|-----------|------------|
+| ---------- | -------- | ----------- | ------------ |
 | **Switch Failure** | Split traffic | Router error | Automatic retry |
 | **Green Crash** | 100% errors | Health check | Instant rollback |
 | **Database Incompatibility** | Data corruption | Migration error | Schema versioning |

@@ -26,7 +26,7 @@ Let $\mathcal{E}$ be an experiment with:
 **Statistical Requirements:**
 
 | Requirement | Formal Definition | Impact |
-|-------------|-------------------|--------|
+| ------------- | ------------------- | -------- |
 | **Randomization** | $P(user \in A) = \pi_A \land P(user \in B) = \pi_B$ | Eliminates selection bias |
 | **Sample Size** | $n > n_{min}(\alpha, \beta, \delta)$ | Statistical power |
 | **Independence** | $\forall u_i, u_j: variant(u_i) \perp variant(u_j)$ | Valid variance estimation |
@@ -56,7 +56,7 @@ With confidence interval $CI_{95\%}$ that doesn't include 0.
 ### 2.1 Experiment Lifecycle
 
 | Phase | Duration | Activity |
-|-------|----------|----------|
+| ------- | ---------- | ---------- |
 | **Design** | 1-2 days | Define hypothesis, metrics, sample size |
 | **Setup** | 1 day | Configure variants, targeting |
 | **Run** | 1-4 weeks | Collect data, monitor health |
@@ -464,7 +464,7 @@ func normalCDF(x float64) float64 {
 ## 5. Failure Scenarios and Mitigations
 
 | Scenario | Impact | Detection | Mitigation |
-|----------|--------|-----------|------------|
+| ---------- | -------- | ----------- | ------------ |
 | **SRM** | Biased results | Chi-square test | Auto-pause experiment |
 | **Novelty Effect** | False positive | Time-based analysis | Run longer, segment by time |
 | **Network Effects** | Contaminated results | Cross-user metrics | Cluster-based analysis |

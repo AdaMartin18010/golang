@@ -18,12 +18,14 @@
 ### 1.1 Problem Statement
 
 In distributed systems, determining service health is critical for:
+
 - Routing traffic away from failing instances
 - Auto-scaling decisions
 - Alerting and incident response
 - Automated recovery procedures
 
 **Challenges:**
+
 - Distinguishing between temporary and permanent failures
 - Avoiding false positives (flapping)
 - Checking deep dependencies vs shallow checks
@@ -32,6 +34,7 @@ In distributed systems, determining service health is critical for:
 ### 1.2 Solution Overview
 
 Health Check Patterns provide structured approaches to:
+
 - **Liveness**: Is the application running?
 - **Readiness**: Is the application ready to receive traffic?
 - **Startup**: Has the application finished starting?
@@ -251,13 +254,13 @@ Health Response Structure:
     "dependencies": {
       "status": "degraded",
       "checks": {
-        "database": { 
-          "status": "healthy", 
+        "database": {
+          "status": "healthy",
           "responseTime": "5ms",
           "connections": "5/20"
         },
-        "cache": { 
-          "status": "degraded", 
+        "cache": {
+          "status": "degraded",
           "responseTime": "150ms",
           "warning": "high latency"
         }
@@ -277,231 +280,231 @@ Health Response Structure:
 package health
 
 import (
-	"context"
-	"encoding/json"
-	"fmt"
-	"net/http"
-	"sync"
-	"time"
+ "context"
+ "encoding/json"
+ "fmt"
+ "net/http"
+ "sync"
+ "time"
 
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
+ "go.opentelemetry.io/otel/attribute"
+ "go.opentelemetry.io/otel/metric"
 )
 
 // Status represents health status
 type Status string
 
 const (
-	StatusHealthy   Status = "healthy"
-	StatusDegraded  Status = "degraded"
-	StatusUnhealthy Status = "unhealthy"
-	StatusUnknown   Status = "unknown"
+ StatusHealthy   Status = "healthy"
+ StatusDegraded  Status = "degraded"
+ StatusUnhealthy Status = "unhealthy"
+ StatusUnknown   Status = "unknown"
 )
 
 // Check represents a single health check
 type Check interface {
-	Name() string
-	Execute(ctx context.Context) CheckResult
+ Name() string
+ Execute(ctx context.Context) CheckResult
 }
 
 // CheckResult contains the result of a health check
 type CheckResult struct {
-	Name         string                 `json:"name"`
-	Status       Status                 `json:"status"`
-	ResponseTime time.Duration          `json:"responseTime"`
-	Message      string                 `json:"message,omitempty"`
-	Metadata     map[string]interface{} `json:"metadata,omitempty"`
-	Error        string                 `json:"error,omitempty"`
+ Name         string                 `json:"name"`
+ Status       Status                 `json:"status"`
+ ResponseTime time.Duration          `json:"responseTime"`
+ Message      string                 `json:"message,omitempty"`
+ Metadata     map[string]interface{} `json:"metadata,omitempty"`
+ Error        string                 `json:"error,omitempty"`
 }
 
 // Registry manages health checks
 type Registry struct {
-	checks   map[string]Check
-	mutex    sync.RWMutex
-	cache    *healthCache
-	meter    metric.Meter
+ checks   map[string]Check
+ mutex    sync.RWMutex
+ cache    *healthCache
+ meter    metric.Meter
 
-	// Metrics
-	checkCounter   metric.Int64Counter
-	checkDuration  metric.Float64Histogram
-	statusGauge    metric.Int64Gauge
+ // Metrics
+ checkCounter   metric.Int64Counter
+ checkDuration  metric.Float64Histogram
+ statusGauge    metric.Int64Gauge
 }
 
 // NewRegistry creates a new health check registry
 func NewRegistry(cacheTTL time.Duration, meter metric.Meter) *Registry {
-	r := &Registry{
-		checks: make(map[string]Check),
-		cache:  newHealthCache(cacheTTL),
-		meter:  meter,
-	}
+ r := &Registry{
+  checks: make(map[string]Check),
+  cache:  newHealthCache(cacheTTL),
+  meter:  meter,
+ }
 
-	if meter != nil {
-		var err error
-		r.checkCounter, err = meter.Int64Counter(
-			"health_checks_total",
-			metric.WithDescription("Total health checks executed"),
-		)
-		if err != nil {
-			// Log error
-		}
+ if meter != nil {
+  var err error
+  r.checkCounter, err = meter.Int64Counter(
+   "health_checks_total",
+   metric.WithDescription("Total health checks executed"),
+  )
+  if err != nil {
+   // Log error
+  }
 
-		r.checkDuration, err = meter.Float64Histogram(
-			"health_check_duration_seconds",
-			metric.WithDescription("Health check duration"),
-		)
-		if err != nil {
-			// Log error
-		}
-	}
+  r.checkDuration, err = meter.Float64Histogram(
+   "health_check_duration_seconds",
+   metric.WithDescription("Health check duration"),
+  )
+  if err != nil {
+   // Log error
+  }
+ }
 
-	return r
+ return r
 }
 
 // Register adds a health check
 func (r *Registry) Register(check Check) {
-	r.mutex.Lock()
-	defer r.mutex.Unlock()
-	r.checks[check.Name()] = check
+ r.mutex.Lock()
+ defer r.mutex.Unlock()
+ r.checks[check.Name()] = check
 }
 
 // Unregister removes a health check
 func (r *Registry) Unregister(name string) {
-	r.mutex.Lock()
-	defer r.mutex.Unlock()
-	delete(r.checks, name)
+ r.mutex.Lock()
+ defer r.mutex.Unlock()
+ delete(r.checks, name)
 }
 
 // RunAll executes all health checks
 func (r *Registry) RunAll(ctx context.Context) HealthReport {
-	r.mutex.RLock()
-	checks := make([]Check, 0, len(r.checks))
-	for _, check := range r.checks {
-		checks = append(checks, check)
-	}
-	r.mutex.RUnlock()
+ r.mutex.RLock()
+ checks := make([]Check, 0, len(r.checks))
+ for _, check := range r.checks {
+  checks = append(checks, check)
+ }
+ r.mutex.RUnlock()
 
-	report := HealthReport{
-		Timestamp: time.Now().UTC(),
-		Checks:    make(map[string]CheckResult),
-	}
+ report := HealthReport{
+  Timestamp: time.Now().UTC(),
+  Checks:    make(map[string]CheckResult),
+ }
 
-	var wg sync.WaitGroup
-	results := make(chan CheckResult, len(checks))
+ var wg sync.WaitGroup
+ results := make(chan CheckResult, len(checks))
 
-	for _, check := range checks {
-		wg.Add(1)
-		go func(c Check) {
-			defer wg.Done()
-			
-			start := time.Now()
-			result := c.Execute(ctx)
-			duration := time.Since(start)
-			result.ResponseTime = duration
+ for _, check := range checks {
+  wg.Add(1)
+  go func(c Check) {
+   defer wg.Done()
 
-			if r.checkDuration != nil {
-				r.checkDuration.Record(ctx, duration.Seconds(), metric.WithAttributes(
-					attribute.String("check", c.Name()),
-				))
-			}
+   start := time.Now()
+   result := c.Execute(ctx)
+   duration := time.Since(start)
+   result.ResponseTime = duration
 
-			if r.checkCounter != nil {
-				r.checkCounter.Add(ctx, 1, metric.WithAttributes(
-					attribute.String("check", c.Name()),
-					attribute.String("status", string(result.Status)),
-				))
-			}
+   if r.checkDuration != nil {
+    r.checkDuration.Record(ctx, duration.Seconds(), metric.WithAttributes(
+     attribute.String("check", c.Name()),
+    ))
+   }
 
-			results <- result
-		}(check)
-	}
+   if r.checkCounter != nil {
+    r.checkCounter.Add(ctx, 1, metric.WithAttributes(
+     attribute.String("check", c.Name()),
+     attribute.String("status", string(result.Status)),
+    ))
+   }
 
-	go func() {
-		wg.Wait()
-		close(results)
-	}()
+   results <- result
+  }(check)
+ }
 
-	for result := range results {
-		report.Checks[result.Name] = result
-		
-		// Aggregate status
-		if result.Status == StatusUnhealthy {
-			report.Status = StatusUnhealthy
-		} else if result.Status == StatusDegraded && report.Status != StatusUnhealthy {
-			report.Status = StatusDegraded
-		}
-	}
+ go func() {
+  wg.Wait()
+  close(results)
+ }()
 
-	if report.Status == "" {
-		report.Status = StatusHealthy
-	}
+ for result := range results {
+  report.Checks[result.Name] = result
 
-	return report
+  // Aggregate status
+  if result.Status == StatusUnhealthy {
+   report.Status = StatusUnhealthy
+  } else if result.Status == StatusDegraded && report.Status != StatusUnhealthy {
+   report.Status = StatusDegraded
+  }
+ }
+
+ if report.Status == "" {
+  report.Status = StatusHealthy
+ }
+
+ return report
 }
 
 // Run executes a specific health check
 func (r *Registry) Run(ctx context.Context, name string) (CheckResult, error) {
-	r.mutex.RLock()
-	check, ok := r.checks[name]
-	r.mutex.RUnlock()
+ r.mutex.RLock()
+ check, ok := r.checks[name]
+ r.mutex.RUnlock()
 
-	if !ok {
-		return CheckResult{}, fmt.Errorf("health check not found: %s", name)
-	}
+ if !ok {
+  return CheckResult{}, fmt.Errorf("health check not found: %s", name)
+ }
 
-	return check.Execute(ctx), nil
+ return check.Execute(ctx), nil
 }
 
 // HealthReport aggregates all check results
 type HealthReport struct {
-	Status    Status                  `json:"status"`
-	Version   string                  `json:"version,omitempty"`
-	Timestamp time.Time               `json:"timestamp"`
-	Checks    map[string]CheckResult  `json:"checks"`
+ Status    Status                  `json:"status"`
+ Version   string                  `json:"version,omitempty"`
+ Timestamp time.Time               `json:"timestamp"`
+ Checks    map[string]CheckResult  `json:"checks"`
 }
 
 // healthCache caches health check results
 type healthCache struct {
-	ttl     time.Duration
-	entries map[string]cacheEntry
-	mutex   sync.RWMutex
+ ttl     time.Duration
+ entries map[string]cacheEntry
+ mutex   sync.RWMutex
 }
 
 type cacheEntry struct {
-	result    CheckResult
-	timestamp time.Time
+ result    CheckResult
+ timestamp time.Time
 }
 
 func newHealthCache(ttl time.Duration) *healthCache {
-	return &healthCache{
-		ttl:     ttl,
-		entries: make(map[string]cacheEntry),
-	}
+ return &healthCache{
+  ttl:     ttl,
+  entries: make(map[string]cacheEntry),
+ }
 }
 
 func (c *healthCache) Get(name string) (CheckResult, bool) {
-	c.mutex.RLock()
-	defer c.mutex.RUnlock()
+ c.mutex.RLock()
+ defer c.mutex.RUnlock()
 
-	entry, ok := c.entries[name]
-	if !ok {
-		return CheckResult{}, false
-	}
+ entry, ok := c.entries[name]
+ if !ok {
+  return CheckResult{}, false
+ }
 
-	if time.Since(entry.timestamp) > c.ttl {
-		return CheckResult{}, false
-	}
+ if time.Since(entry.timestamp) > c.ttl {
+  return CheckResult{}, false
+ }
 
-	return entry.result, true
+ return entry.result, true
 }
 
 func (c *healthCache) Set(name string, result CheckResult) {
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
+ c.mutex.Lock()
+ defer c.mutex.Unlock()
 
-	c.entries[name] = cacheEntry{
-		result:    result,
-		timestamp: time.Now(),
-	}
+ c.entries[name] = cacheEntry{
+  result:    result,
+  timestamp: time.Now(),
+ }
 }
 ```
 
@@ -511,185 +514,185 @@ func (c *healthCache) Set(name string, result CheckResult) {
 package health
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
-	"net/http"
-	"runtime"
-	"time"
+ "context"
+ "database/sql"
+ "fmt"
+ "net/http"
+ "runtime"
+ "time"
 )
 
 // ProcessCheck checks if process is running
 type ProcessCheck struct{}
 
 func (p *ProcessCheck) Name() string {
-	return "process"
+ return "process"
 }
 
 func (p *ProcessCheck) Execute(ctx context.Context) CheckResult {
-	return CheckResult{
-		Name:   p.Name(),
-		Status: StatusHealthy,
-		Metadata: map[string]interface{}{
-			"goroutines": runtime.NumGoroutine(),
-		},
-	}
+ return CheckResult{
+  Name:   p.Name(),
+  Status: StatusHealthy,
+  Metadata: map[string]interface{}{
+   "goroutines": runtime.NumGoroutine(),
+  },
+ }
 }
 
 // MemoryCheck checks memory usage
 type MemoryCheck struct {
-	WarningThreshold  float64 // percentage
-	CriticalThreshold float64 // percentage
+ WarningThreshold  float64 // percentage
+ CriticalThreshold float64 // percentage
 }
 
 func (m *MemoryCheck) Name() string {
-	return "memory"
+ return "memory"
 }
 
 func (m *MemoryCheck) Execute(ctx context.Context) CheckResult {
-	var memStats runtime.MemStats
-	runtime.ReadMemStats(&memStats)
+ var memStats runtime.MemStats
+ runtime.ReadMemStats(&memStats)
 
-	// Calculate memory usage (simplified)
-	usagePercent := float64(memStats.Alloc) / float64(memStats.Sys) * 100
+ // Calculate memory usage (simplified)
+ usagePercent := float64(memStats.Alloc) / float64(memStats.Sys) * 100
 
-	status := StatusHealthy
-	if usagePercent > m.CriticalThreshold {
-		status = StatusUnhealthy
-	} else if usagePercent > m.WarningThreshold {
-		status = StatusDegraded
-	}
+ status := StatusHealthy
+ if usagePercent > m.CriticalThreshold {
+  status = StatusUnhealthy
+ } else if usagePercent > m.WarningThreshold {
+  status = StatusDegraded
+ }
 
-	return CheckResult{
-		Name:   m.Name(),
-		Status: status,
-		Metadata: map[string]interface{}{
-			"alloc":       memStats.Alloc,
-			"sys":         memStats.Sys,
-			"heapAlloc":   memStats.HeapAlloc,
-			"heapSys":     memStats.HeapSys,
-			"usagePercent": fmt.Sprintf("%.2f%%", usagePercent),
-		},
-	}
+ return CheckResult{
+  Name:   m.Name(),
+  Status: status,
+  Metadata: map[string]interface{}{
+   "alloc":       memStats.Alloc,
+   "sys":         memStats.Sys,
+   "heapAlloc":   memStats.HeapAlloc,
+   "heapSys":     memStats.HeapSys,
+   "usagePercent": fmt.Sprintf("%.2f%%", usagePercent),
+  },
+ }
 }
 
 // DatabaseCheck checks database connectivity
 type DatabaseCheck struct {
-	DB *sql.DB
+ DB *sql.DB
 }
 
 func (d *DatabaseCheck) Name() string {
-	return "database"
+ return "database"
 }
 
 func (d *DatabaseCheck) Execute(ctx context.Context) CheckResult {
-	start := time.Now()
-	err := d.DB.PingContext(ctx)
-	duration := time.Since(start)
+ start := time.Now()
+ err := d.DB.PingContext(ctx)
+ duration := time.Since(start)
 
-	if err != nil {
-		return CheckResult{
-			Name:     d.Name(),
-			Status:   StatusUnhealthy,
-			Error:    err.Error(),
-			ResponseTime: duration,
-		}
-	}
+ if err != nil {
+  return CheckResult{
+   Name:     d.Name(),
+   Status:   StatusUnhealthy,
+   Error:    err.Error(),
+   ResponseTime: duration,
+  }
+ }
 
-	// Get connection stats
-	stats := d.DB.Stats()
+ // Get connection stats
+ stats := d.DB.Stats()
 
-	return CheckResult{
-		Name:     d.Name(),
-		Status:   StatusHealthy,
-		ResponseTime: duration,
-		Metadata: map[string]interface{}{
-			"openConnections":    stats.OpenConnections,
-			"inUse":              stats.InUse,
-			"idle":               stats.Idle,
-			"waitCount":          stats.WaitCount,
-			"waitDuration":       stats.WaitDuration.String(),
-			"maxOpenConnections": stats.MaxOpenConnections,
-		},
-	}
+ return CheckResult{
+  Name:     d.Name(),
+  Status:   StatusHealthy,
+  ResponseTime: duration,
+  Metadata: map[string]interface{}{
+   "openConnections":    stats.OpenConnections,
+   "inUse":              stats.InUse,
+   "idle":               stats.Idle,
+   "waitCount":          stats.WaitCount,
+   "waitDuration":       stats.WaitDuration.String(),
+   "maxOpenConnections": stats.MaxOpenConnections,
+  },
+ }
 }
 
 // HTTPCheck checks external HTTP endpoint
 type HTTPCheck struct {
-	Name_   string
-	URL     string
-	Client  *http.Client
-	Timeout time.Duration
+ Name_   string
+ URL     string
+ Client  *http.Client
+ Timeout time.Duration
 }
 
 func (h *HTTPCheck) Name() string {
-	return h.Name_
+ return h.Name_
 }
 
 func (h *HTTPCheck) Execute(ctx context.Context) CheckResult {
-	if h.Client == nil {
-		h.Client = &http.Client{Timeout: h.Timeout}
-	}
+ if h.Client == nil {
+  h.Client = &http.Client{Timeout: h.Timeout}
+ }
 
-	start := time.Now()
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, h.URL, nil)
-	if err != nil {
-		return CheckResult{
-			Name:   h.Name(),
-			Status: StatusUnhealthy,
-			Error:  err.Error(),
-		}
-	}
+ start := time.Now()
+ req, err := http.NewRequestWithContext(ctx, http.MethodGet, h.URL, nil)
+ if err != nil {
+  return CheckResult{
+   Name:   h.Name(),
+   Status: StatusUnhealthy,
+   Error:  err.Error(),
+  }
+ }
 
-	resp, err := h.Client.Do(req)
-	duration := time.Since(start)
+ resp, err := h.Client.Do(req)
+ duration := time.Since(start)
 
-	if err != nil {
-		return CheckResult{
-			Name:     h.Name(),
-			Status:   StatusUnhealthy,
-			Error:    err.Error(),
-			ResponseTime: duration,
-		}
-	}
-	defer resp.Body.Close()
+ if err != nil {
+  return CheckResult{
+   Name:     h.Name(),
+   Status:   StatusUnhealthy,
+   Error:    err.Error(),
+   ResponseTime: duration,
+  }
+ }
+ defer resp.Body.Close()
 
-	status := StatusHealthy
-	if resp.StatusCode >= 500 {
-		status = StatusUnhealthy
-	} else if resp.StatusCode >= 400 {
-		status = StatusDegraded
-	}
+ status := StatusHealthy
+ if resp.StatusCode >= 500 {
+  status = StatusUnhealthy
+ } else if resp.StatusCode >= 400 {
+  status = StatusDegraded
+ }
 
-	return CheckResult{
-		Name:     h.Name(),
-		Status:   status,
-		ResponseTime: duration,
-		Metadata: map[string]interface{}{
-			"statusCode": resp.StatusCode,
-		},
-	}
+ return CheckResult{
+  Name:     h.Name(),
+  Status:   status,
+  ResponseTime: duration,
+  Metadata: map[string]interface{}{
+   "statusCode": resp.StatusCode,
+  },
+ }
 }
 
 // DiskCheck checks disk space
 type DiskCheck struct {
-	Path              string
-	WarningThreshold  float64 // percentage
-	CriticalThreshold float64 // percentage
+ Path              string
+ WarningThreshold  float64 // percentage
+ CriticalThreshold float64 // percentage
 }
 
 func (d *DiskCheck) Name() string {
-	return "disk"
+ return "disk"
 }
 
 func (d *DiskCheck) Execute(ctx context.Context) CheckResult {
-	// Implementation depends on OS
-	// This is a simplified version
-	return CheckResult{
-		Name:   d.Name(),
-		Status: StatusHealthy,
-		Message: "Disk check not implemented for this OS",
-	}
+ // Implementation depends on OS
+ // This is a simplified version
+ return CheckResult{
+  Name:   d.Name(),
+  Status: StatusHealthy,
+  Message: "Disk check not implemented for this OS",
+ }
 }
 ```
 
@@ -699,113 +702,113 @@ func (d *DiskCheck) Execute(ctx context.Context) CheckResult {
 package health
 
 import (
-	"encoding/json"
-	"net/http"
-	"time"
+ "encoding/json"
+ "net/http"
+ "time"
 )
 
 // Handler provides HTTP endpoints for health checks
 type Handler struct {
-	registry *Registry
-	version  string
+ registry *Registry
+ version  string
 }
 
 // NewHandler creates a new health handler
 func NewHandler(registry *Registry, version string) *Handler {
-	return &Handler{
-		registry: registry,
-		version:  version,
-	}
+ return &Handler{
+  registry: registry,
+  version:  version,
+ }
 }
 
 // RegisterRoutes registers health endpoints
 func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/health", h.HealthHandler)
-	mux.HandleFunc("/health/live", h.LivenessHandler)
-	mux.HandleFunc("/health/ready", h.ReadinessHandler)
-	mux.HandleFunc("/health/startup", h.StartupHandler)
+ mux.HandleFunc("/health", h.HealthHandler)
+ mux.HandleFunc("/health/live", h.LivenessHandler)
+ mux.HandleFunc("/health/ready", h.ReadinessHandler)
+ mux.HandleFunc("/health/startup", h.StartupHandler)
 }
 
 // HealthHandler returns comprehensive health status
 func (h *Handler) HealthHandler(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
-	defer cancel()
+ ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
+ defer cancel()
 
-	report := h.registry.RunAll(ctx)
-	report.Version = h.version
+ report := h.registry.RunAll(ctx)
+ report.Version = h.version
 
-	w.Header().Set("Content-Type", "application/json")
-	
-	if report.Status == StatusUnhealthy {
-		w.WriteHeader(http.StatusServiceUnavailable)
-	} else if report.Status == StatusDegraded {
-		w.WriteHeader(http.StatusOK)
-	} else {
-		w.WriteHeader(http.StatusOK)
-	}
+ w.Header().Set("Content-Type", "application/json")
 
-	json.NewEncoder(w).Encode(report)
+ if report.Status == StatusUnhealthy {
+  w.WriteHeader(http.StatusServiceUnavailable)
+ } else if report.Status == StatusDegraded {
+  w.WriteHeader(http.StatusOK)
+ } else {
+  w.WriteHeader(http.StatusOK)
+ }
+
+ json.NewEncoder(w).Encode(report)
 }
 
 // LivenessHandler returns liveness status
 func (h *Handler) LivenessHandler(w http.ResponseWriter, r *http.Request) {
-	// Simple liveness check - if we can respond, we're alive
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{
-		"status": "alive",
-	})
+ // Simple liveness check - if we can respond, we're alive
+ w.Header().Set("Content-Type", "application/json")
+ w.WriteHeader(http.StatusOK)
+ json.NewEncoder(w).Encode(map[string]string{
+  "status": "alive",
+ })
 }
 
 // ReadinessHandler returns readiness status
 func (h *Handler) ReadinessHandler(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
-	defer cancel()
+ ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+ defer cancel()
 
-	report := h.registry.RunAll(ctx)
+ report := h.registry.RunAll(ctx)
 
-	w.Header().Set("Content-Type", "application/json")
-	
-	if report.Status == StatusHealthy {
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]string{
-			"status": "ready",
-		})
-	} else {
-		w.WriteHeader(http.StatusServiceUnavailable)
-		json.NewEncoder(w).Encode(map[string]string{
-			"status": "not ready",
-			"reason": string(report.Status),
-		})
-	}
+ w.Header().Set("Content-Type", "application/json")
+
+ if report.Status == StatusHealthy {
+  w.WriteHeader(http.StatusOK)
+  json.NewEncoder(w).Encode(map[string]string{
+   "status": "ready",
+  })
+ } else {
+  w.WriteHeader(http.StatusServiceUnavailable)
+  json.NewEncoder(w).Encode(map[string]string{
+   "status": "not ready",
+   "reason": string(report.Status),
+  })
+ }
 }
 
 // StartupHandler returns startup status
 func (h *Handler) StartupHandler(w http.ResponseWriter, r *http.Request) {
-	// Startup probe - check if initialization is complete
-	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
-	defer cancel()
+ // Startup probe - check if initialization is complete
+ ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+ defer cancel()
 
-	report := h.registry.RunAll(ctx)
+ report := h.registry.RunAll(ctx)
 
-	w.Header().Set("Content-Type", "application/json")
-	
-	// Startup succeeds if dependencies are healthy
-	for _, check := range report.Checks {
-		if check.Status == StatusUnhealthy {
-			w.WriteHeader(http.StatusServiceUnavailable)
-			json.NewEncoder(w).Encode(map[string]string{
-				"status": "starting",
-				"check":  check.Name,
-			})
-			return
-		}
-	}
+ w.Header().Set("Content-Type", "application/json")
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{
-		"status": "started",
-	})
+ // Startup succeeds if dependencies are healthy
+ for _, check := range report.Checks {
+  if check.Status == StatusUnhealthy {
+   w.WriteHeader(http.StatusServiceUnavailable)
+   json.NewEncoder(w).Encode(map[string]string{
+    "status": "starting",
+    "check":  check.Name,
+   })
+   return
+  }
+ }
+
+ w.WriteHeader(http.StatusOK)
+ json.NewEncoder(w).Encode(map[string]string{
+  "status": "started",
+ })
 }
 ```
 
@@ -814,7 +817,7 @@ func (h *Handler) StartupHandler(w http.ResponseWriter, r *http.Request) {
 ## 5. Failure Scenarios and Mitigation
 
 | Scenario | Symptom | Cause | Mitigation |
-|----------|---------|-------|------------|
+| ---------- | --------- | ------- | ------------ |
 | **Flapping** | Rapid healthy/unhealthy transitions | Aggressive thresholds | Increase threshold, hysteresis |
 | **False Negative** | Healthy service marked unhealthy | Network blip | Retry logic, longer timeout |
 | **Check Overhead** | Performance degradation | Expensive checks | Cache results, async checks |
@@ -828,9 +831,9 @@ func (h *Handler) StartupHandler(w http.ResponseWriter, r *http.Request) {
 ```go
 // HealthMetrics for monitoring
 type HealthMetrics struct {
-	checkTotal    metric.Int64Counter
-	checkDuration metric.Float64Histogram
-	statusGauge   metric.Int64Gauge
+ checkTotal    metric.Int64Counter
+ checkDuration metric.Float64Histogram
+ statusGauge   metric.Int64Gauge
 }
 ```
 
@@ -868,7 +871,7 @@ type HealthMetrics struct {
 ### 8.1 Probe Configuration Matrix
 
 | Probe Type | Initial Delay | Period | Timeout | Threshold |
-|------------|---------------|--------|---------|-----------|
+| ------------ | --------------- | -------- | --------- | ----------- |
 | **Liveness** | 10s | 10s | 5s | 3 |
 | **Readiness** | 5s | 5s | 3s | 1 |
 | **Startup** | 0s | 10s | 5s | 3 |
@@ -895,56 +898,56 @@ type HealthMetrics struct {
 package benchmark_test
 
 import (
-	"context"
-	"sync"
-	"testing"
-	"time"
+ "context"
+ "sync"
+ "testing"
+ "time"
 )
 
 // BenchmarkBasicOperation measures baseline performance
 func BenchmarkBasicOperation(b *testing.B) {
-	ctx := context.Background()
-	
-	b.ResetTimer()
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			// Simulate operation
-			_ = ctx
-		}
-	})
+ ctx := context.Background()
+
+ b.ResetTimer()
+ b.RunParallel(func(pb *testing.PB) {
+  for pb.Next() {
+   // Simulate operation
+   _ = ctx
+  }
+ })
 }
 
 // BenchmarkConcurrentLoad tests concurrent performance
 func BenchmarkConcurrentLoad(b *testing.B) {
-	var wg sync.WaitGroup
-	
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			// Simulate work
-			time.Sleep(1 * time.Microsecond)
-		}()
-	}
-	wg.Wait()
+ var wg sync.WaitGroup
+
+ b.ResetTimer()
+ for i := 0; i < b.N; i++ {
+  wg.Add(1)
+  go func() {
+   defer wg.Done()
+   // Simulate work
+   time.Sleep(1 * time.Microsecond)
+  }()
+ }
+ wg.Wait()
 }
 
 // BenchmarkMemoryAllocation tracks allocations
 func BenchmarkMemoryAllocation(b *testing.B) {
-	b.ReportAllocs()
-	
-	for i := 0; i < b.N; i++ {
-		data := make([]byte, 1024)
-		_ = data
-	}
+ b.ReportAllocs()
+
+ for i := 0; i < b.N; i++ {
+  data := make([]byte, 1024)
+  _ = data
+ }
 }
 ```
 
 ### 10.2 Performance Comparison
 
 | Implementation | ns/op | allocs/op | memory/op | Throughput |
-|---------------|-------|-----------|-----------|------------|
+| --------------- | ------- | ----------- | ----------- | ------------ |
 | **Baseline** | 100 ns | 0 | 0 B | 10M ops/s |
 | **With Context** | 150 ns | 1 | 32 B | 6.7M ops/s |
 | **With Metrics** | 300 ns | 2 | 64 B | 3.3M ops/s |
@@ -953,7 +956,7 @@ func BenchmarkMemoryAllocation(b *testing.B) {
 ### 10.3 Production Performance
 
 | Metric | P50 | P95 | P99 | Target |
-|--------|-----|-----|-----|--------|
+| -------- | ----- | ----- | ----- | -------- |
 | Latency | 100μs | 250μs | 500μs | < 1ms |
 | Throughput | 50K | 80K | 100K | > 50K RPS |
 | Error Rate | 0.01% | 0.05% | 0.1% | < 0.1% |
@@ -962,7 +965,7 @@ func BenchmarkMemoryAllocation(b *testing.B) {
 ### 10.4 Optimization Recommendations
 
 | Priority | Optimization | Impact | Effort |
-|----------|-------------|--------|--------|
+| ---------- | ------------- | -------- | -------- |
 | 🔴 High | Connection pooling | 50% latency | Low |
 | 🔴 High | Caching layer | 80% throughput | Medium |
 | 🟡 Medium | Async processing | 30% latency | Medium |

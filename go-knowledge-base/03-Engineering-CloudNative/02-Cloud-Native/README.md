@@ -5,7 +5,7 @@
 ## 文档列表
 
 | 文档 | 内容 |
-|------|------|
+| ------ | ------ |
 | [01-Microservices.md](01-Microservices.md) | 微服务架构 |
 | [02-Containers.md](02-Containers.md) | 容器化 |
 | [03-Kubernetes.md](03-Kubernetes.md) | Kubernetes |
@@ -731,7 +731,7 @@ volumes:
 ### 7. 监控指标
 
 | 指标名称 | 类型 | 描述 | 告警阈值 |
-|----------|------|------|----------|
+| ---------- | ------ | ------ | ---------- |
 | request_duration | Histogram | 请求处理时间 | p99 > 100ms |
 | request_total | Counter | 总请求数 | - |
 | error_total | Counter | 错误总数 | rate > 1% |

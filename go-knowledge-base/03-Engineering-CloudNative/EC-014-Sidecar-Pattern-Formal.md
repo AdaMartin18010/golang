@@ -619,7 +619,7 @@ kubectl exec my-pod -c istio-proxy -- iptables -t nat -L -v
 ### 9.2 常见问题
 
 | 问题 | 症状 | 解决 |
-|------|------|------|
+| ------ | ------ | ------ |
 | Sidecar 启动慢 | 应用先于 Sidecar 启动 | 添加 readiness probe |
 | 循环依赖 | 两个服务相互调用超时 | 配置超时和重试策略 |
 | 资源竞争 | OOMKilled | 调整资源限制 |

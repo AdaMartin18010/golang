@@ -34,12 +34,12 @@ class UserService:
     def __init__(self, api_url: str):
         self.api_url = api_url
         self._cache: Dict[int, dict] = {}
-    
+
     def get_user(self, user_id: int) -> Optional[dict]:
         # Check cache
         if user_id in self._cache:
             return self._cache[user_id]
-        
+
         # Fetch from API
         response = requests.get(f"{self.api_url}/users/{user_id}")
         if response.status_code == 200:
@@ -47,7 +47,7 @@ class UserService:
             self._cache[user_id] = user
             return user
         return None
-    
+
     def get_users(self, user_ids: List[int]) -> List[dict]:
         # List comprehension + generator expression
         return [
@@ -90,6 +90,7 @@ async def get_user(user_id: int):
 ```
 
 **Python Productivity Strengths:**
+
 - Minimal boilerplate
 - Interactive REPL
 - Jupyter notebooks
@@ -147,34 +148,34 @@ func (s *UserService) GetUser(ctx context.Context, userID int64) (*User, error) 
         return user, nil
     }
     s.mu.RUnlock()
-    
+
     // Fetch from API
     url := fmt.Sprintf("%s/users/%d", s.apiURL, userID)
     req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
     if err != nil {
         return nil, err
     }
-    
+
     resp, err := s.client.Do(req)
     if err != nil {
         return nil, err
     }
     defer resp.Body.Close()
-    
+
     if resp.StatusCode != http.StatusOK {
         return nil, fmt.Errorf("API returned %d", resp.StatusCode)
     }
-    
+
     var user User
     if err := json.NewDecoder(resp.Body).Decode(&user); err != nil {
         return nil, err
     }
-    
+
     // Update cache
     s.mu.Lock()
     s.cache[userID] = &user
     s.mu.Unlock()
-    
+
     return &user, nil
 }
 
@@ -184,10 +185,10 @@ func (s *UserService) GetUsers(ctx context.Context, userIDs []int64) ([]*User, e
         user *User
         err  error
     }
-    
+
     results := make([]*result, len(userIDs))
     var wg sync.WaitGroup
-    
+
     for i, id := range userIDs {
         wg.Add(1)
         go func(idx int, userID int64) {
@@ -196,16 +197,16 @@ func (s *UserService) GetUsers(ctx context.Context, userIDs []int64) ([]*User, e
             results[idx] = &result{user: user, err: err}
         }(i, id)
     }
-    
+
     wg.Wait()
-    
+
     var users []*User
     for _, r := range results {
         if r.err == nil && r.user != nil {
             users = append(users, r.user)
         }
     }
-    
+
     return users, nil
 }
 
@@ -220,25 +221,25 @@ func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
         Email string `json:"email"`
         Age   *int   `json:"age"`
     }
-    
+
     if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
         http.Error(w, err.Error(), http.StatusBadRequest)
         return
     }
-    
+
     // Validate
     if req.Name == "" || req.Email == "" {
         http.Error(w, "name and email required", http.StatusBadRequest)
         return
     }
-    
+
     user := &User{
         ID:    1, // Generated
         Name:  req.Name,
         Email: req.Email,
         Age:   req.Age,
     }
-    
+
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusCreated)
     json.NewEncoder(w).Encode(user)
@@ -252,7 +253,7 @@ func (s *Server) handleGetUser(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Invalid ID", http.StatusBadRequest)
         return
     }
-    
+
     user, err := s.userService.GetUser(r.Context(), id)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -262,13 +263,14 @@ func (s *Server) handleGetUser(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "User not found", http.StatusNotFound)
         return
     }
-    
+
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(user)
 }
 ```
 
 **Go Productivity Strengths:**
+
 - Fast compilation
 - Clear error handling
 - Built-in concurrency
@@ -293,10 +295,10 @@ T = TypeVar('T')
 class Container(Generic[T]):
     def __init__(self, value: T) -> None:
         self._value = value
-    
+
     def get(self) -> T:
         return self._value
-    
+
     def map(self, fn: Callable[[T], T]) -> 'Container[T]':
         return Container(fn(self._value))
 
@@ -324,7 +326,7 @@ def render(item: Drawable) -> None:
 class Point:
     x: float
     y: float
-    
+
     def distance_from_origin(self) -> float:
         return (self.x ** 2 + self.y ** 2) ** 0.5
 
@@ -399,15 +401,15 @@ func (p Point) DistanceFromOrigin() float64 {
 func main() {
     container := NewContainer(42)  // Inferred as Container[int]
     fmt.Println(container.Get())
-    
+
     doubled := container.Map(func(x int) int {
         return x * 2
     })
     fmt.Println(doubled.Get())
-    
+
     // Type safety at compile time
     // container = NewContainer("string")  // Compile error!
-    
+
     // Interface satisfaction is implicit
     c := Circle{Radius: 5.0}
     Render(c)  // Works without declaration
@@ -417,7 +419,7 @@ func main() {
 **Type System Comparison:**
 
 | Feature | Python | Go |
-|---------|--------|-----|
+| --------- | -------- | ----- |
 | Checking Time | Runtime + Optional Static | Compile time |
 | Generics | Full (3.5+) | Full (1.18+) |
 | Variance | Invariant by default | Invariant |
@@ -462,17 +464,18 @@ services:
     depends_on:
       - db
       - redis
-  
+
   db:
     image: postgres:15
     environment:
       POSTGRES_DB: myapp
-  
+
   redis:
     image: redis:7-alpine
 ```
 
 **Python Deployment Challenges:**
+
 - Dependency management (requirements.txt, poetry, pipenv)
 - Virtual environments
 - Interpreter version management
@@ -517,7 +520,7 @@ services:
       - DATABASE_URL=postgresql://db/postgres
     depends_on:
       - db
-  
+
   db:
     image: postgres:15
     environment:
@@ -525,6 +528,7 @@ services:
 ```
 
 **Go Deployment Advantages:**
+
 - Single static binary
 - No runtime dependencies
 - Cross-compilation (GOOS/GOARCH)
@@ -539,7 +543,7 @@ services:
 ### Benchmark Results
 
 | Benchmark | Python 3.11 | Go 1.21 | Ratio |
-|-----------|-------------|---------|-------|
+| ----------- | ------------- | --------- | ------- |
 | Hello World | 1.0x | 50x | Go 50x faster |
 | JSON Parse | 1.0x | 30x | Go 30x faster |
 | HTTP Request | 1.0x | 40x | Go 40x faster |
@@ -550,6 +554,7 @@ services:
 ### Concurrent HTTP Server
 
 **Python:**
+
 ```python
 # Python: Async with FastAPI
 from fastapi import FastAPI
@@ -573,6 +578,7 @@ async def compute(n: int):
 ```
 
 **Go:**
+
 ```go
 // Go: Goroutines handle concurrency automatically
 package main
@@ -589,20 +595,20 @@ func main() {
         time.Sleep(10 * time.Millisecond) // Simulate IO
         fmt.Fprint(w, `{"message": "Hello"}`)
     })
-    
+
     http.HandleFunc("/compute/", func(w http.ResponseWriter, r *http.Request) {
         nStr := r.URL.Path[len("/compute/"):]
         n, _ := strconv.Atoi(nStr)
-        
+
         // CPU-bound - runs in parallel goroutine
         result := 0
         for i := 0; i < n; i++ {
             result += i * i
         }
-        
+
         fmt.Fprintf(w, `{"result": %d}`, result)
     })
-    
+
     // No worker configuration needed - Go handles it
     http.ListenAndServe(":8080", nil)
 }
@@ -615,7 +621,7 @@ func main() {
 ### Decision Matrix
 
 | Use Case | Python | Go | Recommendation |
-|----------|--------|-----|----------------|
+| ---------- | -------- | ----- | ---------------- |
 | Data Science/ML | 10/10 | 4/10 | Python |
 | Web Scraping | 9/10 | 7/10 | Python |
 | Scripting/Automation | 10/10 | 6/10 | Python |
@@ -727,13 +733,13 @@ response = stub.SumSquares(SumRequest(n=1000000))
 
 # Option 2: HTTP API
 import requests
-response = requests.post('http://localhost:8080/compute', 
+response = requests.post('http://localhost:8080/compute',
                         json={'n': 1000000})
 result = response.json()['result']
 
 # Option 3: subprocess (simple cases)
 import subprocess
-result = subprocess.run(['./compute', '1000000'], 
+result = subprocess.run(['./compute', '1000000'],
                        capture_output=True, text=True)
 value = int(result.stdout)
 ```
@@ -741,7 +747,7 @@ value = int(result.stdout)
 #### Phase 4: Common Pattern Mapping
 
 | Python | Go | Notes |
-|--------|-----|-------|
+| -------- | ----- | ------- |
 | `list` | `[]T` | Slice |
 | `dict` | `map[K]V` | Map |
 | `set` | `map[T]struct{}` | Map as set |
@@ -772,14 +778,14 @@ func main() {
             Data []float64 `json:"data"`
         }
         json.NewDecoder(r.Body).Decode(&req)
-        
+
         result := processData(req.Data)
-        
+
         json.NewEncoder(w).Encode(map[string]interface{}{
             "result": result,
         })
     })
-    
+
     http.ListenAndServe(":8080", nil)
 }
 ```
@@ -801,7 +807,7 @@ def call_go_service(data):
 ## Summary
 
 | Aspect | Python | Go | Winner |
-|--------|--------|-----|--------|
+| -------- | -------- | ----- | -------- |
 | Development Speed | Excellent | Good | Python |
 | Runtime Performance | Fair | Excellent | Go |
 | Type Safety | Optional | Required | Go |
@@ -814,6 +820,7 @@ def call_go_service(data):
 | Maintenance | Moderate | Easy | Go |
 
 **Recommendation:**
+
 - Use Python for data science, ML, prototyping, scripting
 - Use Go for production services, APIs, infrastructure
 - Consider polyglot: Python for ML models, Go for serving infrastructure

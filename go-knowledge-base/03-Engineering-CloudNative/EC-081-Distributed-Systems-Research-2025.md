@@ -13,7 +13,7 @@
 ### 1.1 2025 Key Papers
 
 | Conference | Paper | Contribution |
-|------------|-------|--------------|
+| ------------ | ------- | -------------- |
 | OSDI 2025 | Basilisk | Scalable ML training |
 | OSDI 2025 | Picsou | Cost-efficient cloud storage |
 | EuroSys 2025 | T2C | Tail latency optimization |

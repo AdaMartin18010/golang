@@ -65,7 +65,7 @@ $$
 ### 2.2 Idempotency Strategies
 
 | Strategy | Mechanism | Use Case |
-|----------|-----------|----------|
+| ---------- | ----------- | ---------- |
 | **Natural Idempotency** | Operation is naturally idempotent | PUT with full resource |
 | **Token-Based** | Unique token per request | Payment processing |
 | **State Check** | Check current state before action | Order creation |
@@ -512,7 +512,7 @@ Key Design for Distributed Systems:
 ## 6. Failure Scenarios and Mitigation
 
 | Scenario | Symptom | Cause | Mitigation |
-|----------|---------|-------|------------|
+| ---------- | --------- | ------- | ------------ |
 | **Key Collision** | Wrong response returned | Insufficient key entropy | Include more unique data in key |
 | **Storage Failure** | Duplicate processing | Redis unavailable | Fallback to database, fail closed |
 | **TTL Too Short** | Duplicate after expiration | Short TTL | Extend TTL, persistent storage |
@@ -632,56 +632,56 @@ PUT /users/123: naturally idempotent (no key needed)
 package benchmark_test
 
 import (
-	"context"
-	"sync"
-	"testing"
-	"time"
+ "context"
+ "sync"
+ "testing"
+ "time"
 )
 
 // BenchmarkBasicOperation measures baseline performance
 func BenchmarkBasicOperation(b *testing.B) {
-	ctx := context.Background()
-	
-	b.ResetTimer()
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			// Simulate operation
-			_ = ctx
-		}
-	})
+ ctx := context.Background()
+
+ b.ResetTimer()
+ b.RunParallel(func(pb *testing.PB) {
+  for pb.Next() {
+   // Simulate operation
+   _ = ctx
+  }
+ })
 }
 
 // BenchmarkConcurrentLoad tests concurrent performance
 func BenchmarkConcurrentLoad(b *testing.B) {
-	var wg sync.WaitGroup
-	
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			// Simulate work
-			time.Sleep(1 * time.Microsecond)
-		}()
-	}
-	wg.Wait()
+ var wg sync.WaitGroup
+
+ b.ResetTimer()
+ for i := 0; i < b.N; i++ {
+  wg.Add(1)
+  go func() {
+   defer wg.Done()
+   // Simulate work
+   time.Sleep(1 * time.Microsecond)
+  }()
+ }
+ wg.Wait()
 }
 
 // BenchmarkMemoryAllocation tracks allocations
 func BenchmarkMemoryAllocation(b *testing.B) {
-	b.ReportAllocs()
-	
-	for i := 0; i < b.N; i++ {
-		data := make([]byte, 1024)
-		_ = data
-	}
+ b.ReportAllocs()
+
+ for i := 0; i < b.N; i++ {
+  data := make([]byte, 1024)
+  _ = data
+ }
 }
 ```
 
 ### 10.2 Performance Comparison
 
 | Implementation | ns/op | allocs/op | memory/op | Throughput |
-|---------------|-------|-----------|-----------|------------|
+| --------------- | ------- | ----------- | ----------- | ------------ |
 | **Baseline** | 100 ns | 0 | 0 B | 10M ops/s |
 | **With Context** | 150 ns | 1 | 32 B | 6.7M ops/s |
 | **With Metrics** | 300 ns | 2 | 64 B | 3.3M ops/s |
@@ -690,7 +690,7 @@ func BenchmarkMemoryAllocation(b *testing.B) {
 ### 10.3 Production Performance
 
 | Metric | P50 | P95 | P99 | Target |
-|--------|-----|-----|-----|--------|
+| -------- | ----- | ----- | ----- | -------- |
 | Latency | 100μs | 250μs | 500μs | < 1ms |
 | Throughput | 50K | 80K | 100K | > 50K RPS |
 | Error Rate | 0.01% | 0.05% | 0.1% | < 0.1% |
@@ -699,7 +699,7 @@ func BenchmarkMemoryAllocation(b *testing.B) {
 ### 10.4 Optimization Recommendations
 
 | Priority | Optimization | Impact | Effort |
-|----------|-------------|--------|--------|
+| ---------- | ------------- | -------- | -------- |
 | 🔴 High | Connection pooling | 50% latency | Low |
 | 🔴 High | Caching layer | 80% throughput | Medium |
 | 🟡 Medium | Async processing | 30% latency | Medium |

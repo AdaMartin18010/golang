@@ -172,7 +172,7 @@ byRole := groupBy(users, func(u User) string { return u.Role })
 ### 4.1 Time Complexity
 
 | Operation | Average | Worst Case |
-|-----------|---------|------------|
+| ----------- | --------- | ------------ |
 | Insert | O(1) | O(n) |
 | Lookup | O(1) | O(n) |
 | Delete | O(1) | O(n) |
@@ -205,7 +205,7 @@ m = make(map[string]int) // Old map will be GC'd
 ## 5. Comparison with Alternatives
 
 | Approach | Lookup | Insert | Memory | Use Case |
-|----------|--------|--------|--------|----------|
+| ---------- | -------- | -------- | -------- | ---------- |
 | **map** | O(1) | O(1) | Medium | General use |
 | **slice** | O(n) | O(1)* | Low | Small collections |
 | **sorted slice** | O(log n) | O(n) | Low | Range queries |
@@ -270,7 +270,7 @@ m = make(map[string]int) // Old map will be GC'd
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -283,7 +283,9 @@ m = make(map[string]int) // Old map will be GC'd
 ### 配置优化
 
 `yaml
+
 # 生产环境推荐配置
+
 performance:
   max_connections: 1000
   buffer_pool_size: 8GB
@@ -309,7 +311,7 @@ client := NewClient(Config{
 ### 性能基准
 
 | 指标 | 数值 | 说明 |
-|------|------|------|
+| ------ | ------ | ------ |
 | 吞吐量 | 10K QPS | 单节点 |
 | 延迟 | p99 < 10ms | 本地网络 |
 | 可用性 | 99.99% | 集群模式 |
@@ -322,7 +324,7 @@ client := NewClient(Config{
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -335,7 +337,9 @@ client := NewClient(Config{
 ### 部署配置
 
 `yaml
+
 # docker-compose.yml
+
 version: '3.8'
 services:
   app:
@@ -371,7 +375,7 @@ pool := &redis.Pool{
 ### 监控告警
 
 | 指标 | 阈值 | 动作 |
-|------|------|------|
+| ------ | ------ | ------ |
 | CPU > 80% | 5min | 扩容 |
 | 内存 > 90% | 2min | 告警 |
 | 错误率 > 1% | 1min | 回滚 |
@@ -385,7 +389,7 @@ pool := &redis.Pool{
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -427,7 +431,7 @@ A: 使用连接池、限流、熔断等模式。
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -543,7 +547,7 @@ CAP 定理和 BASE 理论的实际应用。
 
 ---
 
-**质量评级**: S (全面扩展)  
+**质量评级**: S (全面扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -659,5 +663,5 @@ CAP 定理和 BASE 理论的实际应用。
 
 ---
 
-**质量评级**: S (全面扩展)  
+**质量评级**: S (全面扩展)
 **完成日期**: 2026-04-02

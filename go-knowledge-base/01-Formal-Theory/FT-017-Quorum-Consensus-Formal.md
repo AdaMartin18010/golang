@@ -915,7 +915,7 @@ func (hqm *HierarchicalQuorumManager) VerifyIntersection(q1, q2 []*Node) bool {
 ## Comparison with Related Protocols
 
 | Aspect | Quorum Consensus | Two-Phase Commit | Raft | Paxos |
-|--------|------------------|------------------|------|-------|
+| -------- | ------------------ | ------------------ | ------ | ------- |
 | **Coordination** | Partial (quorum only) | Full (all nodes) | Leader-based | Leader-based |
 | **Fault Tolerance** | Configurable | Low (coordinator failure) | Majority | Majority |
 | **Latency** | Single RTT (quorum) | 2+ RTTs | 1-2 RTTs | 2+ RTTs |

@@ -53,13 +53,13 @@ Performance characteristics vary significantly across programming languages base
     - [完整代码实现](#完整代码实现)
     - [配置示例](#配置示例)
 - [生产环境配置](#生产环境配置)
-    - [测试用例](#测试用例)
-    - [部署指南](#部署指南)
-    - [性能调优](#性能调优)
-    - [故障处理](#故障处理)
-    - [安全建议](#安全建议)
-    - [运维手册](#运维手册)
-    - [参考链接](#参考链接)
+  - [测试用例](#测试用例)
+  - [部署指南](#部署指南)
+  - [性能调优](#性能调优)
+  - [故障处理](#故障处理)
+  - [安全建议](#安全建议)
+  - [运维手册](#运维手册)
+  - [参考链接](#参考链接)
   - [完整扩展内容](#完整扩展内容)
     - [理论分析](#理论分析)
     - [实践指南](#实践指南)
@@ -184,7 +184,7 @@ fn sieve(n: usize) -> Vec<bool> {
 **Results (time in milliseconds):**
 
 | Language | Time (ms) | Relative |
-|----------|-----------|----------|
+| ---------- | ----------- | ---------- |
 | C++ (O3) | 45 | 1.0x |
 | Rust (release) | 48 | 1.07x |
 | Go | 62 | 1.38x |
@@ -200,7 +200,7 @@ fn sieve(n: usize) -> Vec<bool> {
 Parsing and serializing 1MB JSON document:
 
 | Language | Parse (ms) | Serialize (ms) | Total (ms) |
-|----------|------------|----------------|------------|
+| ---------- | ------------ | ---------------- | ------------ |
 | C++ (simdjson) | 1.2 | 2.1 | 3.3 |
 | Rust (serde_json) | 2.5 | 3.2 | 5.7 |
 | Go | 3.8 | 4.5 | 8.3 |
@@ -216,7 +216,7 @@ Parsing and serializing 1MB JSON document:
 Processing 100,000 lines of text:
 
 | Language | Regex Replace (ms) | Split/Join (ms) |
-|----------|-------------------|-----------------|
+| ---------- | ------------------- | ----------------- |
 | C++ | 15 | 22 |
 | Rust | 18 | 25 |
 | Go | 28 | 35 |
@@ -235,7 +235,7 @@ Processing 100,000 lines of text:
 Using wrk: `wrk -t12 -c400 -d30s http://localhost:8080/`
 
 | Language | Framework | RPS | Latency (p99) | Memory |
-|----------|-----------|-----|---------------|--------|
+| ---------- | ----------- | ----- | --------------- | -------- |
 | C++ | Drogon | 520,000 | 0.8ms | 15MB |
 | Rust | Actix-web | 480,000 | 0.9ms | 18MB |
 | Go | net/http | 180,000 | 2.1ms | 20MB |
@@ -254,7 +254,7 @@ Using wrk: `wrk -t12 -c400 -d30s http://localhost:8080/`
 Query PostgreSQL and return JSON:
 
 | Language | Framework | RPS | Latency (p99) |
-|----------|-----------|-----|---------------|
+| ---------- | ----------- | ----- | --------------- |
 | Go | pgx + std | 45,000 | 12ms |
 | Rust | sqlx + axum | 42,000 | 13ms |
 | Java | R2DBC + WebFlux | 38,000 | 14ms |
@@ -271,7 +271,7 @@ Query PostgreSQL and return JSON:
 Minimal HTTP server at rest:
 
 | Language | RSS Memory |
-|----------|------------|
+| ---------- | ------------ |
 | C++ | 3MB |
 | Rust | 5MB |
 | Go | 12MB |
@@ -284,7 +284,7 @@ Minimal HTTP server at rest:
 ### Memory Per 10k Concurrent Connections
 
 | Language | Memory |
-|----------|--------|
+| ---------- | -------- |
 | Rust | 150MB |
 | Go | 200MB |
 | C++ | 180MB |
@@ -298,7 +298,7 @@ Minimal HTTP server at rest:
 Allocations per 1000 JSON operations:
 
 | Language | Allocations | Bytes Allocated |
-|----------|-------------|-----------------|
+| ---------- | ------------- | ----------------- |
 | Rust | 1,200 | 500KB |
 | Go | 3,500 | 2MB |
 | Java | 8,000 | 5MB |
@@ -313,7 +313,7 @@ Allocations per 1000 JSON operations:
 Time from execution to first request handled:
 
 | Language | Cold Start | Warm Start |
-|----------|------------|------------|
+| ---------- | ------------ | ------------ |
 | C++ | 5ms | 1ms |
 | Rust | 8ms | 2ms |
 | Go | 50ms | 5ms |
@@ -331,7 +331,7 @@ Time from execution to first request handled:
 Time to build 10,000 lines of code:
 
 | Language | Debug Build | Release Build |
-|----------|-------------|---------------|
+| ---------- | ------------- | --------------- |
 | Go | 2s | 3s |
 | Java | 5s | 8s |
 | C# | 6s | 10s |
@@ -351,7 +351,7 @@ Time to build 10,000 lines of code:
 Spawning 100,000 concurrent tasks:
 
 | Language | Time | Memory |
-|----------|------|--------|
+| ---------- | ------ | -------- |
 | Go | 150ms | 200MB |
 | Rust (tokio) | 180ms | 180MB |
 | Erlang | 200ms | 50MB |
@@ -366,7 +366,7 @@ Spawning 100,000 concurrent tasks:
 Messages per second (channel/queue):
 
 | Language | Unbuffered | Buffered (100) |
-|----------|------------|----------------|
+| ---------- | ------------ | ---------------- |
 | Go | 15M/s | 50M/s |
 | Rust | 20M/s | 80M/s |
 | Erlang | 8M/s | 12M/s |
@@ -380,7 +380,7 @@ Messages per second (channel/queue):
 ### Overall Performance Ranking
 
 | Rank | Language | Compute | Web | Memory | Startup | Overall |
-|------|----------|---------|-----|--------|---------|---------|
+| ------ | ---------- | --------- | ----- | -------- | --------- | --------- |
 | 1 | Rust | 10/10 | 10/10 | 10/10 | 9/10 | 9.8 |
 | 2 | C++ | 10/10 | 9/10 | 9/10 | 10/10 | 9.5 |
 | 3 | Go | 8/10 | 8/10 | 8/10 | 8/10 | 8.0 |
@@ -394,7 +394,7 @@ Messages per second (channel/queue):
 ### Use Case Recommendations
 
 | Use Case | Best Choice | Alternatives |
-|----------|-------------|--------------|
+| ---------- | ------------- | -------------- |
 | High-frequency trading | C++, Rust | Java |
 | Web APIs (high throughput) | Go, Rust | Java, C# |
 | Microservices | Go, Rust | Node.js, C# |
@@ -725,7 +725,7 @@ func process(ctx context.Context) string {
 ### 配置说明
 
 | 参数 | 默认值 | 说明 |
-|------|--------|------|
+| ------ | -------- | ------ |
 | timeout | 30s | 超时时间 |
 | retries | 3 | 重试次数 |
 | workers | 10 | 工作线程 |
@@ -811,7 +811,7 @@ func process(ctx context.Context) string {
 ### 配置说明
 
 | 参数 | 默认值 | 说明 |
-|------|--------|------|
+| ------ | -------- | ------ |
 | timeout | 30s | 超时时间 |
 | retries | 3 | 重试次数 |
 | workers | 10 | 工作线程 |
@@ -863,7 +863,7 @@ func process(ctx context.Context) string {
 ### 数据表格
 
 | 项目 | 数值1 | 数值2 | 数值3 | 数值4 | 数值5 |
-|------|-------|-------|-------|-------|-------|
+| ------ | ------- | ------- | ------- | ------- | ------- |
 | 数据A | 100 | 200 | 300 | 400 | 500 |
 | 数据B | 110 | 220 | 330 | 440 | 550 |
 | 数据C | 120 | 240 | 360 | 480 | 600 |
@@ -939,7 +939,7 @@ metrics:
 ### 术语表
 
 | 术语 | 定义 |
-|------|------|
+| ------ | ------ |
 | API | Application Programming Interface |
 | REST | Representational State Transfer |
 | gRPC | Google Remote Procedure Call |
@@ -988,7 +988,7 @@ MIT License - 详见LICENSE文件
 ### 数据表格
 
 | 项目 | 数值1 | 数值2 | 数值3 | 数值4 | 数值5 |
-|------|-------|-------|-------|-------|-------|
+| ------ | ------- | ------- | ------- | ------- | ------- |
 | 数据A | 100 | 200 | 300 | 400 | 500 |
 | 数据B | 110 | 220 | 330 | 440 | 550 |
 | 数据C | 120 | 240 | 360 | 480 | 600 |
@@ -1064,7 +1064,7 @@ metrics:
 ### 术语表
 
 | 术语 | 定义 |
-|------|------|
+| ------ | ------ |
 | API | Application Programming Interface |
 | REST | Representational State Transfer |
 | gRPC | Google Remote Procedure Call |
@@ -1113,7 +1113,7 @@ MIT License - 详见LICENSE文件
 ### 数据表格
 
 | 项目 | 数值1 | 数值2 | 数值3 | 数值4 | 数值5 |
-|------|-------|-------|-------|-------|-------|
+| ------ | ------- | ------- | ------- | ------- | ------- |
 | 数据A | 100 | 200 | 300 | 400 | 500 |
 | 数据B | 110 | 220 | 330 | 440 | 550 |
 | 数据C | 120 | 240 | 360 | 480 | 600 |
@@ -1189,7 +1189,7 @@ metrics:
 ### 术语表
 
 | 术语 | 定义 |
-|------|------|
+| ------ | ------ |
 | API | Application Programming Interface |
 | REST | Representational State Transfer |
 | gRPC | Google Remote Procedure Call |

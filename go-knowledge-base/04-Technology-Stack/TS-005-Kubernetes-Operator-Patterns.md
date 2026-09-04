@@ -246,7 +246,7 @@ func (r *DatabaseReconciler) SetupWithManager(mgr ctrl.Manager) error {
 ## 常用 Operator 框架
 
 | 框架 | 特点 | 推荐场景 |
-|------|------|---------|
+| ------ | ------ | --------- |
 | Operator SDK | Go, Ansible, Helm 支持 | 生产级 |
 | Kubebuilder | Go, 官方推荐 | 复杂业务 |
 | Helm Operator | 纯 Helm chart | 简单场景 |
@@ -328,7 +328,7 @@ client := NewClient(Config{
 ### 性能基准
 
 | 指标 | 数值 | 说明 |
-|------|------|------|
+| ------ | ------ | ------ |
 | 吞吐量 | 10K QPS | 单节点 |
 | 延迟 | p99 < 10ms | 本地网络 |
 | 可用性 | 99.99% | 集群模式 |
@@ -392,7 +392,7 @@ pool := &redis.Pool{
 ### 监控告警
 
 | 指标 | 阈值 | 动作 |
-|------|------|------|
+| ------ | ------ | ------ |
 | CPU > 80% | 5min | 扩容 |
 | 内存 > 90% | 2min | 告警 |
 | 错误率 > 1% | 1min | 回滚 |

@@ -106,7 +106,7 @@ Operations: &&, ||, !, ==, !=
 **定义 2.2 (整数类型)**
 
 | 类型 | 大小 | 范围 | 运算 |
-|------|------|------|------|
+| ------ | ------ | ------ | ------ |
 | int8 | 1 byte | [-128, 127] | +, -, *, /, % |
 | int16 | 2 bytes | [-32768, 32767] | +, -, *, /, % |
 | int32 | 4 bytes | [-2^31, 2^31-1] | +, -, *, /, % |
@@ -218,7 +218,7 @@ T(x) 表示将 x 转换为类型 T。
 **转换规则矩阵**：
 
 | From/To | int | float64 | string | []byte |
-|---------|-----|---------|--------|--------|
+| --------- | ----- | --------- | -------- | -------- |
 | int | - | OK | rune only | - |
 | float64 | truncate | - | - | - |
 | string | []rune索引 | - | - | OK (copy) |
@@ -357,7 +357,7 @@ string           -       -      -      OK      OK
 ### 6.3 类型大小与对齐
 
 | 类型 | 大小 | 对齐 | 说明 |
-|------|------|------|------|
+| ------ | ------ | ------ | ------ |
 | bool | 1 | 1 | |
 | int8/uint8 | 1 | 1 | |
 | int16/uint16 | 2 | 2 | |
@@ -501,7 +501,7 @@ func (s *Stack[T]) Pop() (T, bool) {
 ### 8.1 类型转换开销
 
 | 操作 | 相对开销 | 说明 |
-|------|----------|------|
+| ------ | ---------- | ------ |
 | 同类型赋值 | 1x | 直接复制 |
 | 数值转换 | 1-2x | CPU 指令 |
 | string <-> []byte | 5-10x | 内存分配+复制 |
@@ -630,7 +630,7 @@ func (s *Stack[T]) Pop() (T, bool) {
 1. **Pierce, B. C.** (2002). *Types and Programming Languages*. MIT Press. ISBN: 978-0262162098
 2. **Griesemer, R., et al.** (2020). Featherweight Go. *ACM OOPSLA*. DOI: [10.1145/3428217](https://doi.org/10.1145/3428217)
 3. **Cardelli, L.** (1996). Type Systems. *ACM Computing Surveys*, 28(1), 263-264. DOI: [10.1145/234313.234418](https://doi.org/10.1145/234313.234418)
-4. **Go Authors.** (2023). The Go Programming Language Specification. *Official Documentation*. https://go.dev/ref/spec
+4. **Go Authors.** (2023). The Go Programming Language Specification. *Official Documentation*. <https://go.dev/ref/spec>
 
 ### Video Tutorials
 
@@ -682,97 +682,97 @@ func (s *Stack[T]) Pop() (T, bool) {
 package memmodel_test
 
 import (
-	"sync"
-	"testing"
+ "sync"
+ "testing"
 )
 
 // BenchmarkChannelSync measures channel synchronization overhead
 func BenchmarkChannelSync(b *testing.B) {
-	ch := make(chan struct{})
-	
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		go func() {
-			ch <- struct{}{}
-		}()
-		<-ch
-	}
+ ch := make(chan struct{})
+
+ b.ResetTimer()
+ for i := 0; i < b.N; i++ {
+  go func() {
+   ch <- struct{}{}
+  }()
+  <-ch
+ }
 }
 
 // BenchmarkMutexSync measures mutex synchronization cost
 func BenchmarkMutexSync(b *testing.B) {
-	var mu sync.Mutex
-	var counter int
-	
-	b.ResetTimer()
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			mu.Lock()
-			counter++
-			mu.Unlock()
-		}
-	})
+ var mu sync.Mutex
+ var counter int
+
+ b.ResetTimer()
+ b.RunParallel(func(pb *testing.PB) {
+  for pb.Next() {
+   mu.Lock()
+   counter++
+   mu.Unlock()
+  }
+ })
 }
 
 // BenchmarkRWMutexRead measures RWMutex read performance
 func BenchmarkRWMutexRead(b *testing.B) {
-	var mu sync.RWMutex
-	data := make(map[string]int)
-	
-	b.ResetTimer()
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			mu.RLock()
-			_ = data["key"]
-			mu.RUnlock()
-		}
-	})
+ var mu sync.RWMutex
+ data := make(map[string]int)
+
+ b.ResetTimer()
+ b.RunParallel(func(pb *testing.PB) {
+  for pb.Next() {
+   mu.RLock()
+   _ = data["key"]
+   mu.RUnlock()
+  }
+ })
 }
 
 // BenchmarkAtomicOperations compares atomic vs mutex
 func BenchmarkAtomicOperations(b *testing.B) {
-	b.Run("Atomic", func(b *testing.B) {
-		var counter int64
-		b.RunParallel(func(pb *testing.PB) {
-			for pb.Next() {
-				atomic.AddInt64(&counter, 1)
-			}
-		})
-	})
-	
-	b.Run("Mutex", func(b *testing.B) {
-		var mu sync.Mutex
-		var counter int64
-		b.RunParallel(func(pb *testing.PB) {
-			for pb.Next() {
-				mu.Lock()
-				counter++
-				mu.Unlock()
-			}
-		})
-	})
+ b.Run("Atomic", func(b *testing.B) {
+  var counter int64
+  b.RunParallel(func(pb *testing.PB) {
+   for pb.Next() {
+    atomic.AddInt64(&counter, 1)
+   }
+  })
+ })
+
+ b.Run("Mutex", func(b *testing.B) {
+  var mu sync.Mutex
+  var counter int64
+  b.RunParallel(func(pb *testing.PB) {
+   for pb.Next() {
+    mu.Lock()
+    counter++
+    mu.Unlock()
+   }
+  })
+ })
 }
 
 // BenchmarkWaitGroup measures WaitGroup overhead
 func BenchmarkWaitGroup(b *testing.B) {
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		var wg sync.WaitGroup
-		wg.Add(10)
-		for j := 0; j < 10; j++ {
-			go func() {
-				defer wg.Done()
-			}()
-		}
-		wg.Wait()
-	}
+ b.ResetTimer()
+ for i := 0; i < b.N; i++ {
+  var wg sync.WaitGroup
+  wg.Add(10)
+  for j := 0; j < 10; j++ {
+   go func() {
+    defer wg.Done()
+   }()
+  }
+  wg.Wait()
+ }
 }
 ```
 
 ### 10.2 Synchronization Primitive Performance
 
 | Primitive | ns/op | CPU Cycles | Memory Fence | Scalability |
-|-----------|-------|------------|--------------|-------------|
+| ----------- | ------- | ------------ | -------------- | ------------- |
 | **Atomic Load** | 0.5 ns | 2 | Acquire | Excellent |
 | **Atomic Store** | 0.5 ns | 2 | Release | Excellent |
 | **Atomic Add** | 2 ns | 8 | Full | Excellent |
@@ -787,14 +787,14 @@ func BenchmarkWaitGroup(b *testing.B) {
 ```go
 // DataRaceDetectorBenchmark measures race detector overhead
 func BenchmarkDataRaceDetector(b *testing.B) {
-	b.Run("NoRace", func(b *testing.B) {
-		var counter int64
-		b.RunParallel(func(pb *testing.PB) {
-			for pb.Next() {
-				atomic.AddInt64(&counter, 1)
-			}
-		})
-	})
+ b.Run("NoRace", func(b *testing.B) {
+  var counter int64
+  b.RunParallel(func(pb *testing.PB) {
+   for pb.Next() {
+    atomic.AddInt64(&counter, 1)
+   }
+  })
+ })
 }
 ```
 
@@ -803,7 +803,7 @@ func BenchmarkDataRaceDetector(b *testing.B) {
 From production Go services:
 
 | Scenario | Goroutines | Latency | Throughput |
-|----------|------------|---------|------------|
+| ---------- | ------------ | --------- | ------------ |
 | HTTP Server | 10K | 1ms p99 | 100K RPS |
 | gRPC Server | 50K | 500μs p99 | 200K RPS |
 | Queue Consumer | 100 | 10ms avg | 10K msg/s |
@@ -812,7 +812,7 @@ From production Go services:
 ### 10.5 Optimization Guidelines
 
 | Pattern | Before | After | Improvement |
-|---------|--------|-------|-------------|
+| --------- | -------- | ------- | ------------- |
 | Lock-free counter | Mutex | sync/atomic | 7.5x faster |
 | Read-heavy map | Mutex | RWMutex | 2x throughput |
 | Event broadcasting | Mutex + slice | sync.Cond | 3x latency |

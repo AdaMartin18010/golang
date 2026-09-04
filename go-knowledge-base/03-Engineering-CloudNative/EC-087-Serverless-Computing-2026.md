@@ -1,9 +1,9 @@
 # EC-087-Serverless-Computing-2026
 
-> **Dimension**: 03-Engineering-CloudNative  
-> **Status**: S-Level Academic  
-> **Created**: 2026-04-03  
-> **Version**: 2026  
+> **Dimension**: 03-Engineering-CloudNative
+> **Status**: S-Level Academic
+> **Created**: 2026-04-03
+> **Version**: 2026
 > **Size**: >20KB
 
 ---
@@ -11,7 +11,7 @@
 ## 1. Serverless Platforms
 
 | Platform | Runtime | Cold Start |
-|----------|---------|------------|
+| ---------- | --------- | ------------ |
 | AWS Lambda | Go 1.26 | <100ms |
 | Azure Functions | Go 1.26 | <200ms |
 | Knative | Go 1.26 | <50ms |

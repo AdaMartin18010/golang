@@ -1,9 +1,9 @@
 # TS-033-Linux-Kernel-6-15-Features
 
-> **Dimension**: 04-Technology-Stack  
-> **Status**: S-Level Academic  
-> **Created**: 2026-04-03  
-> **Version**: Linux 6.15  
+> **Dimension**: 04-Technology-Stack
+> **Status**: S-Level Academic
+> **Created**: 2026-04-03
+> **Version**: Linux 6.15
 > **Size**: >20KB
 
 ---
@@ -43,7 +43,7 @@ Release: 2025
 ## 3. Performance
 
 | Workload | Improvement |
-|----------|-------------|
+| ---------- | ------------- |
 | Database | 5-10% |
 | Web server | 10-15% |
 | ML training | 8-12% |

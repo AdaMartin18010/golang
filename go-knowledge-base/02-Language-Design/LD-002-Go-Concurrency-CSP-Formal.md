@@ -35,7 +35,7 @@ $$P ::= \text{STOP} \mid \text{SKIP} \mid a \to P \mid P \square Q \mid P \sqcap
 **Go 映射**:
 
 | CSP | Go | 说明 |
-|-----|-----|------|
+| ----- | ----- | ------ |
 | $a \to P$ | `ch <- v; ...` | Channel 发送后继续 |
 | $P \square Q$ | `select { case <-ch1: ... case <-ch2: ... }` | 外部选择 |
 | $P \parallel Q$ | `go f()` | 并行执行 |
@@ -88,11 +88,11 @@ $$\text{ChState} = \text{Empty} \mid \text{Full}(v) \mid \text{Closed} \mid \tex
 **操作语义**:
 
 | 状态 | 操作 | 结果 | 条件 |
-|------|------|------|------|
+| ------ | ------ | ------ | ------ |
 | Empty | send(v) | Full(v) | 无缓冲 |
 | Empty | send(v) | Block | 无接收者 |
 | Full(v) | recv | Empty | 返回值 v |
-| Buffered($\vec{v}$) | send(w) | Buffered($\vec{v} \circ w$) | $|\vec{v}| < n$ |
+| Buffered($\vec{v}$) | send(w) | Buffered($\vec{v} \circ w$) | $ | \vec{v} | < n$ |
 | Any | close | Closed | - |
 | Closed | send | Panic | - |
 | Closed | recv | (zero, false) | - |
@@ -274,7 +274,7 @@ Go Concurrency
 ### 4.3 并发原语对比矩阵
 
 | 原语 | 通信 | 同步 | 阻塞 | 适用场景 | 性能 |
-|------|------|------|------|---------|------|
+| ------ | ------ | ------ | ------ | --------- | ------ |
 | **Unbuffered Chan** | 是 | 强 | 双向 | 同步协调、信号 | 高 |
 | **Buffered Chan** | 是 | 弱 | 条件 | 解耦、批处理 | 高 |
 | **Mutex** | 否 | 强 | 是 | 保护共享状态 | 极高 |
@@ -464,67 +464,67 @@ Go (2009)
 package runtime_test
 
 import (
-	"sync"
-	"sync/atomic"
-	"testing"
+ "sync"
+ "sync/atomic"
+ "testing"
 )
 
 // BenchmarkAtomicVsMutex compares atomic operations to mutex
 func BenchmarkAtomicVsMutex(b *testing.B) {
-	b.Run("AtomicAdd", func(b *testing.B) {
-		var counter int64
-		b.RunParallel(func(pb *testing.PB) {
-			for pb.Next() {
-				atomic.AddInt64(&counter, 1)
-			}
-		})
-	})
-	
-	b.Run("MutexAdd", func(b *testing.B) {
-		var mu sync.Mutex
-		var counter int64
-		b.RunParallel(func(pb *testing.PB) {
-			for pb.Next() {
-				mu.Lock()
-				counter++
-				mu.Unlock()
-			}
-		})
-	})
+ b.Run("AtomicAdd", func(b *testing.B) {
+  var counter int64
+  b.RunParallel(func(pb *testing.PB) {
+   for pb.Next() {
+    atomic.AddInt64(&counter, 1)
+   }
+  })
+ })
+
+ b.Run("MutexAdd", func(b *testing.B) {
+  var mu sync.Mutex
+  var counter int64
+  b.RunParallel(func(pb *testing.PB) {
+   for pb.Next() {
+    mu.Lock()
+    counter++
+    mu.Unlock()
+   }
+  })
+ })
 }
 
 // BenchmarkGoroutineCreation measures goroutine spawn cost
 func BenchmarkGoroutineCreation(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		done := make(chan struct{})
-		go func() {
-			close(done)
-		}()
-		<-done
-	}
+ for i := 0; i < b.N; i++ {
+  done := make(chan struct{})
+  go func() {
+   close(done)
+  }()
+  <-done
+ }
 }
 
 // BenchmarkChannelThroughput measures channel performance
 func BenchmarkChannelThroughput(b *testing.B) {
-	ch := make(chan int, 100)
-	
-	go func() {
-		for range ch {
-		}
-	}()
-	
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		ch <- i
-	}
-	close(ch)
+ ch := make(chan int, 100)
+
+ go func() {
+  for range ch {
+  }
+ }()
+
+ b.ResetTimer()
+ for i := 0; i < b.N; i++ {
+  ch <- i
+ }
+ close(ch)
 }
 ```
 
 ### 10.2 Runtime Performance Characteristics
 
 | Operation | Time | Memory | Notes |
-|-----------|------|--------|-------|
+| ----------- | ------ | -------- | ------- |
 | Goroutine spawn | ~1μs | 2KB stack | Lightweight |
 | Channel send (buffered) | ~50ns | - | Per operation |
 | Channel send (unbuffered) | ~100ns | - | Includes synchronization |
@@ -536,7 +536,7 @@ func BenchmarkChannelThroughput(b *testing.B) {
 ### 10.3 Optimization Recommendations
 
 | Area | Before | After | Speedup |
-|------|--------|-------|---------|
+| ------ | -------- | ------- | --------- |
 | Counter | sync.Mutex | sync/atomic | 7.5x |
 | String concat | + operator | strings.Builder | 100x |
 | JSON encoding | reflection | codegen | 5x |

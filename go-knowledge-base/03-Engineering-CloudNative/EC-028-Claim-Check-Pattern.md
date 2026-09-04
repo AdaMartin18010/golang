@@ -701,7 +701,7 @@ func (p *ClaimCheckProducer) PublishStream(ctx context.Context, topic string, re
 ### Performance Comparison
 
 | Metric | Direct Pub/Sub | Claim-Check | Notes |
-|--------|----------------|-------------|-------|
+| -------- | ---------------- | ------------- | ------- |
 | **Latency (small msg)** | 1-10ms | 1-10ms | No difference |
 | **Latency (large msg)** | 100-1000ms | 20-50ms + storage time | Much better |
 | **Throughput** | Limited by broker | Limited by storage | Better for large msgs |

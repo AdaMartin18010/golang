@@ -277,7 +277,7 @@ func worker(id int, jobs <-chan Job, results chan<- Result) {
 ### Memory Per Connection
 
 | Metric | Node.js | Go |
-|--------|---------|-----|
+| -------- | --------- | ----- |
 | Base Memory | 30-50MB | 5-10MB |
 | Per Connection | ~5KB (event) | ~2KB (goroutine) |
 | 100k Connections | ~500MB | ~200MB |
@@ -494,7 +494,7 @@ func main() {
 ### HTTP Server Performance
 
 | Test | Node.js (Express) | Go (net/http) | Go (Gin) |
-|------|-------------------|---------------|----------|
+| ------ | ------------------- | --------------- | ---------- |
 | Hello World RPS | 15,000 | 120,000 | 180,000 |
 | JSON Response RPS | 12,000 | 100,000 | 150,000 |
 | Latency p99 | 15ms | 2ms | 1.5ms |
@@ -506,7 +506,7 @@ func main() {
 **Database Query + JSON Response:**
 
 | Scenario | Node.js | Go | Difference |
-|----------|---------|-----|------------|
+| ---------- | --------- | ----- | ------------ |
 | Simple query | 8,000 RPS | 45,000 RPS | 5.6x |
 | 5 parallel queries | 6,000 RPS | 40,000 RPS | 6.7x |
 | With Redis caching | 20,000 RPS | 80,000 RPS | 4x |
@@ -669,7 +669,7 @@ func transferFunds(db *gorm.DB, fromID, toID uint, amount float64) error {
 ### Choose Node.js When
 
 | Criterion | Weight | Score | Rationale |
-|-----------|--------|-------|-----------|
+| ----------- | -------- | ------- | ----------- |
 | Full-stack JS | High | 10/10 | Same language frontend/backend |
 | NPM ecosystem needed | High | 10/10 | Largest package registry |
 | Rapid prototyping | High | 9/10 | Quick iteration |
@@ -680,7 +680,7 @@ func transferFunds(db *gorm.DB, fromID, toID uint, amount float64) error {
 ### Choose Go When
 
 | Criterion | Weight | Score | Rationale |
-|-----------|--------|-------|-----------|
+| ----------- | -------- | ------- | ----------- |
 | High throughput | Critical | 10/10 | 5-10x performance |
 | CPU + I/O mixed | High | 10/10 | Goroutines handle both |
 | Microservices | High | 10/10 | Small binaries, fast startup |
@@ -761,7 +761,7 @@ func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request, id string)
 #### Step 3: Pattern Mapping
 
 | Node.js | Go | Notes |
-|---------|-----|-------|
+| --------- | ----- | ------- |
 | `async/await` | Function return | Implicitly async |
 | `Promise.all` | `sync.WaitGroup` or channels | More explicit |
 | `EventEmitter` | Channels | Type-safe |
@@ -829,7 +829,7 @@ client.GetUser({ id: '123' }, (err, response) => {
 ## Summary
 
 | Aspect | Node.js | Go | Winner |
-|--------|---------|-----|--------|
+| -------- | --------- | ----- | -------- |
 | Learning Curve | Gentle | Gentle | Tie |
 | Concurrency Model | Event loop | Goroutines | Go |
 | Raw Performance | Good | Excellent | Go |

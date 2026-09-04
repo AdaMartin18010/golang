@@ -53,13 +53,13 @@
 type Context interface {
     // Deadline 返回超时时间，ok=false 表示没有设置
     Deadline() (deadline time.Time, ok bool)
-    
+
     // Done 返回一个 channel，当 Context 被取消或超时时关闭
     Done() <-chan struct{}
-    
+
     // Err 返回 Context 结束的原因
     Err() error
-    
+
     // Value 根据 key 获取存储的值
     Value(key any) any
 }
@@ -117,7 +117,7 @@ func TODO() Context {
 // cancelCtx 是可取消的 Context
 type cancelCtx struct {
     Context
-    
+
     mu       sync.Mutex
     done     atomic.Value      // chan struct{}，懒加载
     children map[canceler]struct{} // 子节点集合
@@ -136,10 +136,10 @@ func (c *cancelCtx) Done() <-chan struct{} {
     if d != nil {
         return d.(chan struct{})
     }
-    
+
     c.mu.Lock()
     defer c.mu.Unlock()
-    
+
     d = c.done.Load()
     if d == nil {
         d = make(chan struct{})
@@ -159,15 +159,15 @@ func (c *cancelCtx) cancel(removeFromParent bool, err error) {
     if err == nil {
         panic("context: internal error: missing cancel error")
     }
-    
+
     c.mu.Lock()
     if c.err != nil {
         c.mu.Unlock()
         return // 已取消
     }
-    
+
     c.err = err
-    
+
     // 关闭 done channel
     d, _ := c.done.Load().(chan struct{})
     if d == nil {
@@ -175,14 +175,14 @@ func (c *cancelCtx) cancel(removeFromParent bool, err error) {
     } else {
         close(d)
     }
-    
+
     // 递归取消子节点
     for child := range c.children {
         child.cancel(false, err)
     }
     c.children = nil
     c.mu.Unlock()
-    
+
     // 从父节点移除
     if removeFromParent {
         removeChild(c.Context, c)
@@ -210,7 +210,7 @@ func propagateCancel(parent Context, child canceler) {
         // 父节点永远不会取消
         return
     }
-    
+
     select {
     case <-done:
         // 父节点已取消
@@ -218,7 +218,7 @@ func propagateCancel(parent Context, child canceler) {
         return
     default:
     }
-    
+
     // 将 child 添加到父节点的 children 集合
     if p, ok := parentCancelCtx(parent); ok {
         p.mu.Lock()
@@ -280,25 +280,25 @@ func WithDeadline(parent Context, d time.Time) (Context, CancelFunc) {
     if parent == nil {
         panic("cannot create context from nil parent")
     }
-    
+
     // 检查父节点的 deadline
     if cur, ok := parent.Deadline(); ok && cur.Before(d) {
         // 父节点 deadline 更早，直接继承
         return WithCancel(parent)
     }
-    
+
     c := &timerCtx{
         cancelCtx: newCancelCtx(parent),
         deadline:  d,
     }
     propagateCancel(parent, c)
-    
+
     dur := time.Until(d)
     if dur <= 0 {
         c.cancel(true, DeadlineExceeded)
         return c, func() { c.cancel(false, Canceled) }
     }
-    
+
     c.mu.Lock()
     defer c.mu.Unlock()
     if c.err == nil {
@@ -306,7 +306,7 @@ func WithDeadline(parent Context, d time.Time) (Context, CancelFunc) {
             c.cancel(true, DeadlineExceeded)
         })
     }
-    
+
     return c, func() { c.cancel(true, Canceled) }
 }
 
@@ -357,18 +357,18 @@ func WithValue(parent Context, key, val any) Context {
 // 每个派生操作都会分配
 func analyzeAllocations() {
     ctx := context.Background()
-    
+
     // 分配 cancelCtx (约 48 bytes)
     ctx, cancel := context.WithCancel(ctx)
     defer cancel()
-    
+
     // 分配 timerCtx (约 72 bytes + Timer)
     ctx, cancel = context.WithTimeout(ctx, 5*time.Second)
     defer cancel()
-    
+
     // 分配 valueCtx (约 32 bytes)
     ctx = context.WithValue(ctx, "key", "value")
-    
+
     // 深度嵌套时的内存使用
     for i := 0; i < 100; i++ {
         ctx = context.WithValue(ctx, i, i) // O(n) 查找
@@ -451,7 +451,7 @@ func safeCancel(cancel context.CancelFunc) {
 // 错误：在 goroutine 之间共享 cancel 函数可能导致竞态
 func wrongPattern() {
     ctx, cancel := context.WithCancel(context.Background())
-    
+
     for i := 0; i < 10; i++ {
         go func() {
             // 错误：多个 goroutine 可能同时调用 cancel
@@ -466,7 +466,7 @@ func wrongPattern() {
 func correctPattern() {
     ctx, cancel := context.WithCancel(context.Background())
     var once sync.Once
-    
+
     for i := 0; i < 10; i++ {
         go func() {
             if someCondition() {
@@ -488,7 +488,7 @@ func correctPattern() {
 func processRequest(ctx context.Context) error {
     ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
     defer cancel() // 确保取消
-    
+
     // 处理请求...
     return nil
 }
@@ -516,14 +516,14 @@ func safeHandler(ctx context.Context) {
 // 4. 避免过度嵌套
 func flatContexts() {
     ctx := context.Background()
-    
+
     // 合并多个 value
     ctx = withMetadata(ctx, Metadata{
         TraceID: "xxx",
         UserID:  "yyy",
         SpanID:  "zzz",
     })
-    
+
     // 而不是：
     // ctx = context.WithValue(ctx, "trace_id", "xxx")
     // ctx = context.WithValue(ctx, "user_id", "yyy")
@@ -657,15 +657,15 @@ import (
 func contextMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         ctx := r.Context()
-        
+
         // 添加请求 ID
         reqID := generateRequestID()
         ctx = withRequestID(ctx, reqID)
-        
+
         // 添加超时
         ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
         defer cancel()
-        
+
         next.ServeHTTP(w, r.WithContext(ctx))
     })
 }
@@ -675,9 +675,9 @@ func loggingMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         start := time.Now()
         reqID := getRequestID(r.Context())
-        
+
         next.ServeHTTP(w, r)
-        
+
         fmt.Printf("[%s] %s %s %v\n",
             reqID,
             r.Method,
@@ -690,20 +690,20 @@ func loggingMiddleware(next http.Handler) http.Handler {
 // 处理函数
 func handler(w http.ResponseWriter, r *http.Request) {
     ctx := r.Context()
-    
+
     // 检查取消
     if err := ctx.Err(); err != nil {
         http.Error(w, err.Error(), http.StatusRequestTimeout)
         return
     }
-    
+
     // 带超时的数据库查询
     user, err := getUserWithContext(ctx, "123")
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
-    
+
     fmt.Fprintf(w, "User: %+v\n", user)
 }
 
@@ -714,14 +714,14 @@ func getUserWithContext(ctx context.Context, id string) (*User, error) {
         user *User
         err  error
     }
-    
+
     done := make(chan result, 1)
-    
+
     go func() {
         user, err := db.GetUser(id)
         done <- result{user, err}
     }()
-    
+
     select {
     case <-ctx.Done():
         return nil, ctx.Err()
@@ -759,10 +759,10 @@ func (m *mockDB) GetUser(id string) (*User, error) {
 func main() {
     mux := http.NewServeMux()
     mux.HandleFunc("/", handler)
-    
+
     // 应用中间件
     handler := contextMiddleware(loggingMiddleware(mux))
-    
+
     fmt.Println("Server started on :8080")
     http.ListenAndServe(":8080", handler)
 }
@@ -782,10 +782,10 @@ import (
 // 带取消的 pipeline
 func pipeline(ctx context.Context, inputs []int) <-chan int {
     out := make(chan int)
-    
+
     go func() {
         defer close(out)
-        
+
         for _, n := range inputs {
             select {
             case <-ctx.Done():
@@ -795,7 +795,7 @@ func pipeline(ctx context.Context, inputs []int) <-chan int {
             }
         }
     }()
-    
+
     return out
 }
 
@@ -803,28 +803,28 @@ func pipeline(ctx context.Context, inputs []int) <-chan int {
 func processWithTimeout(inputs []int, timeout time.Duration) ([]int, error) {
     ctx, cancel := context.WithTimeout(context.Background(), timeout)
     defer cancel()
-    
+
     out := pipeline(ctx, inputs)
-    
+
     var results []int
     for n := range out {
         results = append(results, n)
     }
-    
+
     if err := ctx.Err(); err != nil {
         return results, err
     }
-    
+
     return results, nil
 }
 
 func main() {
     inputs := []int{1, 2, 3, 4, 5}
-    
+
     // 成功场景
     results, err := processWithTimeout(inputs, 5*time.Second)
     fmt.Printf("Results: %v, Error: %v\n", results, err)
-    
+
     // 超时场景
     results, err = processWithTimeout(inputs, 1*time.Nanosecond)
     fmt.Printf("Results: %v, Error: %v\n", results, err)

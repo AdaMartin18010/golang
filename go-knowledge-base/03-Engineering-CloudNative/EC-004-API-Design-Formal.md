@@ -28,7 +28,7 @@ API 是一个三元组 $\langle \text{operations}, \text{types}, \text{errors} \
 RESTful API 满足以下约束：
 
 | 约束 | 形式化 | 说明 |
-|------|--------|------|
+| ------ | -------- | ------ |
 | **Client-Server** | $\text{UI} \perp \text{Data}$ | 关注点分离 |
 | **Stateless** | $\forall r: \text{Server}(r) \not\ni \text{Session}$ | 无状态 |
 | **Cacheable** | $\text{Response} \ni \text{Cache-Control}$ | 可缓存 |
@@ -37,7 +37,7 @@ RESTful API 满足以下约束：
 ### 1.2 API 质量属性
 
 | 属性 | 度量 | 目标值 |
-|------|------|--------|
+| ------ | ------ | -------- |
 | **可理解性** | Time to First Call | < 15 min |
 | **一致性** | Violations per Endpoint | 0 |
 | **可演化性** | Breaking Changes / Release | < 5% |
@@ -68,7 +68,7 @@ $$\text{Resource} = \langle \text{URI}, \text{Methods}, \text{Representation} \r
 ### 2.2 HTTP 方法语义
 
 | 方法 | 幂等性 | 安全性 | 用途 | 成功状态码 |
-|------|--------|--------|------|-----------|
+| ------ | -------- | -------- | ------ | ----------- |
 | **GET** | ✓ | ✓ | 读取资源 | 200 OK |
 | **POST** | ✗ | ✗ | 创建资源 | 201 Created |
 | **PUT** | ✓ | ✗ | 全量更新 | 200 OK |
@@ -508,7 +508,7 @@ func (h *UserHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
 ### 4.1 API 反模式
 
 | 反模式 | 症状 | 后果 | 修正 |
-|--------|------|------|------|
+| -------- | ------ | ------ | ------ |
 | **API 爆炸** | 端点数量失控 | 维护困难 | 资源建模 |
 | **不一致命名** | users vs user_list | 认知负担 | 命名规范 |
 | **过度获取** | 返回完整对象 | 性能问题 | 字段选择 |
@@ -696,7 +696,7 @@ Breaking Change Policy:
 ### 6.1 REST vs gRPC 对比
 
 | 维度 | REST (JSON) | gRPC (Protobuf) | 胜出 |
-|------|-------------|-----------------|------|
+| ------ | ------------- | ----------------- | ------ |
 | **浏览器支持** | 原生 | 需要代理 | REST |
 | **性能** | 文本，较大 | 二进制，紧凑 | gRPC |
 | **开发体验** | 灵活，弱类型 | 严格，强类型 | 平手 |
@@ -708,7 +708,7 @@ Breaking Change Policy:
 ### 6.2 版本策略选择
 
 | 策略 | 优点 | 缺点 | 适用 |
-|------|------|------|------|
+| ------ | ------ | ------ | ------ |
 | **URL Path** | 直观、可缓存 | URL 变化 | 公共 API |
 | **Header** | URL 稳定 | 不易测试 | 内部 API |
 | **Content-Type** | RESTful | 复杂 | 特殊场景 |

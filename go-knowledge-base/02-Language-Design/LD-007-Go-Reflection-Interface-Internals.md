@@ -295,7 +295,7 @@ result := m.Call([]reflect.Value{reflect.ValueOf(arg)})
 ### 5.1 操作开销
 
 | 操作 | 开销 | 说明 |
-|------|------|------|
+| ------ | ------ | ------ |
 | 接口赋值 | ~5ns | itab 缓存命中 |
 | 类型断言 | ~3ns | 直接比较 |
 | type switch | ~5ns | 跳跃表 |
@@ -778,7 +778,7 @@ Go Interface & Reflection
 ### Academic Papers
 
 1. **Kiczales, G., et al.** (1991). The Art of the Metaobject Protocol. *MIT Press*. ISBN: 978-0262610744
-2. **Go Authors.** (2023). The Laws of Reflection. *Go Blog*. https://go.dev/blog/laws-of-reflection
+2. **Go Authors.** (2023). The Laws of Reflection. *Go Blog*. <https://go.dev/blog/laws-of-reflection>
 3. **Cox, R.** (2009). Go Data Structures: Interfaces. *Go Blog*.
 4. **Pierce, B. C.** (2002). *Types and Programming Languages* (Chapter 27). MIT Press.
 

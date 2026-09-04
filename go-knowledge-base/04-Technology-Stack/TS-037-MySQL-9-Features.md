@@ -1,9 +1,9 @@
 # TS-037-MySQL-9-Features
 
-> **Dimension**: 04-Technology-Stack  
-> **Status**: S-Level Academic  
-> **Created**: 2026-04-03  
-> **Version**: MySQL 9.0  
+> **Dimension**: 04-Technology-Stack
+> **Status**: S-Level Academic
+> **Created**: 2026-04-03
+> **Version**: MySQL 9.0
 > **Size**: >20KB
 
 ---
@@ -29,8 +29,8 @@ CREATE TABLE embeddings (
     vec VECTOR(1536)
 );
 
-SELECT * FROM embeddings 
-ORDER BY vec <=> :query_vec 
+SELECT * FROM embeddings
+ORDER BY vec <=> :query_vec
 LIMIT 10;
 ```
 

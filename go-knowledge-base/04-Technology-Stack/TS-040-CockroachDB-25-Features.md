@@ -1,9 +1,9 @@
 # TS-040-CockroachDB-25-Features
 
-> **Dimension**: 04-Technology-Stack  
-> **Status**: S-Level Academic  
-> **Created**: 2026-04-03  
-> **Version**: CockroachDB 25.2  
+> **Dimension**: 04-Technology-Stack
+> **Status**: S-Level Academic
+> **Created**: 2026-04-03
+> **Version**: CockroachDB 25.2
 > **Size**: >20KB
 
 ---
@@ -25,7 +25,7 @@ CREATE TABLE documents (
 
 CREATE INDEX idx_embedding ON documents USING cspann (embedding);
 
-SELECT id, l2_distance(embedding, $1) 
+SELECT id, l2_distance(embedding, $1)
 FROM documents
 ORDER BY embedding <-> $1
 LIMIT 10;
@@ -42,7 +42,7 @@ Unified read/write authority
 ## 3. Performance
 
 | Metric | 25.1 | 25.2 | Improvement |
-|--------|------|------|-------------|
+| -------- | ------ | ------ | ------------- |
 | SQL latency | ~3ms | ~1.32ms | 56% |
 | tpmC | - | 88.1K | +41% |
 | Bulk import | - | 4x | faster |

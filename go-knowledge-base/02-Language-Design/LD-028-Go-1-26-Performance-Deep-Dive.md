@@ -13,7 +13,7 @@
 ### 1.1 Benchmarks
 
 | Workload | Improvement |
-|----------|-------------|
+| ---------- | ------------- |
 | GC overhead | 10-40% reduction |
 | cgo calls | ~30% faster |
 | Small allocations | Up to 30% faster |

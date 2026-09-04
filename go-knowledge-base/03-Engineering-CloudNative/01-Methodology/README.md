@@ -5,7 +5,7 @@
 ## 文档列表
 
 | 文档 | 内容 |
-|------|------|
+| ------ | ------ |
 | [01-Clean-Code.md](01-Clean-Code.md) | 整洁代码 |
 | [02-Design-Patterns.md](02-Design-Patterns.md) | 设计模式 |
 | [03-Testing-Strategies.md](03-Testing-Strategies.md) | 测试策略 |
@@ -732,7 +732,7 @@ volumes:
 ### 7. 监控指标
 
 | 指标名称 | 类型 | 描述 | 告警阈值 |
-|----------|------|------|----------|
+| ---------- | ------ | ------ | ---------- |
 | request_duration | Histogram | 请求处理时间 | p99 > 100ms |
 | request_total | Counter | 总请求数 | - |
 | error_total | Counter | 错误总数 | rate > 1% |

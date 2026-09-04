@@ -124,7 +124,7 @@ $$\text{err}.(*\text{NotFoundError}) \text{ ok} \Leftrightarrow \text{err 是 No
 ### 3.3 错误处理对比矩阵
 
 | 模式 | 适用场景 | 性能 | 可扩展性 | 版本要求 |
-|------|----------|------|----------|----------|
+| ------ | ---------- | ------ | ---------- | ---------- |
 | 哨兵错误 | 简单错误类型判断 | 快 | 低 | 全版本 |
 | 类型断言 | 需要错误上下文 | 中 | 中 | 全版本 |
 | errors.Is | 包装错误检查 | 中 | 高 | Go 1.13+ |
@@ -218,7 +218,7 @@ $$\text{err}.(*\text{NotFoundError}) \text{ ok} \Leftrightarrow \text{err 是 No
 ### 4.3 错误处理策略对比
 
 | 策略 | 优点 | 缺点 | 适用场景 |
-|------|------|------|----------|
+| ------ | ------ | ------ | ---------- |
 | **立即返回** | 简单、无嵌套 | 丢失上下文 | 简单函数 |
 | **包装返回** | 保留上下文链 | 堆分配 | 标准做法 |
 | **聚合错误** | 报告所有问题 | 复杂 | 验证场景 |
@@ -518,7 +518,7 @@ func isDuplicateKeyError(err error) bool {
 
 1. **Hoare, C. A. R.** (1980). The Emperor's Old Clothes. *Communications of the ACM*, 24(2), 75-83. DOI: [10.1145/358549.358561](https://doi.org/10.1145/358549.358561)
 2. **Goodenough, J. B.** (1975). Exception Handling: Issues and a Proposed Notation. *CACM*, 18(12), 683-696. DOI: [10.1145/361227.361230](https://doi.org/10.1145/361227.361230)
-3. **Go Authors.** (2023). Errors in Go. *Official Documentation*. https://go.dev/blog/go1.13-errors
+3. **Go Authors.** (2023). Errors in Go. *Official Documentation*. <https://go.dev/blog/go1.13-errors>
 4. **Cheney, D.** (2016). Don't Just Check Errors, Handle Them Gracefully. *Go Blog*.
 
 ### Video Tutorials

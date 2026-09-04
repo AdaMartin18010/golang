@@ -7,7 +7,7 @@ Cilium is an open-source software for providing, securing, and observing network
 ### 1.1 Core Capabilities
 
 | Capability | Description | eBPF Program Type |
-|------------|-------------|-------------------|
+| ------------ | ------------- | ------------------- |
 | Networking | High-performance overlay/underlay | TC/XDP |
 | Security | Identity-based L3-L7 policies | LSM/Tracepoint |
 | Observability | Hubble flow visibility | kprobe/tracepoint |
@@ -881,7 +881,7 @@ clustermesh:
 ## 7. Comparison with Alternatives
 
 | Feature | Cilium | Calico | Flannel | Weave Net |
-|---------|--------|--------|---------|-----------|
+| --------- | -------- | -------- | --------- | ----------- |
 | Data Plane | eBPF | eBPF/iptables | iptables | userspace |
 | Performance | Excellent | Good | Good | Medium |
 | Observability | Hubble | Limited | None | Limited |

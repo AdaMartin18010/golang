@@ -295,7 +295,7 @@ type Event struct {
 ### 6.1 Time Operations Cost
 
 | Operation | Approximate Cost |
-|-----------|-----------------|
+| ----------- | ----------------- |
 | time.Now() | ~20-50ns (fast) |
 | time.Since() | ~10-20ns (fast) |
 | time.Parse() | ~1-5μs (slow) |
@@ -332,7 +332,7 @@ time.AfterFunc(5*time.Second, func() {
 ## 7. Comparison with Alternatives
 
 | Approach | Pros | Cons | When to Use |
-|----------|------|------|-------------|
+| ---------- | ------ | ------ | ------------- |
 | **time.Time** | Standard, monotonic, complete | Slightly complex | All production code |
 | **Unix timestamp** | Simple, portable | No timezone info | APIs, databases |
 | **ISO 8601/RFC3339** | Human readable, standard | Parsing overhead | JSON, logging |

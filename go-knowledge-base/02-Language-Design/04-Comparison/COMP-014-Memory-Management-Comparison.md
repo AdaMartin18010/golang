@@ -861,7 +861,7 @@ public class MemoryManagementDemo
 ## Performance Comparison
 
 | Aspect | Go | Rust | Java | C++ | C | Swift | C# |
-|--------|-----|------|------|-----|---|-------|-----|
+| -------- | ----- | ------ | ------ | ----- | --- | ------- | ----- |
 | Allocation Speed | Fast | Fast | Moderate | Fast | Fast | Fast | Moderate |
 | Deallocation | GC (pause) | Deterministic | GC (pause) | Deterministic | Manual | ARC | GC (pause) |
 | Memory Overhead | 2-3x | 1x | 2-3x | 1x | 1x | 1x | 2-3x |

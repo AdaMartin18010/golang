@@ -92,7 +92,7 @@ $$
 ### 2.3 Rate Limiting Strategies
 
 | Strategy | Formula | Use Case |
-|----------|---------|----------|
+| ---------- | --------- | ---------- |
 | **Fixed Window** | $\lfloor t/W \rfloor$ | Simple, some burst allowed |
 | **Sliding Window** | Rolling count in $[t-W, t]$ | Precise, memory intensive |
 | **Token Bucket** | Burst up to $C$, sustained at $R$ | Allows burst, smooth |
@@ -752,7 +752,7 @@ func (pcl *PerClientLimiter) Allow(ctx context.Context, clientID string) bool {
 ## 5. Failure Scenarios and Mitigation
 
 | Scenario | Symptom | Cause | Mitigation |
-|----------|---------|-------|------------|
+| ---------- | --------- | ------- | ------------ |
 | **Thundering Herd** | Spike at window boundary | Fixed window reset | Use sliding window or token bucket |
 | **Clock Skew** | Inconsistent limits | Distributed clocks | NTP synchronization, monotonic clocks |
 | **Redis Failure** | All requests rejected/failed | Cache unavailability | Local fallback, circuit breaker |
@@ -831,7 +831,7 @@ func (rlm *RateLimitMiddleware) Handler(next http.Handler) http.Handler {
 ### 8.1 Configuration Guidelines
 
 | Use Case | Algorithm | Rate | Burst | Notes |
-|----------|-----------|------|-------|-------|
+| ---------- | ----------- | ------ | ------- | ------- |
 | **Public API** | Token Bucket | 100/min | 20 | Allow burst |
 | **Authenticated API** | Token Bucket | 1000/min | 100 | Higher for users |
 | **Internal Service** | Sliding Window | 10000/min | - | Precise control |

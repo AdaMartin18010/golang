@@ -293,7 +293,7 @@ func (c *Config) Validate() error {
 ## 5. Comparison with Alternatives
 
 | Library | Features | Complexity | When to Use |
-|---------|----------|------------|-------------|
+| --------- | ---------- | ------------ | ------------- |
 | **flag** | Standard, simple | Low | Simple CLIs |
 | **cobra** | Full-featured | Medium | Complex CLIs |
 | **urfave/cli** | Good features | Medium | Medium complexity |
@@ -383,7 +383,7 @@ type FlagConfig struct {
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -396,7 +396,9 @@ type FlagConfig struct {
 ### 配置优化
 
 `yaml
+
 # 生产环境推荐配置
+
 performance:
   max_connections: 1000
   buffer_pool_size: 8GB
@@ -422,7 +424,7 @@ client := NewClient(Config{
 ### 性能基准
 
 | 指标 | 数值 | 说明 |
-|------|------|------|
+| ------ | ------ | ------ |
 | 吞吐量 | 10K QPS | 单节点 |
 | 延迟 | p99 < 10ms | 本地网络 |
 | 可用性 | 99.99% | 集群模式 |
@@ -435,5 +437,5 @@ client := NewClient(Config{
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02

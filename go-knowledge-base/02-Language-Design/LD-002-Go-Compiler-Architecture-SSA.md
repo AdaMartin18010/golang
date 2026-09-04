@@ -188,7 +188,7 @@ Function
 ### 3.3 SSA 操作码
 
 | 类别 | 操作码 | 描述 |
-|------|--------|------|
+| ------ | -------- | ------ |
 | 常量 | OpConst64, OpConstString | 常量值 |
 | 算术 | OpAdd64, OpSub64, OpMul64, OpDiv64 | 算术运算 |
 | 比较 | OpLess64, OpEq64, OpGreater64 | 比较运算 |
@@ -238,7 +238,7 @@ if false {
 ### 4.2 优化决策矩阵
 
 | 优化 | 编译时开销 | 运行时收益 | 适用场景 |
-|------|------------|------------|----------|
+| ------ | ------------ | ------------ | ---------- |
 | 内联 | 中 | 高 | 小函数 |
 | 逃逸分析 | 中 | 高 | 减少 GC |
 | 常量传播 | 低 | 中 | 常量计算 |
@@ -362,7 +362,7 @@ b3:  // else
 ### 6.3 优化级别对比
 
 | 级别 | 标志 | 优化内容 | 编译时间 |
-|------|------|----------|----------|
+| ------ | ------ | ---------- | ---------- |
 | 默认 | 无 | 基本优化 | 1x |
 | 调试 | -N -l | 禁用优化和内联 | 0.8x |
 | 最大 | -l=4 | 激进内联 | 2x |
@@ -388,7 +388,7 @@ SSA 构建            15%
 ### 7.2 代码质量指标
 
 | 指标 | 测量方法 | 目标 |
-|------|----------|------|
+| ------ | ---------- | ------ |
 | 指令数 | objdump | 最小化 |
 | 分支数 | SSA 分析 | 最小化 |
 | 内存访问 | 逃逸分析 | 栈优先 |
@@ -474,7 +474,7 @@ func noWriteBarrier()
 ### Academic Papers
 
 1. **Cytron, R., et al.** (1991). Efficiently Computing Static Single Assignment Form. *ACM TOPLAS*, 13(4), 451-490. DOI: [10.1145/115372.115320](https://doi.org/10.1145/115372.115320)
-2. **Go Authors.** (2016). Go 1.7 Compiler: SSA-based Backend. *Go Blog*. https://go.dev/blog/go1.7
+2. **Go Authors.** (2016). Go 1.7 Compiler: SSA-based Backend. *Go Blog*. <https://go.dev/blog/go1.7>
 3. **Bracha, G., et al.** (1998). Making the Future Safe for the Past: Adding Genericity to the Java Programming Language. *ACM OOPSLA*. DOI: [10.1145/286936.286957](https://doi.org/10.1145/286936.286957)
 4. **Lattner, C., & Adve, V.** (2004). LLVM: A Compilation Framework for Lifelong Program Analysis. *CGO*. DOI: [10.1109/CGO.2004.1281665](https://doi.org/10.1109/CGO.2004.1281665)
 

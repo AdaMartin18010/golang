@@ -40,7 +40,7 @@ Execute(op, id) = Execute(op, id) ∘ Execute(op, id)
 ### 1.2 幂等性级别
 
 | 级别 | 定义 | 示例 |
-|------|------|------|
+| ------ | ------ | ------ |
 | **严格幂等** | 完全相同的副作用 | PUT /resource/123 {name:"foo"} |
 | **语义幂等** | 业务层面相同结果 | 支付扣款最终一致 |
 | **近似幂等** | 副作用可接受 | 日志记录重复 |
@@ -414,7 +414,7 @@ func (rr *responseRecorder) Write(p []byte) (int, error) {
 ## 4. 幂等性策略矩阵
 
 | 场景 | 策略 | 实现 | TTL |
-|------|------|------|-----|
+| ------ | ------ | ------ | ----- |
 | 支付 | 严格幂等 | 唯一约束 + 分布式锁 | 24h |
 | 订单创建 | 严格幂等 | 幂等键 + 状态机 | 1h |
 | 消息发送 | 语义幂等 | 去重窗口 | 5min |
@@ -491,13 +491,13 @@ func NewSlidingWindowDedup(window time.Duration, maxEntries int) *SlidingWindowD
 func (s *SlidingWindowDedup) IsDuplicate(key string) bool {
     s.mu.Lock()
     defer s.mu.Unlock()
-    
+
     if ts, ok := s.seen.Get(key); ok {
         if time.Since(ts.(time.Time)) < s.window {
             return true
         }
     }
-    
+
     s.seen.Add(key, time.Now())
     return false
 }
@@ -520,18 +520,18 @@ func (s *SagaStep) Execute(ctx context.Context, store Store) error {
     if err == nil && record.Status == StatusCompleted {
         return nil // 已执行
     }
-    
+
     // 执行并记录
     err = s.Action(ctx)
     if err != nil {
         return err
     }
-    
+
     store.Save(ctx, &Record{
         Key:    s.IdempotencyKey,
         Status: StatusCompleted,
     })
-    
+
     return nil
 }
 ```
@@ -542,22 +542,22 @@ func (s *SagaStep) Execute(ctx context.Context, store Store) error {
 func TestIdempotency(t *testing.T) {
     store := NewMemoryStore()
     service := NewService(store)
-    
+
     ctx := context.Background()
     key := "test-key"
-    
+
     // 第一次执行
     resp1, err1 := service.Process(ctx, key, Request{Amount: 100})
     require.NoError(t, err1)
-    
+
     // 第二次执行（幂等）
     resp2, err2 := service.Process(ctx, key, Request{Amount: 100})
     require.NoError(t, err2)
-    
+
     // 结果相同
     assert.Equal(t, resp1.TransactionID, resp2.TransactionID)
     assert.Equal(t, resp1.Status, resp2.Status)
-    
+
     // 数据库只记录一次
     count := store.GetExecutionCount(key)
     assert.Equal(t, 1, count)
@@ -566,13 +566,13 @@ func TestIdempotency(t *testing.T) {
 func TestConcurrentIdempotency(t *testing.T) {
     store := NewMemoryStore()
     service := NewService(store)
-    
+
     ctx := context.Background()
     key := "concurrent-key"
-    
+
     var wg sync.WaitGroup
     results := make(chan Response, 10)
-    
+
     // 并发请求
     for i := 0; i < 10; i++ {
         wg.Add(1)
@@ -582,10 +582,10 @@ func TestConcurrentIdempotency(t *testing.T) {
             results <- resp
         }()
     }
-    
+
     wg.Wait()
     close(results)
-    
+
     // 所有结果相同
     var firstResponse Response
     for resp := range results {
@@ -608,7 +608,7 @@ var (
         },
         []string{"operation"},
     )
-    
+
     IdempotencyMisses = prometheus.NewCounterVec(
         prometheus.CounterOpts{
             Name: "idempotency_misses_total",
@@ -616,7 +616,7 @@ var (
         },
         []string{"operation"},
     )
-    
+
     IdempotencyLockConflicts = prometheus.NewCounterVec(
         prometheus.CounterOpts{
             Name: "idempotency_lock_conflicts_total",
@@ -642,6 +642,7 @@ var (
 
 **定理 8.2 (分布式幂等性)**
 在分布式系统中，如果满足：
+
 1. 幂等键全局唯一
 2. 执行结果持久化
 3. 并发控制正确
@@ -649,6 +650,7 @@ var (
 则操作是幂等的。
 
 **证明概要**:
+
 - 唯一键确保同一请求可被识别
 - 结果持久化确保重复返回相同结果
 - 并发控制确保状态转换原子性

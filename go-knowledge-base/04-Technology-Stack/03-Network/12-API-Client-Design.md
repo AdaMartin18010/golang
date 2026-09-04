@@ -4,6 +4,7 @@
 > **级别**: S (16+ KB)
 > **标签**: #api-client #http-client #golang #resilience #patterns #circuit-breaker
 > **权威来源**:
+>
 > - [Go HTTP Client Best Practices](https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779) - Medium
 > - [Resilience Patterns](https://docs.microsoft.com/en-us/azure/architecture/patterns/category/resiliency) - Microsoft Azure
 
@@ -108,7 +109,7 @@ func New(config Config, auth AuthProvider) (*Client, error) {
         TLSHandshakeTimeout: 10 * time.Second,
         ExpectContinueTimeout: 1 * time.Second,
     }
-    
+
     return &Client{
         httpClient: &http.Client{
             Timeout:   config.Timeout,
@@ -162,25 +163,25 @@ func (rb *RequestBuilder) Execute(ctx context.Context, result interface{}) error
 // Do the actual request with retries
 func (c *Client) do(ctx context.Context, rb *RequestBuilder, result interface{}) error {
     var lastErr error
-    
+
     for attempt := 0; attempt <= c.config.MaxRetries; attempt++ {
         if attempt > 0 {
             time.Sleep(c.config.RetryDelay * time.Duration(attempt))
         }
-        
+
         err := c.executeOnce(ctx, rb, result)
         if err == nil {
             return nil
         }
-        
+
         lastErr = err
-        
+
         // Don't retry on client errors (4xx)
         if apiErr, ok := err.(*APIError); ok && apiErr.StatusCode >= 400 && apiErr.StatusCode < 500 {
             return err
         }
     }
-    
+
     return fmt.Errorf("max retries exceeded: %w", lastErr)
 }
 
@@ -191,7 +192,7 @@ func (c *Client) executeOnce(ctx context.Context, rb *RequestBuilder, result int
         return err
     }
     u.RawQuery = rb.query.Encode()
-    
+
     // Build body
     var bodyReader io.Reader
     if rb.body != nil {
@@ -201,13 +202,13 @@ func (c *Client) executeOnce(ctx context.Context, rb *RequestBuilder, result int
         }
         bodyReader = bytes.NewReader(bodyBytes)
     }
-    
+
     // Create request
     req, err := http.NewRequestWithContext(ctx, rb.method, u.String(), bodyReader)
     if err != nil {
         return err
     }
-    
+
     // Set headers
     req.Header.Set("Content-Type", "application/json")
     req.Header.Set("Accept", "application/json")
@@ -216,27 +217,27 @@ func (c *Client) executeOnce(ctx context.Context, rb *RequestBuilder, result int
             req.Header.Add(key, value)
         }
     }
-    
+
     // Apply authentication
     if c.auth != nil {
         if err := c.auth.Apply(req); err != nil {
             return err
         }
     }
-    
+
     // Execute
     resp, err := c.httpClient.Do(req)
     if err != nil {
         return err
     }
     defer resp.Body.Close()
-    
+
     // Read response body
     respBody, err := io.ReadAll(resp.Body)
     if err != nil {
         return err
     }
-    
+
     // Check status
     if resp.StatusCode >= 400 {
         return &APIError{
@@ -245,14 +246,14 @@ func (c *Client) executeOnce(ctx context.Context, rb *RequestBuilder, result int
             Message:    fmt.Sprintf("API error: %s", resp.Status),
         }
     }
-    
+
     // Parse result
     if result != nil && len(respBody) > 0 {
         if err := json.Unmarshal(respBody, result); err != nil {
             return err
         }
     }
-    
+
     return nil
 }
 
@@ -293,7 +294,7 @@ type CircuitBreaker struct {
     failureThreshold int
     successThreshold int
     timeout          time.Duration
-    
+
     state          CircuitState
     failures       int
     successes      int
@@ -312,7 +313,7 @@ func NewCircuitBreaker(failureThreshold, successThreshold int, timeout time.Dura
 
 func (cb *CircuitBreaker) Call(fn func() error) error {
     cb.mu.Lock()
-    
+
     switch cb.state {
     case StateOpen:
         if time.Since(cb.lastFailure) > cb.timeout {
@@ -326,27 +327,27 @@ func (cb *CircuitBreaker) Call(fn func() error) error {
     case StateHalfOpen:
         // Continue to execute
     }
-    
+
     cb.mu.Unlock()
-    
+
     err := fn()
-    
+
     cb.mu.Lock()
     defer cb.mu.Unlock()
-    
+
     if err != nil {
         cb.recordFailure()
     } else {
         cb.recordSuccess()
     }
-    
+
     return err
 }
 
 func (cb *CircuitBreaker) recordFailure() {
     cb.failures++
     cb.lastFailure = time.Now()
-    
+
     switch cb.state {
     case StateClosed:
         if cb.failures >= cb.failureThreshold {
@@ -359,7 +360,7 @@ func (cb *CircuitBreaker) recordFailure() {
 
 func (cb *CircuitBreaker) recordSuccess() {
     cb.successes++
-    
+
     switch cb.state {
     case StateHalfOpen:
         if cb.successes >= cb.successThreshold {
@@ -414,51 +415,51 @@ func (rc *RetryConfig) CalculateDelay(attempt int) time.Duration {
     if attempt <= 0 {
         return 0
     }
-    
+
     // Exponential backoff
     delay := float64(rc.BaseDelay) * math.Pow(rc.Multiplier, float64(attempt-1))
-    
+
     // Cap at max delay
     if delay > float64(rc.MaxDelay) {
         delay = float64(rc.MaxDelay)
     }
-    
+
     // Add jitter
     if rc.Jitter > 0 {
         jitter := delay * rc.Jitter * (rand.Float64()*2 - 1)
         delay += jitter
     }
-    
+
     return time.Duration(delay)
 }
 
 func RetryWithConfig(ctx context.Context, config RetryConfig, fn func() error) error {
     var lastErr error
-    
+
     for attempt := 0; attempt <= config.MaxRetries; attempt++ {
         if attempt > 0 {
             delay := config.CalculateDelay(attempt)
-            
+
             select {
             case <-time.After(delay):
             case <-ctx.Done():
                 return ctx.Err()
             }
         }
-        
+
         err := fn()
         if err == nil {
             return nil
         }
-        
+
         lastErr = err
-        
+
         // Check if error is retryable
         if !isRetryableError(err) {
             return err
         }
     }
-    
+
     return lastErr
 }
 
@@ -466,7 +467,7 @@ func isRetryableError(err error) bool {
     if err == nil {
         return false
     }
-    
+
     // Check for specific retryable errors
     errStr := err.Error()
     retryableErrors := []string{
@@ -478,13 +479,13 @@ func isRetryableError(err error) bool {
         "too many requests",
         "service unavailable",
     }
-    
+
     for _, retryable := range retryableErrors {
         if contains(errStr, retryable) {
             return true
         }
     }
-    
+
     return false
 }
 ```

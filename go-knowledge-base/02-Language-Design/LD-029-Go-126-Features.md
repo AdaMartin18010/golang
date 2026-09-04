@@ -51,7 +51,7 @@ if netErr, ok := errors.AsType[*NetworkError](err); ok {
 ## 3. Performance
 
 | Operation | Improvement |
-|-----------|-------------|
+| ----------- | ------------- |
 | GC | 10-40% |
 | cgo | 30% |
 | Small alloc | 30% |

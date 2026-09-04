@@ -260,7 +260,7 @@ func consumeWithManualCommit(consumer sarama.ConsumerGroup) {
 ## 性能优化
 
 | 优化项 | 配置 | 说明 |
-|--------|------|------|
+| -------- | ------ | ------ |
 | 批量发送 | `linger.ms=5`, `batch.size=16384` | 提高吞吐量 |
 | 压缩 | `compression.type=zstd` | 减少网络/磁盘 |
 | 零拷贝 | 自动启用 | 传输优化 |
@@ -285,37 +285,37 @@ func consumeWithManualCommit(consumer sarama.ConsumerGroup) {
 package techstack_test
 
 import (
-	"context"
-	"testing"
-	"time"
+ "context"
+ "testing"
+ "time"
 )
 
 // BenchmarkBasicOperation measures baseline performance
 func BenchmarkBasicOperation(b *testing.B) {
-	ctx := context.Background()
-	
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_ = ctx
-		// Simulate operation
-	}
+ ctx := context.Background()
+
+ b.ResetTimer()
+ for i := 0; i < b.N; i++ {
+  _ = ctx
+  // Simulate operation
+ }
 }
 
 // BenchmarkConcurrentLoad tests concurrent operations
 func BenchmarkConcurrentLoad(b *testing.B) {
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			// Simulate concurrent operation
-			time.Sleep(1 * time.Microsecond)
-		}
-	})
+ b.RunParallel(func(pb *testing.PB) {
+  for pb.Next() {
+   // Simulate concurrent operation
+   time.Sleep(1 * time.Microsecond)
+  }
+ })
 }
 ```
 
 ### 10.2 Performance Characteristics
 
 | Operation | Latency | Throughput | Resource Usage |
-|-----------|---------|------------|----------------|
+| ----------- | --------- | ------------ | ---------------- |
 | **Simple** | 1ms | 1K RPS | Low |
 | **Complex** | 10ms | 100 RPS | Medium |
 | **Batch** | 100ms | 10K records | High |
@@ -323,7 +323,7 @@ func BenchmarkConcurrentLoad(b *testing.B) {
 ### 10.3 Production Metrics
 
 | Metric | Target | Alert | Critical |
-|--------|--------|-------|----------|
+| -------- | -------- | ------- | ---------- |
 | Latency p99 | < 100ms | > 200ms | > 500ms |
 | Error Rate | < 0.1% | > 0.5% | > 1% |
 | Throughput | > 1K | < 500 | < 100 |

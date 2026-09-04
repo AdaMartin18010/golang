@@ -792,7 +792,7 @@ func (p *IdempotentStreamProducer) ProduceWithRetry(ctx context.Context, values 
 ### 7.4 Performance Improvements in Redis 8.6
 
 | Feature | Improvement |
-|---------|-------------|
+| --------- | ------------- |
 | Memory Reduction | 30-50% for hashes and sorted sets |
 | Vector Sets | SIMD optimizations for vector operations |
 | I/O Threads | Improved multi-threading efficiency |

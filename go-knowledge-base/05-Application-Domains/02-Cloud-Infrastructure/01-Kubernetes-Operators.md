@@ -11,7 +11,7 @@
 ### 1.1 Operator vs Manual Management
 
 | Aspect | Manual Management | Operator Pattern |
-|--------|-------------------|------------------|
+| -------- | ------------------- | ------------------ |
 | Deployment | kubectl apply | Automated, GitOps-ready |
 | Scaling | Manual replica changes | HPA integration, custom metrics |
 | Upgrades | Manual version updates | Rolling upgrades with verification |
@@ -197,7 +197,7 @@
 ### 3.1 Controller Performance Optimization
 
 | Technique | Before | After | Benefit |
-|-----------|--------|-------|---------|
+| ----------- | -------- | ------- | --------- |
 | Rate Limiting | Unbounded reconcile | Max 10/sec | Prevents thundering herd |
 | Worker Pool | Single worker | 10 workers | Parallel processing |
 | Predicate Filtering | All events processed | Filter irrelevant | Reduced CPU |
@@ -287,7 +287,7 @@ func (p DatabasePredicate) Delete(e event.DeleteEvent) bool {
 ### 4.1 Operator Development Tools
 
 | Tool | Purpose | Maturity | Learning Curve |
-|------|---------|----------|----------------|
+| ------ | --------- | ---------- | ---------------- |
 | Kubebuilder | Scaffold and build operators | Production | Medium |
 | Operator SDK | Red Hat's operator framework | Production | Medium |
 | Controller-runtime | Core controller library | Production | High |
@@ -1008,7 +1008,7 @@ func (r *Database) validateDatabase() error {
 ### 8.1 Operator Security Checklist
 
 | Category | Requirement | Implementation |
-|----------|-------------|----------------|
+| ---------- | ------------- | ---------------- |
 | RBAC | Least privilege | Specific verbs on specific resources |
 | Secrets | Encryption at rest | Kubernetes secret encryption |
 | Images | Signed images | Cosign/Notary verification |

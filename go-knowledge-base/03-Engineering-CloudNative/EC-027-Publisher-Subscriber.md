@@ -721,7 +721,7 @@ func (eb *EventBus) Start() error {
 ### Pub/Sub vs Direct Communication
 
 | Aspect | Pub/Sub | Direct (HTTP/gRPC) | Notes |
-|--------|---------|-------------------|-------|
+| -------- | --------- | ------------------- | ------- |
 | **Coupling** | Loose | Tight | Pub/Sub decouples in time and space |
 | **Latency** | Higher (ms) | Lower (μs-ms) | Pub/Sub adds broker hop |
 | **Reliability** | Higher | Lower | Broker persists messages |

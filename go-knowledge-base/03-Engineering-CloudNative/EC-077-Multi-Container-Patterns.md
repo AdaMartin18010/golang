@@ -503,7 +503,7 @@ spec:
 ### 2.3 Sidecar Pattern Decision Matrix
 
 | Pattern | Use Case | Implementation | Kubernetes Version |
-|---------|----------|----------------|-------------------|
+| --------- | ---------- | ---------------- | ------------------- |
 | **Service Mesh** | mTLS, traffic management | Istio/Linkerd as native sidecar | 1.28+ (1.33 stable) |
 | **Observability** | Metrics, logging, tracing | Prometheus exporter, Fluent Bit | 1.28+ (1.33 stable) |
 | **Configuration** | Dynamic config reloading | Config reloader sidecar | 1.28+ (1.33 stable) |
@@ -1697,7 +1697,7 @@ spec:
 ### 7.2 Pattern Comparison Matrix
 
 | Aspect | Sidecar | Init Container | Ambassador | Adapter | Config Helper |
-|--------|---------|----------------|------------|---------|---------------|
+| -------- | --------- | ---------------- | ------------ | --------- | --------------- |
 | **Lifecycle** | Parallel to app | Before app starts | Parallel to app | Parallel to app | Init or parallel |
 | **Primary Use** | Cross-cutting concerns | Setup/teardown | Connection proxy | Protocol translation | Config management |
 | **Restart** | Independent (1.33+) | Never (or Always for native sidecar) | Independent | Independent | As configured |

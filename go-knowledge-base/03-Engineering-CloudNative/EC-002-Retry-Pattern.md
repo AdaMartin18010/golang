@@ -99,7 +99,7 @@ $$
 **Error Classification:**
 
 | Error Type | Retry? | Examples |
-|------------|--------|----------|
+| ------------ | -------- | ---------- |
 | **Network** | Yes | Timeout, connection refused, DNS failure |
 | **HTTP 5xx** | Yes | Server errors, gateway timeout |
 | **HTTP 429** | Yes (with backoff) | Rate limited, too many requests |
@@ -933,7 +933,7 @@ func GenerateIdempotencyKey(data ...string) string {
 ### 5.1 Common Retry Failures
 
 | Scenario | Symptom | Root Cause | Mitigation |
-|----------|---------|------------|------------|
+| ---------- | --------- | ------------ | ------------ |
 | **Retry Storm** | Service overwhelmed during recovery | Too many clients retry simultaneously | Add jitter, use circuit breakers |
 | **Infinite Retry** | Resource exhaustion | Missing attempt limit | Always set MaxAttempts |
 | **Non-Idempotent Retry** | Data corruption | Retrying non-idempotent operations | Check idempotency before retry |
@@ -1096,7 +1096,7 @@ func (tr *TracedRetry) Do(ctx context.Context, fn func() error) error {
 ### 8.1 Configuration Matrix
 
 | Scenario | MaxAttempts | InitialDelay | Strategy | Notes |
-|----------|-------------|--------------|----------|-------|
+| ---------- | ------------- | -------------- | ---------- | ------- |
 | **Fast API** | 3 | 50ms | EqualJitter | Quick recovery expected |
 | **Database** | 5 | 100ms | Exponential | Connection issues common |
 | **External API** | 3 | 1s | FullJitter | Respect rate limits |
@@ -1153,109 +1153,109 @@ Should I Retry?
 package retry_test
 
 import (
-	"context"
-	"errors"
-	"testing"
-	"time"
-	
-	"github.com/example/retry"
+ "context"
+ "errors"
+ "testing"
+ "time"
+
+ "github.com/example/retry"
 )
 
 // BenchmarkRetrySuccessFirstAttempt measures overhead with no retries
 func BenchmarkRetrySuccessFirstAttempt(b *testing.B) {
-	policy := retry.DefaultPolicy()
-	retrier, _ := retry.NewRetrier(policy, nil, nil)
-	ctx := context.Background()
-	
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_ = retrier.Do(ctx, func() error {
-			return nil
-		})
-	}
+ policy := retry.DefaultPolicy()
+ retrier, _ := retry.NewRetrier(policy, nil, nil)
+ ctx := context.Background()
+
+ b.ResetTimer()
+ for i := 0; i < b.N; i++ {
+  _ = retrier.Do(ctx, func() error {
+   return nil
+  })
+ }
 }
 
 // BenchmarkRetryWithBackoff measures retry with exponential backoff
 func BenchmarkRetryWithBackoff(b *testing.B) {
-	policy := retry.Policy{
-		MaxAttempts:     3,
-		InitialDelay:    1 * time.Millisecond,
-		MaxDelay:        10 * time.Millisecond,
-		BackoffStrategy: retry.ExponentialBackoffWithJitter,
-	}
-	retrier, _ := retry.NewRetrier(policy, nil, nil)
-	ctx := context.Background()
-	attempts := 0
-	
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		attempts = 0
-		_ = retrier.Do(ctx, func() error {
-			attempts++
-			if attempts < 3 {
-				return errors.New("transient error")
-			}
-			return nil
-		})
-	}
+ policy := retry.Policy{
+  MaxAttempts:     3,
+  InitialDelay:    1 * time.Millisecond,
+  MaxDelay:        10 * time.Millisecond,
+  BackoffStrategy: retry.ExponentialBackoffWithJitter,
+ }
+ retrier, _ := retry.NewRetrier(policy, nil, nil)
+ ctx := context.Background()
+ attempts := 0
+
+ b.ResetTimer()
+ for i := 0; i < b.N; i++ {
+  attempts = 0
+  _ = retrier.Do(ctx, func() error {
+   attempts++
+   if attempts < 3 {
+    return errors.New("transient error")
+   }
+   return nil
+  })
+ }
 }
 
 // BenchmarkRetryParallel measures concurrent retry performance
 func BenchmarkRetryParallel(b *testing.B) {
-	policy := retry.DefaultPolicy()
-	retrier, _ := retry.NewRetrier(policy, nil, nil)
-	ctx := context.Background()
-	
-	b.ResetTimer()
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			_ = retrier.Do(ctx, func() error {
-				return nil
-			})
-		}
-	})
+ policy := retry.DefaultPolicy()
+ retrier, _ := retry.NewRetrier(policy, nil, nil)
+ ctx := context.Background()
+
+ b.ResetTimer()
+ b.RunParallel(func(pb *testing.PB) {
+  for pb.Next() {
+   _ = retrier.Do(ctx, func() error {
+    return nil
+   })
+  }
+ })
 }
 
 // BenchmarkDifferentBackoffStrategies compares backoff algorithms
 func BenchmarkDifferentBackoffStrategies(b *testing.B) {
-	strategies := map[string]retry.BackoffStrategy{
-		"Fixed":     retry.FixedBackoff,
-		"Linear":    retry.LinearBackoff,
-		"Exponential": retry.ExponentialBackoff,
-		"Jitter":    retry.ExponentialBackoffWithJitter,
-	}
-	
-	for name, strategy := range strategies {
-		b.Run(name, func(b *testing.B) {
-			policy := retry.Policy{
-				MaxAttempts:     3,
-				InitialDelay:    1 * time.Millisecond,
-				MaxDelay:        100 * time.Millisecond,
-				BackoffStrategy: strategy,
-			}
-			retrier, _ := retry.NewRetrier(policy, nil, nil)
-			ctx := context.Background()
-			
-			b.ResetTimer()
-			for i := 0; i < b.N; i++ {
-				attempts := 0
-				_ = retrier.Do(ctx, func() error {
-					attempts++
-					if attempts < 3 {
-						return errors.New("error")
-					}
-					return nil
-				})
-			}
-		})
-	}
+ strategies := map[string]retry.BackoffStrategy{
+  "Fixed":     retry.FixedBackoff,
+  "Linear":    retry.LinearBackoff,
+  "Exponential": retry.ExponentialBackoff,
+  "Jitter":    retry.ExponentialBackoffWithJitter,
+ }
+
+ for name, strategy := range strategies {
+  b.Run(name, func(b *testing.B) {
+   policy := retry.Policy{
+    MaxAttempts:     3,
+    InitialDelay:    1 * time.Millisecond,
+    MaxDelay:        100 * time.Millisecond,
+    BackoffStrategy: strategy,
+   }
+   retrier, _ := retry.NewRetrier(policy, nil, nil)
+   ctx := context.Background()
+
+   b.ResetTimer()
+   for i := 0; i < b.N; i++ {
+    attempts := 0
+    _ = retrier.Do(ctx, func() error {
+     attempts++
+     if attempts < 3 {
+      return errors.New("error")
+     }
+     return nil
+    })
+   }
+  })
+ }
 }
 ```
 
 ### 7.2 Backoff Strategy Performance
 
 | Strategy | Avg Delay | Jitter Range | CPU Usage | Use Case |
-|----------|-----------|--------------|-----------|----------|
+| ---------- | ----------- | -------------- | ----------- | ---------- |
 | **Fixed** | 100ms | 0ms | Low | Predictable delays |
 | **Linear** | 500ms | 0ms | Low | Steady increase |
 | **Exponential** | 700ms | 0ms | Low | Aggressive backoff |
@@ -1268,7 +1268,7 @@ func BenchmarkDifferentBackoffStrategies(b *testing.B) {
 From 100M retry operations across production services:
 
 | Metric | Value | Notes |
-|--------|-------|-------|
+| -------- | ------- | ------- |
 | Success Rate (1st attempt) | 94.5% | Healthy services |
 | Success Rate (after retry) | 99.7% | With 3 attempts |
 | Avg Attempts per Operation | 1.08 | Most succeed first try |
@@ -1296,7 +1296,7 @@ var OptimizedConfig = retry.Policy{
 ```
 
 | Optimization | Latency Reduction | Complexity | Recommendation |
-|-------------|-------------------|------------|----------------|
+| ------------- | ------------------- | ------------ | ---------------- |
 | Pre-allocate error channels | 15% | Low | Must implement |
 | Use sync.Pool for context | 8% | Low | Recommended |
 | JIT backoff calculation | 12% | Medium | For high RPS |

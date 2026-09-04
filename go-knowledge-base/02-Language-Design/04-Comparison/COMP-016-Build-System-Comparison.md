@@ -533,7 +533,7 @@ cmake --test --preset=release
 ## Comparison Matrix
 
 | Feature | Go | Cargo | npm | Maven | Gradle | Poetry | CMake |
-|---------|-----|-------|-----|-------|--------|--------|-------|
+| --------- | ----- | ------- | ----- | ------- | -------- | -------- | ------- |
 | Configuration | go.mod | Cargo.toml | package.json | pom.xml | build.gradle | pyproject.toml | CMakeLists.txt |
 | Lock File | go.sum | Cargo.lock | package-lock.json | N/A | gradle.lockfile | poetry.lock | N/A |
 | Central Registry | No (VCS) | crates.io | npmjs.com | Maven Central | Maven Central | PyPI | N/A |

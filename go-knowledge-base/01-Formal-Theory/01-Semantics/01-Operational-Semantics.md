@@ -3,6 +3,7 @@
 ## 40. Additional Topic 40
 
 ### 40.1 Definition
+
 **Definition 40.1**
 Formal definition with mathematical notation.
 
@@ -16,6 +17,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 40.2 Code
+
 ```go
 func Example40() {
     x := 40
@@ -30,6 +32,7 @@ func Example40() {
 ## 41. Additional Topic 41
 
 ### 41.1 Definition
+
 **Definition 41.1**
 Formal definition with mathematical notation.
 
@@ -43,6 +46,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 41.2 Code
+
 ```go
 func Example41() {
     x := 41
@@ -57,6 +61,7 @@ func Example41() {
 ## 42. Additional Topic 42
 
 ### 42.1 Definition
+
 **Definition 42.1**
 Formal definition with mathematical notation.
 
@@ -70,6 +75,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 42.2 Code
+
 ```go
 func Example42() {
     x := 42
@@ -84,6 +90,7 @@ func Example42() {
 ## 43. Additional Topic 43
 
 ### 43.1 Definition
+
 **Definition 43.1**
 Formal definition with mathematical notation.
 
@@ -97,6 +104,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 43.2 Code
+
 ```go
 func Example43() {
     x := 43
@@ -111,6 +119,7 @@ func Example43() {
 ## 44. Additional Topic 44
 
 ### 44.1 Definition
+
 **Definition 44.1**
 Formal definition with mathematical notation.
 
@@ -124,6 +133,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 44.2 Code
+
 ```go
 func Example44() {
     x := 44
@@ -138,6 +148,7 @@ func Example44() {
 ## 45. Additional Topic 45
 
 ### 45.1 Definition
+
 **Definition 45.1**
 Formal definition with mathematical notation.
 
@@ -151,6 +162,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 45.2 Code
+
 ```go
 func Example45() {
     x := 45
@@ -165,6 +177,7 @@ func Example45() {
 ## 46. Additional Topic 46
 
 ### 46.1 Definition
+
 **Definition 46.1**
 Formal definition with mathematical notation.
 
@@ -178,6 +191,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 46.2 Code
+
 ```go
 func Example46() {
     x := 46
@@ -192,6 +206,7 @@ func Example46() {
 ## 47. Additional Topic 47
 
 ### 47.1 Definition
+
 **Definition 47.1**
 Formal definition with mathematical notation.
 
@@ -205,6 +220,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 47.2 Code
+
 ```go
 func Example47() {
     x := 47
@@ -219,6 +235,7 @@ func Example47() {
 ## 48. Additional Topic 48
 
 ### 48.1 Definition
+
 **Definition 48.1**
 Formal definition with mathematical notation.
 
@@ -232,6 +249,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 48.2 Code
+
 ```go
 func Example48() {
     x := 48
@@ -246,6 +264,7 @@ func Example48() {
 ## 49. Additional Topic 49
 
 ### 49.1 Definition
+
 **Definition 49.1**
 Formal definition with mathematical notation.
 
@@ -259,6 +278,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 49.2 Code
+
 ```go
 func Example49() {
     x := 49
@@ -273,6 +293,7 @@ func Example49() {
 ## 50. Additional Topic 50
 
 ### 50.1 Definition
+
 **Definition 50.1**
 Formal definition with mathematical notation.
 
@@ -286,6 +307,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 50.2 Code
+
 ```go
 func Example50() {
     x := 50
@@ -300,6 +322,7 @@ func Example50() {
 ## 51. Additional Topic 51
 
 ### 51.1 Definition
+
 **Definition 51.1**
 Formal definition with mathematical notation.
 
@@ -313,6 +336,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 51.2 Code
+
 ```go
 func Example51() {
     x := 51
@@ -327,6 +351,7 @@ func Example51() {
 ## 52. Additional Topic 52
 
 ### 52.1 Definition
+
 **Definition 52.1**
 Formal definition with mathematical notation.
 
@@ -340,6 +365,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 52.2 Code
+
 ```go
 func Example52() {
     x := 52
@@ -354,6 +380,7 @@ func Example52() {
 ## 53. Additional Topic 53
 
 ### 53.1 Definition
+
 **Definition 53.1**
 Formal definition with mathematical notation.
 
@@ -367,6 +394,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 53.2 Code
+
 ```go
 func Example53() {
     x := 53
@@ -381,6 +409,7 @@ func Example53() {
 ## 54. Additional Topic 54
 
 ### 54.1 Definition
+
 **Definition 54.1**
 Formal definition with mathematical notation.
 
@@ -394,6 +423,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 54.2 Code
+
 ```go
 func Example54() {
     x := 54
@@ -408,6 +438,7 @@ func Example54() {
 ## 55. Additional Topic 55
 
 ### 55.1 Definition
+
 **Definition 55.1**
 Formal definition with mathematical notation.
 
@@ -421,6 +452,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 55.2 Code
+
 ```go
 func Example55() {
     x := 55
@@ -435,6 +467,7 @@ func Example55() {
 ## 56. Additional Topic 56
 
 ### 56.1 Definition
+
 **Definition 56.1**
 Formal definition with mathematical notation.
 
@@ -448,6 +481,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 56.2 Code
+
 ```go
 func Example56() {
     x := 56
@@ -462,6 +496,7 @@ func Example56() {
 ## 57. Additional Topic 57
 
 ### 57.1 Definition
+
 **Definition 57.1**
 Formal definition with mathematical notation.
 
@@ -475,6 +510,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 57.2 Code
+
 ```go
 func Example57() {
     x := 57
@@ -489,6 +525,7 @@ func Example57() {
 ## 58. Additional Topic 58
 
 ### 58.1 Definition
+
 **Definition 58.1**
 Formal definition with mathematical notation.
 
@@ -502,6 +539,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 58.2 Code
+
 ```go
 func Example58() {
     x := 58
@@ -516,6 +554,7 @@ func Example58() {
 ## 59. Additional Topic 59
 
 ### 59.1 Definition
+
 **Definition 59.1**
 Formal definition with mathematical notation.
 
@@ -529,6 +568,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 59.2 Code
+
 ```go
 func Example59() {
     x := 59
@@ -543,6 +583,7 @@ func Example59() {
 ## 60. Additional Topic 60
 
 ### 60.1 Definition
+
 **Definition 60.1**
 Formal definition with mathematical notation.
 
@@ -556,6 +597,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 60.2 Code
+
 ```go
 func Example60() {
     x := 60
@@ -570,6 +612,7 @@ func Example60() {
 ## 61. Additional Topic 61
 
 ### 61.1 Definition
+
 **Definition 61.1**
 Formal definition with mathematical notation.
 
@@ -583,6 +626,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 61.2 Code
+
 ```go
 func Example61() {
     x := 61
@@ -597,6 +641,7 @@ func Example61() {
 ## 62. Additional Topic 62
 
 ### 62.1 Definition
+
 **Definition 62.1**
 Formal definition with mathematical notation.
 
@@ -610,6 +655,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 62.2 Code
+
 ```go
 func Example62() {
     x := 62
@@ -624,6 +670,7 @@ func Example62() {
 ## 63. Additional Topic 63
 
 ### 63.1 Definition
+
 **Definition 63.1**
 Formal definition with mathematical notation.
 
@@ -637,6 +684,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 63.2 Code
+
 ```go
 func Example63() {
     x := 63
@@ -651,6 +699,7 @@ func Example63() {
 ## 64. Additional Topic 64
 
 ### 64.1 Definition
+
 **Definition 64.1**
 Formal definition with mathematical notation.
 
@@ -664,6 +713,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 64.2 Code
+
 ```go
 func Example64() {
     x := 64
@@ -678,6 +728,7 @@ func Example64() {
 ## 65. Additional Topic 65
 
 ### 65.1 Definition
+
 **Definition 65.1**
 Formal definition with mathematical notation.
 
@@ -691,6 +742,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 65.2 Code
+
 ```go
 func Example65() {
     x := 65
@@ -705,6 +757,7 @@ func Example65() {
 ## 66. Additional Topic 66
 
 ### 66.1 Definition
+
 **Definition 66.1**
 Formal definition with mathematical notation.
 
@@ -718,6 +771,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 66.2 Code
+
 ```go
 func Example66() {
     x := 66
@@ -732,6 +786,7 @@ func Example66() {
 ## 67. Additional Topic 67
 
 ### 67.1 Definition
+
 **Definition 67.1**
 Formal definition with mathematical notation.
 
@@ -745,6 +800,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 67.2 Code
+
 ```go
 func Example67() {
     x := 67
@@ -759,6 +815,7 @@ func Example67() {
 ## 68. Additional Topic 68
 
 ### 68.1 Definition
+
 **Definition 68.1**
 Formal definition with mathematical notation.
 
@@ -772,6 +829,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 68.2 Code
+
 ```go
 func Example68() {
     x := 68
@@ -786,6 +844,7 @@ func Example68() {
 ## 69. Additional Topic 69
 
 ### 69.1 Definition
+
 **Definition 69.1**
 Formal definition with mathematical notation.
 
@@ -799,6 +858,7 @@ Property holds.
 *Proof*: By induction. $\square$
 
 ### 69.2 Code
+
 ```go
 func Example69() {
     x := 69

@@ -624,7 +624,7 @@ SafeGo(func() {
 ### 5.3 性能优化建议
 
 | 场景 | 建议 |
-|------|------|
+| ------ | ------ |
 | 高频创建goroutine | 使用worker pool |
 | 大量channel操作 | 考虑batch处理 |
 | 共享数据读多写少 | 使用sync.Map |

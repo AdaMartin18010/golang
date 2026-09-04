@@ -303,7 +303,7 @@ func createNATSConnection() (*nats.Conn, error) {
 ## 5. Comparison with Alternatives
 
 | Feature | NATS | Kafka | RabbitMQ | Redis Pub/Sub |
-|---------|------|-------|----------|---------------|
+| --------- | ------ | ------- | ---------- | --------------- |
 | Latency | Very low | Low | Low | Very low |
 | Throughput | Very high | Very high | High | High |
 | Persistence | JetStream | Yes | Yes | No |

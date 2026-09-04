@@ -558,7 +558,7 @@ func (it Iterator[T]) Map(fn func(T) T) Iterator[T] {
 ## Performance Comparison
 
 | Metric | Haskell (GHC) | Go | Notes |
-|--------|---------------|-----|-------|
+| -------- | --------------- | ----- | ------- |
 | Compilation | Slow | Fast | Go 10-20x faster |
 | Runtime Speed | Good | Excellent | Go faster for most |
 | Memory Usage | Moderate | Low | Go more efficient |
@@ -573,7 +573,7 @@ func (it Iterator[T]) Map(fn func(T) T) Iterator[T] {
 ### Choose Haskell When
 
 | Criterion | Weight | Score | Rationale |
-|-----------|--------|-------|-----------|
+| ----------- | -------- | ------- | ----------- |
 | Type safety critical | High | 10/10 | Strongest type system |
 | Domain modeling | High | 10/10 | ADTs are perfect |
 | Compiler verification | Medium | 10/10 | Proving correctness |
@@ -583,7 +583,7 @@ func (it Iterator[T]) Map(fn func(T) T) Iterator[T] {
 ### Choose Go When
 
 | Criterion | Weight | Score | Rationale |
-|-----------|--------|-------|-----------|
+| ----------- | -------- | ------- | ----------- |
 | Practical development | High | 10/10 | Get things done |
 | Team scaling | High | 9/10 | Easy to learn |
 | Fast iteration | High | 10/10 | Quick compile cycles |
@@ -596,7 +596,7 @@ func (it Iterator[T]) Map(fn func(T) T) Iterator[T] {
 ## Summary
 
 | Aspect | Haskell | Go | Winner |
-|--------|---------|-----|--------|
+| -------- | --------- | ----- | -------- |
 | Type System | Excellent | Simple | Haskell |
 | Functional Purity | Enforced | Optional | Haskell |
 | Learning Curve | Steep | Easy | Go |

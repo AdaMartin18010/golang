@@ -605,7 +605,7 @@ func (h *JobHandler) GetResult(w http.ResponseWriter, r *http.Request) {
 ### Polling vs Webhooks
 
 | Aspect | Polling | Webhooks | Notes |
-|--------|---------|----------|-------|
+| -------- | --------- | ---------- | ------- |
 | **Latency** | Polling interval dependent | Near real-time | Webhooks faster |
 | **Reliability** | Client controls retry | Must handle failures | Polling more reliable |
 | **Firewall** | No issues | Client must accept inbound | Polling simpler |

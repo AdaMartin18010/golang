@@ -4,6 +4,7 @@
 > **级别**: S (18+ KB)
 > **标签**: #mongodb #nosql #data-modeling #document #go
 > **权威来源**:
+>
 > - [MongoDB Documentation](https://docs.mongodb.com/) - MongoDB Inc.
 > - [MongoDB: The Definitive Guide](https://www.oreilly.com/library/view/mongodb-the-definitive/) - O'Reilly Media
 > - [Designing Data-Intensive Applications](https://dataintensive.net/) - Martin Kleppmann
@@ -1306,37 +1307,37 @@ operationProfiling:
 package techstack_test
 
 import (
-	"context"
-	"testing"
-	"time"
+ "context"
+ "testing"
+ "time"
 )
 
 // BenchmarkBasicOperation measures baseline performance
 func BenchmarkBasicOperation(b *testing.B) {
-	ctx := context.Background()
-	
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_ = ctx
-		// Simulate operation
-	}
+ ctx := context.Background()
+
+ b.ResetTimer()
+ for i := 0; i < b.N; i++ {
+  _ = ctx
+  // Simulate operation
+ }
 }
 
 // BenchmarkConcurrentLoad tests concurrent operations
 func BenchmarkConcurrentLoad(b *testing.B) {
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			// Simulate concurrent operation
-			time.Sleep(1 * time.Microsecond)
-		}
-	})
+ b.RunParallel(func(pb *testing.PB) {
+  for pb.Next() {
+   // Simulate concurrent operation
+   time.Sleep(1 * time.Microsecond)
+  }
+ })
 }
 ```
 
 ### 10.2 Performance Characteristics
 
 | Operation | Latency | Throughput | Resource Usage |
-|-----------|---------|------------|----------------|
+| ----------- | --------- | ------------ | ---------------- |
 | **Simple** | 1ms | 1K RPS | Low |
 | **Complex** | 10ms | 100 RPS | Medium |
 | **Batch** | 100ms | 10K records | High |
@@ -1344,7 +1345,7 @@ func BenchmarkConcurrentLoad(b *testing.B) {
 ### 10.3 Production Metrics
 
 | Metric | Target | Alert | Critical |
-|--------|--------|-------|----------|
+| -------- | -------- | ------- | ---------- |
 | Latency p99 | < 100ms | > 200ms | > 500ms |
 | Error Rate | < 0.1% | > 0.5% | > 1% |
 | Throughput | > 1K | < 500 | < 100 |

@@ -53,7 +53,7 @@ ENTRYPOINT ["/server"]
 **Size Comparison:**
 
 | Image Type | Size | CVE Count (typical) |
-|------------|------|---------------------|
+| ------------ | ------ | --------------------- |
 | Alpine-based | 15-25 MB | 15-30 |
 | Debian-based | 50-100 MB | 50-100 |
 | Distroless | 5-10 MB | 0-5 |
@@ -534,7 +534,7 @@ Istio Ambient mode eliminates sidecar proxies, using a per-node "ztunnel" for L4
 **Performance Comparison:**
 
 | Metric | Istio Sidecar | Istio Ambient | Improvement |
-|--------|---------------|---------------|-------------|
+| -------- | --------------- | --------------- | ------------- |
 | CPU Overhead | 166% | 8% | 95% reduction |
 | Memory per Pod | ~100 MB | 0 MB | 100% reduction |
 | Memory per Node | 0 MB | ~5 MB | N/A |
@@ -752,7 +752,7 @@ spec:
 ### 2.4 Service Mesh Decision Matrix
 
 | Criteria | Istio Ambient | Cilium | Linkerd |
-|----------|---------------|--------|---------|
+| ---------- | --------------- | -------- | --------- |
 | **Best For** | Complex enterprises, multi-cluster | eBPF-first, networking teams | Simplicity, resource constraints |
 | **Architecture** | Sidecar-less (ztunnel/waypoint) | eBPF kernel | Sidecar proxy |
 | **CPU Overhead** | 8% | 3-5% | 5% |

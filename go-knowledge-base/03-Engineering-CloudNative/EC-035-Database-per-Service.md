@@ -926,7 +926,7 @@ func (r *CQRSReadModel) GetCustomerOrderSummary(ctx context.Context, customerID 
 ### 5.2 挑战与解决方案
 
 | 挑战 | 解决方案 | 实现方式 |
-|------|----------|----------|
+| ------ | ---------- | ---------- |
 | **跨服务查询** | API Composition / CQRS | 聚合服务或物化视图 |
 | **数据一致性** | Saga 模式 | 补偿事务 |
 | **数据同步** | 异步事件 | Outbox + Event Bus |

@@ -1,9 +1,9 @@
 # TS-036-CUDA-12-9-Blackwell
 
-> **Dimension**: 04-Technology-Stack  
-> **Status**: S-Level Academic  
-> **Created**: 2026-04-03  
-> **Version**: CUDA 12.9, Blackwell  
+> **Dimension**: 04-Technology-Stack
+> **Status**: S-Level Academic
+> **Created**: 2026-04-03
+> **Version**: CUDA 12.9, Blackwell
 > **Size**: >20KB
 
 ---
@@ -15,7 +15,7 @@ NVIDIA Blackwell (2025)
 ### 1.1 Specifications
 
 | Spec | Value |
-|------|-------|
+| ------ | ------- |
 | Process | 3nm |
 | Transistors | 200B+ |
 | Memory | HBM3E |
@@ -41,6 +41,7 @@ New low-precision formats for inference
 ## 3. cuDNN 9
 
 Optimized for Blackwell:
+
 - Faster convolutions
 - Better attention
 - Optimized transformers

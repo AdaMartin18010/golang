@@ -350,5 +350,5 @@ Database Connectivity Checklist:
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02

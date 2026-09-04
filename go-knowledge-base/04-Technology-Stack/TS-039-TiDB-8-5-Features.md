@@ -1,9 +1,9 @@
 # TS-039-TiDB-8-5-Features
 
-> **Dimension**: 04-Technology-Stack  
-> **Status**: S-Level Academic  
-> **Created**: 2026-04-03  
-> **Version**: TiDB 8.5 LTS  
+> **Dimension**: 04-Technology-Stack
+> **Status**: S-Level Academic
+> **Created**: 2026-04-03
+> **Version**: TiDB 8.5 LTS
 > **Size**: >20KB
 
 ---

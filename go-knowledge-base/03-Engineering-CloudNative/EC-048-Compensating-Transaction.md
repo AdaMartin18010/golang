@@ -26,7 +26,7 @@ Let $\mathcal{T} = \{T_1, T_2, ..., T_n\}$ be a distributed long-running transac
 **System Constraints:**
 
 | Constraint | Formal Definition | Impact |
-|------------|-------------------|--------|
+| ------------ | ------------------- | -------- |
 | **No Global Lock** | $\nexists L_{global}: \forall T_i: acquire(L_{global})$ | Cannot enforce serializability globally |
 | **Network Partition** | $\exists t: partition(D_i, D_j)$ | Sub-transactions may commit independently |
 | **Partial Failure** | $\exists i: failure(T_i) \land \forall j \neq i: commit(T_j)$ | Need semantic undo capability |
@@ -76,7 +76,7 @@ A Compensating Transaction $CT$ is a 5-tuple $\langle T, C, \prec, S, R \rangle$
 **Compensation Function Types:**
 
 | Type | Formula | Example |
-|------|---------|---------|
+| ------ | --------- | --------- |
 | **Exact Inverse** | $C(T(x)) = T^{-1}(x)$ | Credit $\leftrightarrow$ Debit |
 | **Semantic Undo** | $C(T(x)) = x'$ where $x' \approx x$ | Cancel order, issue refund |
 | **Retrospective** | $C(T(x)) = notify \land record$ | Alert admins, log for manual handling |
@@ -845,7 +845,7 @@ func (ns *NotificationSend) sendNotification(ctx context.Context) error {
 ### 5.1 Failure Taxonomy
 
 | Scenario | Impact | Detection | Mitigation |
-|----------|--------|-----------|------------|
+| ---------- | -------- | ----------- | ------------ |
 | **Compensation Service Unavailable** | Cannot undo | Connection timeout | Queue for retry + Alert |
 | **Partial Compensation** | Inconsistent state | State verification | Idempotent retry + Reconciliation |
 | **Irreversible Operation** | Cannot compensate | Type check before execute | Design-time validation |
@@ -915,7 +915,7 @@ func (rm *RecoveryManager) RecoverIncompleteCompensations(ctx context.Context) e
 ### 6.2 Saga vs 2PC Trade-offs
 
 | Aspect | Saga + Compensation | Two-Phase Commit |
-|--------|---------------------|------------------|
+| -------- | --------------------- | ------------------ |
 | **Availability** | High (local commits) | Lower (blocking) |
 | **Consistency** | Eventual | Strong |
 | **Complexity** | Business logic | Infrastructure |

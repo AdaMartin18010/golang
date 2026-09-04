@@ -181,7 +181,7 @@ func (p *PointerReceiver) Process() {  // 仅复制 8 字节指针
 **性能特征对比**
 
 | 场景 | 值接收器 | 指针接收器 | 建议 |
-|------|----------|------------|------|
+| ------ | ---------- | ------------ | ------ |
 | 小对象 (< 64 bytes) | 快（无间接访问） | 较慢（指针解引用） | 值接收器 |
 | 大对象 (> 64 bytes) | 慢（复制开销） | 快（仅传递指针） | 指针接收器 |
 | 需要修改状态 | 不支持 | 支持 | 指针接收器 |
@@ -286,7 +286,7 @@ func BenchmarkLargePointer(b *testing.B) {
 **预期性能结果**
 
 | 基准测试 | 操作/纳秒 | 分配/操作 |
-|----------|-----------|-----------|
+| ---------- | ----------- | ----------- |
 | SmallValue | ~0.3ns | 0 |
 | SmallPointer | ~0.3ns | 0 |
 | LargeValue | ~30ns | 1 |
@@ -709,7 +709,7 @@ func (m *MyInt) Method2() {}
 
 ### Academic Papers
 
-1. **Go Authors.** (2023). Go 1.26 Release Notes. *Official Documentation*. https://go.dev/doc/go1.26
+1. **Go Authors.** (2023). Go 1.26 Release Notes. *Official Documentation*. <https://go.dev/doc/go1.26>
 2. **Pierce, B. C.** (2002). *Types and Programming Languages* (Chapter 13: References). MIT Press.
 3. **Cardelli, L.** (1996). Type Systems. *ACM Computing Surveys*, 28(1). DOI: [10.1145/234313.234418](https://doi.org/10.1145/234313.234418)
 4. **Griesemer, R., et al.** (2020). Featherweight Go. *ACM OOPSLA*. DOI: [10.1145/3428217](https://doi.org/10.1145/3428217)

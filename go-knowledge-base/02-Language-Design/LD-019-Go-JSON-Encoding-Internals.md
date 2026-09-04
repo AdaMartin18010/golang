@@ -47,7 +47,7 @@
 type encodeState struct {
     bytes.Buffer           // 输出缓冲
     scratch      [64]byte // 临时缓冲区
-    
+
     // 递归深度限制
     ptrLevel     uint
     ptrSeen      map[any]struct{} // 循环引用检测
@@ -75,12 +75,12 @@ var encoderCache sync.Map // map[reflect.Type]encoderFunc
 func Marshal(v any) ([]byte, error) {
     e := newEncodeState()
     defer encodeStatePool.Put(e)
-    
+
     err := e.marshal(v, encOpts{escape: true})
     if err != nil {
         return nil, err
     }
-    
+
     buf := append([]byte(nil), e.Bytes()...)
     return buf, nil
 }
@@ -91,7 +91,7 @@ func (e *encodeState) marshal(v any, opts encOpts) (err error) {
             err = r.(error)
         }
     }()
-    
+
     e.reflectValue(reflect.ValueOf(v), opts)
     return nil
 }
@@ -116,15 +116,15 @@ func typeEncoder(t reflect.Type) encoderFunc {
     if fi, ok := encoderCache.Load(t); ok {
         return fi.(encoderFunc)
     }
-    
+
     // 加锁创建
     encoderCacheMu.Lock()
     defer encoderCacheMu.Unlock()
-    
+
     if fi, ok := encoderCache.Load(t); ok {
         return fi.(encoderFunc)
     }
-    
+
     // 创建编码器
     var f encoderFunc
     wg := &sync.WaitGroup{}
@@ -133,7 +133,7 @@ func typeEncoder(t reflect.Type) encoderFunc {
         wg.Wait()
         f(e, v, opts)
     })
-    
+
     f = newTypeEncoder(t, true)
     wg.Done()
     encoderCache.Store(t, f)
@@ -155,7 +155,7 @@ func stringEncoder(e *encodeState, v reflect.Value, opts encOpts) {
         e.WriteString(numStr)
         return
     }
-    
+
     s := v.String()
     if opts.quoted {
         e.WriteByte('"')
@@ -174,39 +174,39 @@ func newStructEncoder(t reflect.Type) encoderFunc {
         fields:    fields,
         fieldEncs: make([]encoderFunc, len(fields)),
     }
-    
+
     for i, f := range fields {
         se.fieldEncs[i] = typeEncoder(f.typ)
     }
-    
+
     return se.encode
 }
 
 func (se *structEncoder) encode(e *encodeState, v reflect.Value, opts encOpts) {
     e.WriteByte('{')
     first := true
-    
+
     for i, f := range se.fields {
         fv := fieldByIndex(v, f.index)
         if !fv.IsValid() || f.omitEmpty && isEmptyValue(fv) {
             continue
         }
-        
+
         if first {
             first = false
         } else {
             e.WriteByte(',')
         }
-        
+
         // 字段名
         e.WriteString(f.nameQuoted)
         e.WriteByte(':')
-        
+
         // 字段值
         opts.quoted = f.quoted
         se.fieldEncs[i](e, fv, opts)
     }
-    
+
     e.WriteByte('}')
 }
 ```
@@ -230,27 +230,27 @@ func typeFields(t reflect.Type) []field {
     if f, ok := fieldCache.Load(t); ok {
         return f.([]field)
     }
-    
+
     var fields []field
-    
+
     for i := 0; i < t.NumField(); i++ {
         sf := t.Field(i)
-        
+
         // 跳过未导出字段
         if !sf.IsExported() {
             continue
         }
-        
+
         tag := sf.Tag.Get("json")
         if tag == "-" {
             continue
         }
-        
+
         name, opts := parseTag(tag)
         if name == "" {
             name = sf.Name
         }
-        
+
         field := field{
             name:       name,
             nameQuoted: strconv.Quote(name),
@@ -260,10 +260,10 @@ func typeFields(t reflect.Type) []field {
             omitEmpty:  opts.Contains("omitempty"),
             quoted:     opts.Contains("string"),
         }
-        
+
         fields = append(fields, field)
     }
-    
+
     fieldCache.Store(t, fields)
     return fields
 }
@@ -287,13 +287,13 @@ func (d *decodeState) unmarshal(v any) error {
     if rv.Kind() != reflect.Pointer || rv.IsNil() {
         return &InvalidUnmarshalError{reflect.TypeOf(v)}
     }
-    
+
     // 扫描 JSON
     d.scanWhile(scanSkipSpace)
-    
+
     // 解码到目标类型
     d.value(rv)
-    
+
     return d.savedError
 }
 ```
@@ -363,7 +363,7 @@ func (d *decodeState) value(v reflect.Value) {
         d.literalStore(u)
         return
     }
-    
+
     // 根据 JSON 类型解码
     switch d.opcode {
     case scanBeginArray:
@@ -379,38 +379,38 @@ func (d *decodeState) value(v reflect.Value) {
 func (d *decodeState) object(v reflect.Value) {
     // 创建字段映射
     fields := cachedTypeFields(v.Type())
-    
+
     // 读取 {
     d.scanWhile(scanSkipSpace)
-    
+
     // 空对象
     if d.opcode == scanEndObject {
         return
     }
-    
+
     for {
         // 读取键
         start := d.readIndex()
         d.scanWhile(scanContinue)
         item := d.data[start:d.readIndex()]
         key := string(item)
-        
+
         // 查找字段
         var subv reflect.Value
         if f, ok := fields[key]; ok {
             subv = v.FieldByIndex(f.index)
         }
-        
+
         // 读取值
         d.scanWhile(scanSkipSpace)
         d.value(subv)
-        
+
         // 检查 }
         d.scanWhile(scanSkipSpace)
         if d.opcode == scanEndObject {
             break
         }
-        
+
         // 期望逗号
         if d.opcode != scanObjectComma {
             d.error("expected comma after object element")
@@ -472,7 +472,7 @@ func processEvent(data []byte) error {
     if err := json.Unmarshal(data, &event); err != nil {
         return err
     }
-    
+
     // 根据类型解析 Data
     switch event.Type {
     case "user":
@@ -492,13 +492,13 @@ func processEvent(data []byte) error {
 // 1. 使用 Decoder 流式处理
 func processLargeJSON(r io.Reader) error {
     dec := json.NewDecoder(r)
-    
+
     // 读取 [
     _, err := dec.Token()
     if err != nil {
         return err
     }
-    
+
     // 逐个解码
     for dec.More() {
         var item Item
@@ -507,7 +507,7 @@ func processLargeJSON(r io.Reader) error {
         }
         // 处理 item...
     }
-    
+
     // 读取 ]
     _, err = dec.Token()
     return err
@@ -519,7 +519,7 @@ func decodeNumber(data []byte) error {
     if err := json.Unmarshal(data, &result); err != nil {
         return err
     }
-    
+
     n := result["big_number"]
     // 保留精度
     i, err := n.Int64()
@@ -540,18 +540,18 @@ func decodeWithCapacity(data []byte) (*Response, error) {
     if err := json.Unmarshal(data, &raw); err != nil {
         return nil, err
     }
-    
+
     // 先获取数组长度
     var items []json.RawMessage
     if err := json.Unmarshal(raw.Items, &items); err != nil {
         return nil, err
     }
-    
+
     // 预分配
     result := &Response{
         Items: make([]Item, 0, len(items)),
     }
-    
+
     for _, item := range items {
         var i Item
         if err := json.Unmarshal(item, &i); err != nil {
@@ -559,7 +559,7 @@ func decodeWithCapacity(data []byte) (*Response, error) {
         }
         result.Items = append(result.Items, i)
     }
-    
+
     return result, nil
 }
 ```
@@ -573,12 +573,12 @@ func BenchmarkMarshal(b *testing.B) {
         Name string `json:"name"`
         Age  int    `json:"age"`
     }
-    
+
     user := User{ID: 1, Name: "John", Age: 30}
-    
+
     b.ReportAllocs()
     b.ResetTimer()
-    
+
     for i := 0; i < b.N; i++ {
         _, err := json.Marshal(user)
         if err != nil {
@@ -589,16 +589,16 @@ func BenchmarkMarshal(b *testing.B) {
 
 func BenchmarkUnmarshal(b *testing.B) {
     data := []byte(`{"id":1,"name":"John","age":30}`)
-    
+
     type User struct {
         ID   int    `json:"id"`
         Name string `json:"name"`
         Age  int    `json:"age"`
     }
-    
+
     b.ReportAllocs()
     b.ResetTimer()
-    
+
     for i := 0; i < b.N; i++ {
         var user User
         if err := json.Unmarshal(data, &user); err != nil {
@@ -639,7 +639,7 @@ func threadSafeEncoding() {
     var buf bytes.Buffer
     enc := json.NewEncoder(&buf)
     enc.Encode(data)
-    
+
     // 或者使用 Marshal（并发安全）
     data, _ := json.Marshal(obj)
 }
@@ -651,18 +651,18 @@ func threadSafeEncoding() {
 // 并行编码大量对象
 func parallelEncode(items []Item) [][]byte {
     results := make([][]byte, len(items))
-    
+
     var wg sync.WaitGroup
     sem := make(chan struct{}, runtime.GOMAXPROCS(0))
-    
+
     for i, item := range items {
         wg.Add(1)
         sem <- struct{}{}
-        
+
         go func(idx int, it Item) {
             defer wg.Done()
             defer func() { <-sem }()
-            
+
             data, err := json.Marshal(it)
             if err != nil {
                 return
@@ -670,7 +670,7 @@ func parallelEncode(items []Item) [][]byte {
             results[idx] = data
         }(i, item)
     }
-    
+
     wg.Wait()
     return results
 }
@@ -790,25 +790,25 @@ func (u User) MarshalJSON() ([]byte, error) {
     // 预计算容量避免扩容
     var buf [128]byte
     b := buf[:0]
-    
+
     b = append(b, '{')
-    
+
     // ID
     b = append(b, `"id":`...)
     b = strconv.AppendInt(b, int64(u.ID), 10)
     b = append(b, ',')
-    
+
     // Name
     b = append(b, `"name":`...)
     b = strconv.AppendQuote(b, u.Name)
     b = append(b, ',')
-    
+
     // Age
     b = append(b, `"age":`...)
     b = strconv.AppendInt(b, int64(u.Age), 10)
-    
+
     b = append(b, '}')
-    
+
     result := make([]byte, len(b))
     copy(result, b)
     return result, nil
@@ -852,7 +852,7 @@ func NewBatchEncoder() *BatchEncoder {
 func (e *BatchEncoder) EncodeUsers(users []User) []byte {
     buf := e.pool.Get()
     defer e.pool.Put(buf)
-    
+
     buf.WriteByte('[')
     for i, u := range users {
         if i > 0 {
@@ -862,7 +862,7 @@ func (e *BatchEncoder) EncodeUsers(users []User) []byte {
         buf.Write(data)
     }
     buf.WriteByte(']')
-    
+
     result := make([]byte, buf.Len())
     copy(result, buf.Bytes())
     return result
@@ -871,13 +871,13 @@ func (e *BatchEncoder) EncodeUsers(users []User) []byte {
 // 流式解码器
 func StreamDecode(r io.Reader, callback func(User) error) error {
     dec := json.NewDecoder(r)
-    
+
     // 读取 [
     _, err := dec.Token()
     if err != nil {
         return err
     }
-    
+
     for dec.More() {
         var user User
         if err := dec.Decode(&user); err != nil {
@@ -887,7 +887,7 @@ func StreamDecode(r io.Reader, callback func(User) error) error {
             return err
         }
     }
-    
+
     // 读取 ]
     _, err = dec.Token()
     return err
@@ -898,7 +898,7 @@ func main() {
         {ID: 1, Name: "Alice", Age: 30},
         {ID: 2, Name: "Bob", Age: 25},
     }
-    
+
     encoder := NewBatchEncoder()
     data := encoder.EncodeUsers(users)
     println(string(data))

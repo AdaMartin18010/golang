@@ -113,7 +113,7 @@ var requestSize = promauto.NewSummaryVec(
 ### Histogram vs Summary
 
 | 特性 | Histogram | Summary |
-|------|-----------|---------|
+| ------ | ----------- | --------- |
 | 分位数计算 | 服务端 (PromQL) | 客户端 |
 | 聚合性 | 可聚合 | 不可聚合 |
 | 精度 | 取决于桶配置 | 精确 |
@@ -415,7 +415,7 @@ func (q *QueueMetrics) Collect(ch chan<- prometheus.Metric) {
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -428,7 +428,9 @@ func (q *QueueMetrics) Collect(ch chan<- prometheus.Metric) {
 ### 配置优化
 
 `yaml
+
 # 生产环境推荐配置
+
 performance:
   max_connections: 1000
   buffer_pool_size: 8GB
@@ -454,7 +456,7 @@ client := NewClient(Config{
 ### 性能基准
 
 | 指标 | 数值 | 说明 |
-|------|------|------|
+| ------ | ------ | ------ |
 | 吞吐量 | 10K QPS | 单节点 |
 | 延迟 | p99 < 10ms | 本地网络 |
 | 可用性 | 99.99% | 集群模式 |
@@ -467,7 +469,7 @@ client := NewClient(Config{
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -480,7 +482,9 @@ client := NewClient(Config{
 ### 部署配置
 
 `yaml
+
 # docker-compose.yml
+
 version: '3.8'
 services:
   app:
@@ -516,7 +520,7 @@ pool := &redis.Pool{
 ### 监控告警
 
 | 指标 | 阈值 | 动作 |
-|------|------|------|
+| ------ | ------ | ------ |
 | CPU > 80% | 5min | 扩容 |
 | 内存 > 90% | 2min | 告警 |
 | 错误率 > 1% | 1min | 回滚 |
@@ -530,5 +534,5 @@ pool := &redis.Pool{
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02

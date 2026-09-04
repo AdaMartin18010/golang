@@ -676,7 +676,7 @@ var result = new Result<int>(true, 42, null);
 ## Feature Matrix
 
 | Feature | Go | Rust | Java | C++ | TypeScript | C# |
-|---------|-----|------|------|-----|------------|-----|
+| --------- | ----- | ------ | ------ | ----- | ------------ | ----- |
 | Type Parameters | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Type Constraints | ~ | ✓ | ✓ | Concepts | ✓ | ✓ |
 | Type Inference | ✓ | ✓ | ✓ | Partial | ✓ | ✓ |
@@ -693,7 +693,7 @@ var result = new Result<int>(true, 42, null);
 ## Performance Comparison
 
 | Language | Implementation | Overhead | Notes |
-|----------|---------------|----------|-------|
+| ---------- | --------------- | ---------- | ------- |
 | Go | GC Shape Stenciling | Low | Limited instantiations |
 | Rust | Monomorphization | Zero | Code bloat possible |
 | Java | Type Erasure | Boxing | No primitives in generics |

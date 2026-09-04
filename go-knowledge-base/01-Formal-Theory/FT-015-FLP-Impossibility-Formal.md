@@ -789,7 +789,7 @@ func SimulateFLP(numProcesses, numFaulty int, duration time.Duration) {
 ## Comparison with Related Protocols
 
 | Property | FLP Impossibility | Ben-Or | Paxos | Raft |
-|----------|-------------------|--------|-------|------|
+| ---------- | ------------------- | -------- | ------- | ------ |
 | **Assumptions** | Async, 1+ faults | Async, randomization | Partial sync | Partial sync |
 | **Termination** | Impossible | Probabilistic | Deterministic | Deterministic |
 | **Fault Tolerance** | n/a | < n/2 faults | < n/2 faults | < n/2 faults |

@@ -11,7 +11,7 @@
 ### 1.1 Middleware Purpose and Benefits
 
 | Concern | Without Middleware | With Middleware |
-|---------|-------------------|-----------------|
+| --------- | ------------------- | ----------------- |
 | Logging | Manual in every handler | Automatic, consistent |
 | Authentication | Code duplication | Centralized verification |
 | Rate Limiting | Per-endpoint logic | Global or route-based |
@@ -22,7 +22,7 @@
 ### 1.2 Middleware Decision Matrix
 
 | Pattern | Use Case | Framework Support |
-|---------|----------|-------------------|
+| --------- | ---------- | ------------------- |
 | Function Chain | Simple APIs | Standard library |
 | Handler Wrapper | REST services | Standard library |
 | Gin Middleware | High-performance APIs | Gin |
@@ -134,7 +134,7 @@ func (g *groupedMux) HandleFunc(pattern string, fn http.HandlerFunc) {
 ### 3.1 Middleware Performance Optimization
 
 | Technique | Before | After | Improvement |
-|-----------|--------|-------|-------------|
+| ----------- | -------- | ------- | ------------- |
 | Sync Pool for buffers | 500 allocs/op | 10 allocs/op | 50x reduction |
 | Pre-allocated headers | 200μs | 50μs | 4x faster |
 | Short-circuit paths | Full chain | Skip chain | Variable |
@@ -242,7 +242,7 @@ func SkipLogging(next http.Handler) http.Handler {
 ### 4.1 Middleware Library Comparison
 
 | Library | Performance | Features | Learning Curve | Best For |
-|---------|-------------|----------|----------------|----------|
+| --------- | ------------- | ---------- | ---------------- | ---------- |
 | Standard lib | ★★★★★ | ★★☆☆☆ | Low | Learning, control |
 | Gin | ★★★★★ | ★★★★☆ | Low | High performance |
 | Echo | ★★★★☆ | ★★★★★ | Low | Enterprise apps |

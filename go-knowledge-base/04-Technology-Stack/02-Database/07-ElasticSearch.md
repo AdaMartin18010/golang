@@ -122,7 +122,7 @@ aggQuery := map[string]interface{}{
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -135,7 +135,9 @@ aggQuery := map[string]interface{}{
 ### 配置优化
 
 `yaml
+
 # 生产环境推荐配置
+
 performance:
   max_connections: 1000
   buffer_pool_size: 8GB
@@ -161,7 +163,7 @@ client := NewClient(Config{
 ### 性能基准
 
 | 指标 | 数值 | 说明 |
-|------|------|------|
+| ------ | ------ | ------ |
 | 吞吐量 | 10K QPS | 单节点 |
 | 延迟 | p99 < 10ms | 本地网络 |
 | 可用性 | 99.99% | 集群模式 |
@@ -174,7 +176,7 @@ client := NewClient(Config{
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -187,7 +189,9 @@ client := NewClient(Config{
 ### 部署配置
 
 `yaml
+
 # docker-compose.yml
+
 version: '3.8'
 services:
   app:
@@ -223,7 +227,7 @@ pool := &redis.Pool{
 ### 监控告警
 
 | 指标 | 阈值 | 动作 |
-|------|------|------|
+| ------ | ------ | ------ |
 | CPU > 80% | 5min | 扩容 |
 | 内存 > 90% | 2min | 告警 |
 | 错误率 > 1% | 1min | 回滚 |
@@ -237,7 +241,7 @@ pool := &redis.Pool{
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -279,7 +283,7 @@ A: 使用连接池、限流、熔断等模式。
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -395,7 +399,7 @@ CAP 定理和 BASE 理论的实际应用。
 
 ---
 
-**质量评级**: S (全面扩展)  
+**质量评级**: S (全面扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -511,7 +515,7 @@ CAP 定理和 BASE 理论的实际应用。
 
 ---
 
-**质量评级**: S (全面扩展)  
+**质量评级**: S (全面扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -646,21 +650,21 @@ func NewService(cfg Config) *DefaultService {
 func (s *DefaultService) Process(ctx context.Context, req Request) (Response, error) {
     ctx, cancel := context.WithTimeout(ctx, s.config.Timeout)
     defer cancel()
-    
+
     // 检查缓存
     if cached, ok := s.cache.Get(req.ID); ok {
         return Response{ID: req.ID, Result: cached}, nil
     }
-    
+
     // 处理逻辑
     result, err := s.doProcess(ctx, req)
     if err != nil {
         return Response{ID: req.ID, Error: err}, err
     }
-    
+
     // 更新缓存
     s.cache.Set(req.ID, result, 5*time.Minute)
-    
+
     return Response{ID: req.ID, Result: result}, nil
 }
 
@@ -682,7 +686,9 @@ func (s *DefaultService) Health() HealthStatus {
 ### 4. 配置示例
 
 `yaml
+
 # config.yaml
+
 server:
   host: 0.0.0.0
   port: 8080
@@ -722,13 +728,13 @@ import (
     "context"
     "testing"
     "time"
-    
+
     "github.com/stretchr/testify/assert"
 )
 
 func TestService_Process(t *testing.T) {
-    svc := NewService(Config{Timeout: 5 * time.Second})
-    
+    svc := NewService(Config{Timeout: 5* time.Second})
+
     tests := []struct {
         name    string
         req     Request
@@ -743,12 +749,12 @@ func TestService_Process(t *testing.T) {
             wantErr: false,
         },
     }
-    
+
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
             ctx := context.Background()
             resp, err := svc.Process(ctx, tt.req)
-            
+
             if tt.wantErr {
                 assert.Error(t, err)
             } else {
@@ -760,10 +766,10 @@ func TestService_Process(t *testing.T) {
 }
 
 func BenchmarkService_Process(b *testing.B) {
-    svc := NewService(Config{Timeout: 5 * time.Second})
+    svc := NewService(Config{Timeout: 5* time.Second})
     req := Request{ID: "bench", Data: "data"}
     ctx := context.Background()
-    
+
     b.ResetTimer()
     for i := 0; i < b.N; i++ {
         svc.Process(ctx, req)
@@ -774,7 +780,9 @@ func BenchmarkService_Process(b *testing.B) {
 ### 6. 部署配置
 
 `dockerfile
+
 # Dockerfile
+
 FROM golang:1.26.2-alpine AS builder
 
 WORKDIR /app
@@ -796,7 +804,9 @@ CMD ["./main"]
 `
 
 `yaml
+
 # docker-compose.yml
+
 version: '3.8'
 
 services:
@@ -857,7 +867,7 @@ volumes:
 ### 7. 监控指标
 
 | 指标名称 | 类型 | 描述 | 告警阈值 |
-|----------|------|------|----------|
+| ---------- | ------ | ------ | ---------- |
 | request_duration | Histogram | 请求处理时间 | p99 > 100ms |
 | request_total | Counter | 总请求数 | - |
 | error_total | Counter | 错误总数 | rate > 1% |
@@ -868,17 +878,18 @@ volumes:
 
 `
 问题诊断流程:
+
 1. 检查日志
    kubectl logs -f pod-name
-   
+
 2. 检查指标
-   curl http://localhost:9090/metrics
-   
+   curl <http://localhost:9090/metrics>
+
 3. 检查健康状态
-   curl http://localhost:8080/health
-   
+   curl <http://localhost:8080/health>
+
 4. 分析性能
-   go tool pprof http://localhost:9090/debug/pprof/profile
+   go tool pprof <http://localhost:9090/debug/pprof/profile>
 `
 
 ### 9. 最佳实践总结
@@ -899,6 +910,6 @@ volumes:
 
 ---
 
-**质量评级**: S (完整扩展)  
-**文档大小**: 经过本次扩展已达到 S 级标准  
+**质量评级**: S (完整扩展)
+**文档大小**: 经过本次扩展已达到 S 级标准
 **完成日期**: 2026-04-02

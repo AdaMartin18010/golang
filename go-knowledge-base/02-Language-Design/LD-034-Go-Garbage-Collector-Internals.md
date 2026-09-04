@@ -429,7 +429,7 @@ func deductSweepCredit(size uintptr, assistPtr *gcSweepAssistState) {
 ### 6.1 GOGC Tuning
 
 | GOGC | Heap Overhead | GC CPU | Latency | Use Case |
-|------|---------------|--------|---------|----------|
+| ------ | --------------- | -------- | --------- | ---------- |
 | 50 | 50% | ~33% | Lower | Latency-critical |
 | 100 (default) | 100% | 25% | Balanced | General |
 | 200 | 200% | ~12.5% | Higher | Throughput |
@@ -470,7 +470,7 @@ GODEBUG=gctrace=1 ./program
 **Go 1.26 GC Pause Times** (measured on AMD EPYC, 64GB RAM):
 
 | Percentile | Pause Time | Phase |
-|------------|------------|-------|
+| ------------ | ------------ | ------- |
 | P50 | 15μs | Mark Start |
 | P99 | 85μs | Mark Start |
 | P99.9 | 250μs | Mark Termination |
@@ -481,7 +481,7 @@ GODEBUG=gctrace=1 ./program
 **GC Overhead vs Allocation Rate**:
 
 | Allocation Rate | GC Overhead | Notes |
-|-----------------|-------------|-------|
+| ----------------- | ------------- | ------- |
 | 100 MB/s | 20% | Low pressure |
 | 1 GB/s | 25% | Target overhead |
 | 5 GB/s | 35% | High pressure, more assists |
@@ -490,7 +490,7 @@ GODEBUG=gctrace=1 ./program
 ### 7.3 Comparison with JVM
 
 | Metric | Go GC | G1GC (JVM) | ZGC (JVM) |
-|--------|-------|------------|-----------|
+| -------- | ------- | ------------ | ----------- |
 | Algorithm | Tri-color mark-sweep | Regional generational | Concurrent mark-compact |
 | Max Pause | ~500μs | ~10ms | ~1ms |
 | Throughput | ~75% | ~85% | ~70% |

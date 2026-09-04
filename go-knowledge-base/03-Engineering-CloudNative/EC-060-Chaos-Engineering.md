@@ -29,8 +29,8 @@ $$\forall f \in F: fault(f) \land SS(\mathcal{S}) = SS(\mathcal{S}') \lor gracef
 **System Constraints:**
 
 | Constraint | Formal Definition | Impact |
-|------------|-------------------|--------|
-| **Blast Radius** | $|\{affected\_components\}| < \theta_{max}$ | Limit experiment scope |
+| ------------ | ------------------- | -------- |
+| **Blast Radius** | $ | \{affected\_components\} | < \theta_{max}$ | Limit experiment scope |
 | **Abort Condition** | $\exists m \in metrics: m > threshold \Rightarrow abort$ | Automatic safety |
 | **Time Bound** | $T_{experiment} < T_{max}$ | Limited window |
 | **Reversibility** | $\forall f: \exists f^{-1}: apply(f^{-1}) \Rightarrow recover$ | Can undo faults |
@@ -57,7 +57,7 @@ $$verify(\mathcal{S}, f, P) = apply(f) \land observe(\mathcal{S}) \models P \lan
 ### 2.1 Chaos Experiment Types
 
 | Level | Fault Type | Example | Tool |
-|-------|------------|---------|------|
+| ------- | ------------ | --------- | ------ |
 | **Infrastructure** | Node failure | Terminate VM/instance | AWS FIS, Gremlin |
 | **Network** | Latency, partition | Delay packets, drop connections | Chaos Mesh, Toxiproxy |
 | **Application** | Resource exhaustion | CPU/memory stress | Stress-ng, Chaos Monkey |
@@ -601,7 +601,7 @@ func (f *DiskFillFault) Recover(ctx context.Context) error {
 ## 5. Failure Scenarios and Mitigations
 
 | Scenario | Impact | Detection | Mitigation |
-|----------|--------|-----------|------------|
+| ---------- | -------- | ----------- | ------------ |
 | **Abort Missed** | Outage | Multiple alert channels | Automatic timeout |
 | **Recovery Failure** | Permanent degradation | Post-experiment health check | Manual intervention |
 | **Scope Creep** | Too many services affected | Blast radius validation | Strict scoping rules |

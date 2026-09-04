@@ -1,9 +1,9 @@
 # TS-035-LLVM-21-Features
 
-> **Dimension**: 04-Technology-Stack  
-> **Status**: S-Level Academic  
-> **Created**: 2026-04-03  
-> **Version**: LLVM 21  
+> **Dimension**: 04-Technology-Stack
+> **Status**: S-Level Academic
+> **Created**: 2026-04-03
+> **Version**: LLVM 21
 > **Size**: >20KB
 
 ---
@@ -17,6 +17,7 @@ LLVM 21 released 2025
 ### 2.1 ML-Guided Optimization
 
 Uses machine learning for:
+
 - Pass ordering
 - Inlining decisions
 - Loop unrolling

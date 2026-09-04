@@ -93,7 +93,7 @@ min := Min(1, 2)  // T 推导为 int
 ### 3.1 预定义约束
 
 | 约束 | 要求 | 适用操作 |
-|------|------|----------|
+| ------ | ------ | ---------- |
 | any | 无 | 任何操作 |
 | comparable | ==, != | 相等比较 |
 | constraints.Ordered | <, <=, >, >= | 排序 |
@@ -308,7 +308,7 @@ Go Generics
 ### 性能特征
 
 | 维度 | 复杂度 | 空间开销 | 优化策略 |
-|------|--------|----------|----------|
+| ------ | -------- | ---------- | ---------- |
 | 时间 | (n)$ | - | 缓存、并行 |
 | 空间 | (n)$ | 中等 | 对象池 |
 | 通信 | (1)$ | 低 | 批处理 |
@@ -367,7 +367,7 @@ Go Generics
 ### 并发模式
 
 | 模式 | 适用场景 | 性能 | 复杂度 |
-|------|----------|------|--------|
+| ------ | ---------- | ------ | -------- |
 | Channel | 数据流 | 高 | 低 |
 | Mutex | 共享状态 | 高 | 中 |
 | Atomic | 简单计数 | 极高 | 高 |
@@ -381,7 +381,7 @@ Go Generics
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -423,7 +423,7 @@ A: 使用连接池、限流、熔断等模式。
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -539,7 +539,7 @@ CAP 定理和 BASE 理论的实际应用。
 
 ---
 
-**质量评级**: S (全面扩展)  
+**质量评级**: S (全面扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -655,7 +655,7 @@ CAP 定理和 BASE 理论的实际应用。
 
 ---
 
-**质量评级**: S (全面扩展)  
+**质量评级**: S (全面扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -790,21 +790,21 @@ func NewService(cfg Config) *DefaultService {
 func (s *DefaultService) Process(ctx context.Context, req Request) (Response, error) {
     ctx, cancel := context.WithTimeout(ctx, s.config.Timeout)
     defer cancel()
-    
+
     // 检查缓存
     if cached, ok := s.cache.Get(req.ID); ok {
         return Response{ID: req.ID, Result: cached}, nil
     }
-    
+
     // 处理逻辑
     result, err := s.doProcess(ctx, req)
     if err != nil {
         return Response{ID: req.ID, Error: err}, err
     }
-    
+
     // 更新缓存
     s.cache.Set(req.ID, result, 5*time.Minute)
-    
+
     return Response{ID: req.ID, Result: result}, nil
 }
 
@@ -826,7 +826,9 @@ func (s *DefaultService) Health() HealthStatus {
 ### 4. 配置示例
 
 `yaml
+
 # config.yaml
+
 server:
   host: 0.0.0.0
   port: 8080
@@ -866,13 +868,13 @@ import (
     "context"
     "testing"
     "time"
-    
+
     "github.com/stretchr/testify/assert"
 )
 
 func TestService_Process(t *testing.T) {
-    svc := NewService(Config{Timeout: 5 * time.Second})
-    
+    svc := NewService(Config{Timeout: 5* time.Second})
+
     tests := []struct {
         name    string
         req     Request
@@ -887,12 +889,12 @@ func TestService_Process(t *testing.T) {
             wantErr: false,
         },
     }
-    
+
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
             ctx := context.Background()
             resp, err := svc.Process(ctx, tt.req)
-            
+
             if tt.wantErr {
                 assert.Error(t, err)
             } else {
@@ -904,10 +906,10 @@ func TestService_Process(t *testing.T) {
 }
 
 func BenchmarkService_Process(b *testing.B) {
-    svc := NewService(Config{Timeout: 5 * time.Second})
+    svc := NewService(Config{Timeout: 5* time.Second})
     req := Request{ID: "bench", Data: "data"}
     ctx := context.Background()
-    
+
     b.ResetTimer()
     for i := 0; i < b.N; i++ {
         svc.Process(ctx, req)
@@ -918,7 +920,9 @@ func BenchmarkService_Process(b *testing.B) {
 ### 6. 部署配置
 
 `dockerfile
+
 # Dockerfile
+
 FROM golang:1.26.2-alpine AS builder
 
 WORKDIR /app
@@ -940,7 +944,9 @@ CMD ["./main"]
 `
 
 `yaml
+
 # docker-compose.yml
+
 version: '3.8'
 
 services:
@@ -1001,7 +1007,7 @@ volumes:
 ### 7. 监控指标
 
 | 指标名称 | 类型 | 描述 | 告警阈值 |
-|----------|------|------|----------|
+| ---------- | ------ | ------ | ---------- |
 | request_duration | Histogram | 请求处理时间 | p99 > 100ms |
 | request_total | Counter | 总请求数 | - |
 | error_total | Counter | 错误总数 | rate > 1% |
@@ -1012,17 +1018,18 @@ volumes:
 
 `
 问题诊断流程:
+
 1. 检查日志
    kubectl logs -f pod-name
-   
+
 2. 检查指标
-   curl http://localhost:9090/metrics
-   
+   curl <http://localhost:9090/metrics>
+
 3. 检查健康状态
-   curl http://localhost:8080/health
-   
+   curl <http://localhost:8080/health>
+
 4. 分析性能
-   go tool pprof http://localhost:9090/debug/pprof/profile
+   go tool pprof <http://localhost:9090/debug/pprof/profile>
 `
 
 ### 9. 最佳实践总结
@@ -1043,6 +1050,6 @@ volumes:
 
 ---
 
-**质量评级**: S (完整扩展)  
-**文档大小**: 经过本次扩展已达到 S 级标准  
+**质量评级**: S (完整扩展)
+**文档大小**: 经过本次扩展已达到 S 级标准
 **完成日期**: 2026-04-02

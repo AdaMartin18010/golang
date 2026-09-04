@@ -749,7 +749,7 @@ func BenchmarkPool(b *testing.B) {
 ### 9.2 性能对比
 
 | 原语 | 无竞争延迟 | 竞争延迟 | 内存开销 |
-|------|-----------|---------|---------|
+| ------ | ----------- | --------- | --------- |
 | sync.Mutex | ~10ns | 100-500ns | 8 bytes |
 | sync.RWMutex | ~15ns (读) | 200-800ns | 24 bytes |
 | sync/atomic | ~5ns | ~5ns | 4-8 bytes |

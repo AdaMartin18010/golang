@@ -46,13 +46,13 @@ Go and C# both target enterprise development with different philosophies. C# off
     - [完整代码实现](#完整代码实现)
     - [配置示例](#配置示例)
 - [生产环境配置](#生产环境配置)
-    - [测试用例](#测试用例)
-    - [部署指南](#部署指南)
-    - [性能调优](#性能调优)
-    - [故障处理](#故障处理)
-    - [安全建议](#安全建议)
-    - [运维手册](#运维手册)
-    - [参考链接](#参考链接)
+  - [测试用例](#测试用例)
+  - [部署指南](#部署指南)
+  - [性能调优](#性能调优)
+  - [故障处理](#故障处理)
+  - [安全建议](#安全建议)
+  - [运维手册](#运维手册)
+  - [参考链接](#参考链接)
   - [附录A: 详细数据](#附录a-详细数据)
     - [数据表格](#数据表格)
     - [代码示例](#代码示例)
@@ -509,7 +509,7 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 ## Performance Analysis
 
 | Metric | C# (.NET 8) | Go 1.21 | Notes |
-|--------|-------------|---------|-------|
+| -------- | ------------- | --------- | ------- |
 | Startup Time | 1-3s | 50ms | Go 20-60x faster |
 | Memory (idle) | 80-150MB | 10-20MB | Go 5-8x less |
 | Hello World RPS | 100,000 | 180,000 | Go 1.8x faster |
@@ -524,7 +524,7 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 ### Choose C# When
 
 | Criterion | Weight | Score | Rationale |
-|-----------|--------|-------|-----------|
+| ----------- | -------- | ------- | ----------- |
 | Existing .NET codebase | Critical | 10/10 | Migration cost |
 | Enterprise Windows | High | 9/10 | Native integration |
 | LINQ needed | High | 10/10 | Unmatched feature |
@@ -535,7 +535,7 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 ### Choose Go When
 
 | Criterion | Weight | Score | Rationale |
-|-----------|--------|-------|-----------|
+| ----------- | -------- | ------- | ----------- |
 | Microservices | High | 10/10 | Fast startup |
 | Cross-platform | High | 10/10 | Native compilation |
 | Fast CI/CD | High | 9/10 | Quick builds |
@@ -550,7 +550,7 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 ### C# to Go Migration
 
 | C# Feature | Go Equivalent |
-|------------|---------------|
+| ------------ | --------------- |
 | `async/await` | Goroutines + channels |
 | `LINQ` | Explicit loops |
 | `IEnumerable<T>` | `[]T` or iterator func |
@@ -570,7 +570,7 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 ## Summary
 
 | Aspect | C# | Go | Winner |
-|--------|-----|-----|--------|
+| -------- | ----- | ----- | -------- |
 | Enterprise Integration | Excellent | Good | C# |
 | Cross-Platform | Good | Excellent | Go |
 | Performance | Good | Excellent | Go |
@@ -866,7 +866,7 @@ func TestService(t *testing.T) {
 ### 数据表格
 
 | 项目 | 数值1 | 数值2 | 数值3 | 数值4 | 数值5 |
-|------|-------|-------|-------|-------|-------|
+| ------ | ------- | ------- | ------- | ------- | ------- |
 | 数据A | 100 | 200 | 300 | 400 | 500 |
 | 数据B | 110 | 220 | 330 | 440 | 550 |
 | 数据C | 120 | 240 | 360 | 480 | 600 |
@@ -942,7 +942,7 @@ metrics:
 ### 术语表
 
 | 术语 | 定义 |
-|------|------|
+| ------ | ------ |
 | API | Application Programming Interface |
 | REST | Representational State Transfer |
 | gRPC | Google Remote Procedure Call |
@@ -991,7 +991,7 @@ MIT License - 详见LICENSE文件
 ### 数据表格
 
 | 项目 | 数值1 | 数值2 | 数值3 | 数值4 | 数值5 |
-|------|-------|-------|-------|-------|-------|
+| ------ | ------- | ------- | ------- | ------- | ------- |
 | 数据A | 100 | 200 | 300 | 400 | 500 |
 | 数据B | 110 | 220 | 330 | 440 | 550 |
 | 数据C | 120 | 240 | 360 | 480 | 600 |
@@ -1067,7 +1067,7 @@ metrics:
 ### 术语表
 
 | 术语 | 定义 |
-|------|------|
+| ------ | ------ |
 | API | Application Programming Interface |
 | REST | Representational State Transfer |
 | gRPC | Google Remote Procedure Call |
@@ -1116,7 +1116,7 @@ MIT License - 详见LICENSE文件
 ### 数据表格
 
 | 项目 | 数值1 | 数值2 | 数值3 | 数值4 | 数值5 |
-|------|-------|-------|-------|-------|-------|
+| ------ | ------- | ------- | ------- | ------- | ------- |
 | 数据A | 100 | 200 | 300 | 400 | 500 |
 | 数据B | 110 | 220 | 330 | 440 | 550 |
 | 数据C | 120 | 240 | 360 | 480 | 600 |
@@ -1192,7 +1192,7 @@ metrics:
 ### 术语表
 
 | 术语 | 定义 |
-|------|------|
+| ------ | ------ |
 | API | Application Programming Interface |
 | REST | Representational State Transfer |
 | gRPC | Google Remote Procedure Call |

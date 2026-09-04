@@ -4,6 +4,7 @@
 > **级别**: S (16+ KB)
 > **标签**: #golang #concurrency #mutex #waitgroup #once #pool #syncmap
 > **权威来源**:
+>
 > - [Go sync Package](https://golang.org/pkg/sync/) - Go standard library
 > - [Go Memory Model](https://golang.org/ref/mem) - Memory model
 > - [The Go Scheduler](https://www.ardanlabs.com/blog/2018/08/scheduling-in-go-part2.html) - Ardan Labs
@@ -59,7 +60,7 @@ import (
 func basicMutex() {
     var mu sync.Mutex
     counter := 0
-    
+
     for i := 0; i < 1000; i++ {
         go func() {
             mu.Lock()
@@ -67,7 +68,7 @@ func basicMutex() {
             counter++
         }()
     }
-    
+
     time.Sleep(time.Second)
     fmt.Println(counter) // 1000
 }
@@ -182,7 +183,7 @@ type Cache struct {
 func (c *Cache) Get(key string) (interface{}, bool) {
     c.mu.RLock()
     defer c.mu.RUnlock()
-    
+
     val, ok := c.items[key]
     if ok {
         atomic.AddInt64(&c.hits, 1)
@@ -207,7 +208,7 @@ func (c *Cache) Delete(key string) {
 func (c *Cache) GetAll() map[string]interface{} {
     c.mu.RLock()
     defer c.mu.RUnlock()
-    
+
     // Return copy to avoid data race
     result := make(map[string]interface{}, len(c.items))
     for k, v := range c.items {
@@ -232,7 +233,7 @@ func (c *Cache) GetAll() map[string]interface{} {
 // WaitGroup waits for a collection of goroutines to finish
 type WaitGroup struct {
     noCopy noCopy  // Prevents copying
-    
+
     // state: high 32 bits = counter, low 32 bits = waiter count
     state atomic.Uint64
     sema  uint32   // Semaphore for blocking waiters
@@ -255,7 +256,7 @@ wg.Wait()
 // Parallel processing with WaitGroup
 func processItems(items []Item) {
     var wg sync.WaitGroup
-    
+
     for _, item := range items {
         wg.Add(1)
         go func(i Item) {
@@ -263,7 +264,7 @@ func processItems(items []Item) {
             process(i)
         }(item)
     }
-    
+
     wg.Wait()
     fmt.Println("All items processed")
 }
@@ -272,18 +273,18 @@ func processItems(items []Item) {
 func processWithLimit(items []Item, maxWorkers int) {
     var wg sync.WaitGroup
     sem := make(chan struct{}, maxWorkers)
-    
+
     for _, item := range items {
         wg.Add(1)
         sem <- struct{}{} // Acquire semaphore
-        
+
         go func(i Item) {
             defer wg.Done()
             defer func() { <-sem }() // Release semaphore
             process(i)
         }(item)
     }
-    
+
     wg.Wait()
 }
 
@@ -413,13 +414,13 @@ func GetDB() (*sql.DB, error) {
 ```go
 type Pool struct {
     noCopy noCopy
-    
+
     local     unsafe.Pointer // [P]poolLocal
     localSize uintptr
-    
+
     victim     unsafe.Pointer // [P]poolLocal from previous GC
     victimSize uintptr
-    
+
     New func() interface{}
 }
 
@@ -448,7 +449,7 @@ var bufferPool = sync.Pool{
 func processData(data []byte) []byte {
     buf := bufferPool.Get().([]byte)
     defer bufferPool.Put(buf[:cap(buf)]) // Reset slice before returning
-    
+
     // Use buf...
     n := copy(buf, data)
     return buf[:n]
@@ -481,7 +482,7 @@ func useBuffer() {
         b.Reset()
         bufPool.Put(b)
     }()
-    
+
     // Use buffer...
 }
 
@@ -540,7 +541,7 @@ func getOrCompute(key string, compute func() interface{}) interface{} {
     if ok {
         return val
     }
-    
+
     newVal := compute()
     actual, loaded := cache.LoadOrStore(key, newVal)
     if loaded {

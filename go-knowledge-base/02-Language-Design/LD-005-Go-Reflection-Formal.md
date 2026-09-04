@@ -99,7 +99,7 @@ $$v.\text{CanSet}() = \text{true} \Leftrightarrow v\text{的指针指向可写�
 ### 3.1 类型操作
 
 | 操作 | 形式化 | 复杂度 | 说明 |
-|------|--------|--------|------|
+| ------ | -------- | -------- | ------ |
 | TypeOf | $\text{unpack}(interface) \to type$ | $O(1)$ | 解包接口 |
 | Kind | $\text{type} \to \text{Kind}$ | $O(1)$ | 获取基础类型 |
 | Elem | $\text{Ptr/Slice/Array/Chan/Map} \to \text{element type}$ | $O(1)$ | 解引用 |
@@ -201,7 +201,7 @@ $\square$
 ### 4.3 反射操作对比矩阵
 
 | 操作 | 性能 | 类型安全 | 使用场景 | 风险 |
-|------|------|----------|----------|------|
+| ------ | ------ | ---------- | ---------- | ------ |
 | **类型断言** | 极快 | 编译期检查 | 已知类型范围 | panic |
 | **type switch** | 快 | 编译期检查 | 有限类型分支 | 冗长 |
 | **reflect.TypeOf** | 快 | 运行时检查 | 类型检查 | O(1) |
@@ -263,7 +263,7 @@ $\square$
 ### 5.1 性能特征
 
 | 操作 | 相对性能 | 说明 |
-|------|----------|------|
+| ------ | ---------- | ------ |
 | 直接调用 | 1x (baseline) | $f()$ |
 | 类型断言 | ~1x | $x.(T)$ |
 | reflect.TypeOf | ~2x | 解包接口 |
@@ -499,67 +499,67 @@ func ExampleSerializer() {
 package runtime_test
 
 import (
-	"sync"
-	"sync/atomic"
-	"testing"
+ "sync"
+ "sync/atomic"
+ "testing"
 )
 
 // BenchmarkAtomicVsMutex compares atomic operations to mutex
 func BenchmarkAtomicVsMutex(b *testing.B) {
-	b.Run("AtomicAdd", func(b *testing.B) {
-		var counter int64
-		b.RunParallel(func(pb *testing.PB) {
-			for pb.Next() {
-				atomic.AddInt64(&counter, 1)
-			}
-		})
-	})
-	
-	b.Run("MutexAdd", func(b *testing.B) {
-		var mu sync.Mutex
-		var counter int64
-		b.RunParallel(func(pb *testing.PB) {
-			for pb.Next() {
-				mu.Lock()
-				counter++
-				mu.Unlock()
-			}
-		})
-	})
+ b.Run("AtomicAdd", func(b *testing.B) {
+  var counter int64
+  b.RunParallel(func(pb *testing.PB) {
+   for pb.Next() {
+    atomic.AddInt64(&counter, 1)
+   }
+  })
+ })
+
+ b.Run("MutexAdd", func(b *testing.B) {
+  var mu sync.Mutex
+  var counter int64
+  b.RunParallel(func(pb *testing.PB) {
+   for pb.Next() {
+    mu.Lock()
+    counter++
+    mu.Unlock()
+   }
+  })
+ })
 }
 
 // BenchmarkGoroutineCreation measures goroutine spawn cost
 func BenchmarkGoroutineCreation(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		done := make(chan struct{})
-		go func() {
-			close(done)
-		}()
-		<-done
-	}
+ for i := 0; i < b.N; i++ {
+  done := make(chan struct{})
+  go func() {
+   close(done)
+  }()
+  <-done
+ }
 }
 
 // BenchmarkChannelThroughput measures channel performance
 func BenchmarkChannelThroughput(b *testing.B) {
-	ch := make(chan int, 100)
-	
-	go func() {
-		for range ch {
-		}
-	}()
-	
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		ch <- i
-	}
-	close(ch)
+ ch := make(chan int, 100)
+
+ go func() {
+  for range ch {
+  }
+ }()
+
+ b.ResetTimer()
+ for i := 0; i < b.N; i++ {
+  ch <- i
+ }
+ close(ch)
 }
 ```
 
 ### 10.2 Runtime Performance Characteristics
 
 | Operation | Time | Memory | Notes |
-|-----------|------|--------|-------|
+| ----------- | ------ | -------- | ------- |
 | Goroutine spawn | ~1μs | 2KB stack | Lightweight |
 | Channel send (buffered) | ~50ns | - | Per operation |
 | Channel send (unbuffered) | ~100ns | - | Includes synchronization |
@@ -571,7 +571,7 @@ func BenchmarkChannelThroughput(b *testing.B) {
 ### 10.3 Optimization Recommendations
 
 | Area | Before | After | Speedup |
-|------|--------|-------|---------|
+| ------ | -------- | ------- | --------- |
 | Counter | sync.Mutex | sync/atomic | 7.5x |
 | String concat | + operator | strings.Builder | 100x |
 | JSON encoding | reflection | codegen | 5x |

@@ -113,7 +113,7 @@ Compute Express Link (CXL) has emerged as the dominant interconnect technology f
 #### CXL Specification Evolution
 
 | Version | Status | Key Features | Release Timeline |
-|---------|--------|--------------|------------------|
+| --------- | -------- | -------------- | ------------------ |
 | CXL 1.1 | Production | Memory expansion, basic cache coherency | 2023 (Intel Sapphire Rapids) |
 | CXL 2.0 | Production | Memory pooling, switching, fabric capabilities | 2024 |
 | CXL 3.0 | Production | Enhanced coherency, multi-level switching, 256-byte flit | 2024-2025 |
@@ -188,7 +188,7 @@ CAGR: 26.8% - 33.3%
 Understanding the memory hierarchy latency is crucial for workload optimization:
 
 | Memory Type | Latency | Bandwidth | Use Case |
-|-------------|---------|-----------|----------|
+| ------------- | --------- | ----------- | ---------- |
 | HBM3e | 2-3 ns | 1.2 TB/s | GPU memory, AI training |
 | DDR5 (Local) | 80-100 ns | 51.2 GB/s | Main system memory |
 | CXL 2.0 Attached | 200-300 ns | 32-64 GB/s | Memory expansion, pooling |
@@ -279,7 +279,7 @@ PCIe Gen5 represents a significant leap in storage performance, doubling the ban
 ### PCIe Gen5 Specifications
 
 | Specification | Gen4 | Gen5 | Improvement |
-|--------------|------|------|-------------|
+| -------------- | ------ | ------ | ------------- |
 | Per-Lane Speed | 16 GT/s | 32 GT/s | 2x |
 | Per-Lane Bandwidth | ~2 GB/s | ~4 GB/s | 2x |
 | x4 Bandwidth | ~8 GB/s | ~16 GB/s | 2x |
@@ -327,7 +327,7 @@ NVMe-oF extends NVMe semantics across network fabrics, enabling disaggregated st
 #### Transport Protocols Comparison
 
 | Protocol | Latency | Bandwidth | Use Case | Complexity |
-|----------|---------|-----------|----------|------------|
+| ---------- | --------- | ----------- | ---------- | ------------ |
 | NVMe/InfiniBand | 2-3 μs | 400+ Gb/s | HPC, AI training | High |
 | NVMe/RoCEv2 | <5 μs | 100-400 Gb/s | Enterprise, Cloud | Medium |
 | NVMe/TCP | 15-50 μs | 25-100 Gb/s | General purpose | Low |
@@ -450,7 +450,7 @@ After NVMe-oF:
 ### Production Metrics
 
 | Metric | Value | Notes |
-|--------|-------|-------|
+| -------- | ------- | ------- |
 | 4KB Random Read | 15M IOPS/node | Per storage node |
 | 128KB Sequential Read | 180GB/s/node | Per storage node |
 | Average Latency (RoCE) | 5-7 μs | End-to-end |
@@ -491,7 +491,7 @@ The data lakehouse architecture has matured significantly in 2025-2026, with Apa
 ### Open Table Format Comparison (2025-2026)
 
 | Feature | Apache Iceberg | Delta Lake | Apache Hudi | Apache Paimon |
-|---------|----------------|------------|-------------|---------------|
+| --------- | ---------------- | ------------ | ------------- | --------------- |
 | **ACID Transactions** | Yes (snapshot isolation) | Yes (optimistic concurrency) | Yes (MVCC) | Yes (snapshot isolation) |
 | **Time Travel** | Snapshot-based + timestamp | Version-based + timestamp | Commit-based | Snapshot-based |
 | **Schema Evolution** | Add, drop, rename, reorder, type promotion | Add, overwrite (limited) | Add, rename, delete | Add, drop, rename |
@@ -774,7 +774,7 @@ Compaction Process:
 #### LSM-Tree Variants
 
 | Variant | Compaction Strategy | Use Case |
-|---------|---------------------|----------|
+| --------- | --------------------- | ---------- |
 | Leveled (LevelDB, RocksDB) | Level-by-level merge | Read-heavy, point lookups |
 | Size-Tiered (Cassandra) | Merge similar-sized files | Write-heavy, sequential |
 | Tiered+Leveled | Hybrid approach | Balanced workloads |
@@ -847,7 +847,7 @@ These three storage engines represent the state-of-the-art in LSM-tree based sto
 #### Overview Comparison
 
 | Feature | Pebble | Badger | RocksDB |
-|---------|--------|--------|---------|
+| --------- | -------- | -------- | --------- |
 | **Language** | Go | Go | C++ (with Go bindings) |
 | **Primary Use** | CockroachDB, internal Go projects | Dgraph, fast KV lookups | General purpose, wide adoption |
 | **Storage Engine** | LSM-tree (LevelDB-inspired) | LSM-tree + LSM-tree | LSM-tree |
@@ -1052,7 +1052,7 @@ if err == nil {
 #### Performance Comparison Summary
 
 | Workload | Pebble | Badger | RocksDB |
-|----------|--------|--------|---------|
+| ---------- | -------- | -------- | --------- |
 | Small Values (<1KB) | ★★★ | ★★★ | ★★★ |
 | Large Values (>4KB) | ★★☆ | ★★★ | ★★☆ |
 | Write-Heavy | ★★★ | ★★★ | ★★☆ |
@@ -1202,7 +1202,7 @@ xiRAID Lockless Design:
 #### 4KB Synchronous Random Write Performance
 
 | Jobs | xiRAID IOPS | xiRAID Latency | mdadm IOPS | mdadm Latency | Improvement |
-|------|-------------|----------------|------------|---------------|-------------|
+| ------ | ------------- | ---------------- | ------------ | --------------- | ------------- |
 | 1 | 58.4k | 17 μs | 21.5k | 46 μs | 2.7x |
 | 16 | 834k | 18 μs | 250k | 64 μs | 3.3x |
 | 32 | 1,376k | 20 μs | 285k | 111 μs | 4.8x |
@@ -1249,7 +1249,7 @@ xiRAID maintains significantly better performance during drive failure:
 ### Feature Set
 
 | Feature | Description |
-|---------|-------------|
+| --------- | ------------- |
 | **RAID Levels** | 0, 1, 5, 6, 7.3, 10, 50, 60, 70, N+M |
 | **Max Drives** | 64 drives per RAID set |
 | **Max RAIDs** | Unlimited |
@@ -1291,7 +1291,7 @@ xiRAID maintains significantly better performance during drive failure:
 ### xiRAID Editions
 
 | Edition | Deployment | Use Case |
-|---------|------------|----------|
+| --------- | ------------ | ---------- |
 | **xiRAID Classic** | Kernel space | Maximum performance, NVMe direct |
 | **xiRAID User Space** | User space | NVMe-oF, virtual environments, DPUs |
 | **xiRAID DPU** | NVIDIA BlueField-3 | Offloaded data protection, computational storage |

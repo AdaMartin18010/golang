@@ -1,9 +1,9 @@
 # TS-032-PostgreSQL-19-New-Features
 
-> **Dimension**: 04-Technology-Stack  
-> **Status**: S-Level Academic  
-> **Created**: 2026-04-03  
-> **Version**: PostgreSQL 19  
+> **Dimension**: 04-Technology-Stack
+> **Status**: S-Level Academic
+> **Created**: 2026-04-03
+> **Version**: PostgreSQL 19
 > **Size**: >20KB
 
 ---
@@ -27,7 +27,7 @@ ORDER BY 1;
 ### 2.2 Window Functions Enhancement
 
 ```sql
-SELECT 
+SELECT
     lag(value) IGNORE NULLS OVER (ORDER BY date),
     first_value(value) RESPECT NULLS OVER (ORDER BY date)
 FROM data;

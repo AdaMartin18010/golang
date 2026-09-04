@@ -30,6 +30,7 @@ Simplicity is the ultimate sophistication.
 ```
 
 Go was designed at Google with explicit goals:
+
 - **Simplicity**: Minimal syntax, orthogonal features
 - **Readability**: Code should be obvious to any Go programmer
 - **Fast compilation**: Scale to millions of lines quickly
@@ -44,6 +45,7 @@ With great power comes great responsibility.
 ```
 
 Rust was designed by Mozilla with core principles:
+
 - **Memory safety without GC**: Zero-cost abstractions
 - **Fearless concurrency**: Compile-time data race prevention
 - **Zero-cost abstractions**: High-level features without runtime overhead
@@ -327,6 +329,7 @@ func main() {
 ```
 
 **Go GC Characteristics:**
+
 - Concurrent mark-and-sweep
 - Low latency (sub-millisecond pauses in Go 1.20+)
 - Automatic tuning
@@ -379,6 +382,7 @@ fn main() {
 ```
 
 **Rust Memory Characteristics:**
+
 - Zero-cost deterministic cleanup
 - Compile-time memory safety
 - RAII (Resource Acquisition Is Initialization)
@@ -391,7 +395,7 @@ fn main() {
 ### Benchmark Comparison
 
 | Metric | Go | Rust | Notes |
-|--------|-----|------|-------|
+| -------- | ----- | ------ | ------- |
 | Binary Size | 2-5 MB | 200KB-2 MB | Rust smaller with optimization |
 | Memory Usage | 2-5x live data | 1x + small overhead | Go has GC overhead |
 | Startup Time | ~100ms | ~10ms | Rust faster |
@@ -468,7 +472,7 @@ async fn main() -> std::io::Result<()> {
 **Benchmark Results (approximate on modern hardware):**
 
 | Test | Go (net/http) | Rust (Actix) | Ratio |
-|------|---------------|--------------|-------|
+| ------ | --------------- | -------------- | ------- |
 | Hello World RPS | 150,000 | 450,000 | 3:1 |
 | JSON Response RPS | 120,000 | 380,000 | 3.2:1 |
 | Latency p99 | 2ms | 0.5ms | 4:1 |
@@ -478,10 +482,10 @@ async fn main() -> std::io::Result<()> {
 
 ## Decision Matrix
 
-### Use Go When...
+### Use Go When
 
 | Criterion | Weight | Go Score | Notes |
-|-----------|--------|----------|-------|
+| ----------- | -------- | ---------- | ------- |
 | Rapid Development | High | 9/10 | Fast compile, simple syntax |
 | Team Size > 10 | High | 9/10 | Easy to read/maintain |
 | Microservices | High | 9/10 | Fast startup, small binaries |
@@ -491,10 +495,10 @@ async fn main() -> std::io::Result<()> {
 | Library Ecosystem | Medium | 8/10 | Mature, well-documented |
 | Hiring Pool | Medium | 8/10 | Growing rapidly |
 
-### Use Rust When...
+### Use Rust When
 
 | Criterion | Weight | Rust Score | Notes |
-|-----------|--------|------------|-------|
+| ----------- | -------- | ------------ | ------- |
 | Maximum Performance | High | 10/10 | Zero-cost abstractions |
 | Memory Safety Critical | High | 10/10 | Compile-time guarantees |
 | Systems Programming | High | 10/10 | OS kernels, embedded |
@@ -511,6 +515,7 @@ async fn main() -> std::io::Result<()> {
 ### Go to Rust Migration
 
 #### Phase 1: Identify Components
+
 ```
 1. Performance-critical paths
 2. Memory-intensive operations
@@ -549,10 +554,10 @@ pub extern "C" fn process_data_rust(data: *const u8, len: usize) {
     let slice = unsafe {
         std::slice::from_raw_parts(data, len)
     };
-    
+
     // Process data in Rust
     let result = process(slice);
-    
+
     // Return or callback to Go
 }
 
@@ -565,7 +570,7 @@ fn process(data: &[u8]) -> Vec<u8> {
 #### Phase 3: Data Structure Mapping
 
 | Go | Rust | Notes |
-|----|------|-------|
+| ---- | ------ | ------- |
 | `map[K]V` | `HashMap<K, V>` | Use `BTreeMap` for ordered |
 | `[]T` | `Vec<T>` | Growable array |
 | `chan T` | `mpsc::channel<T>` | Single-owner channels |
@@ -577,6 +582,7 @@ fn process(data: &[u8]) -> Vec<u8> {
 ### Rust to Go Migration
 
 #### Phase 1: Component Analysis
+
 ```
 1. Identify components needing GC tolerance
 2. Find areas benefiting from faster compilation
@@ -593,9 +599,9 @@ pub extern "C" fn analyze_data_go(data: *const u8, len: usize) -> *mut c_char {
     let slice = unsafe {
         std::slice::from_raw_parts(data, len)
     };
-    
+
     let result = analyze(slice);
-    
+
     // Convert to C string (must be freed by Go)
     CString::new(result)
         .unwrap()
@@ -606,7 +612,7 @@ pub extern "C" fn analyze_data_go(data: *const u8, len: usize) -> *mut c_char {
 #### Phase 3: Common Patterns
 
 | Rust | Go | Notes |
-|------|-----|-------|
+| ------ | ----- | ------- |
 | `Result<T, E>` | `(T, error)` | Go uses multiple returns |
 | `Option<T>` | `*T` or `nil` | Go uses nil for absence |
 | `match` | `switch` | Go switch is more limited |
@@ -618,7 +624,7 @@ pub extern "C" fn analyze_data_go(data: *const u8, len: usize) -> *mut c_char {
 
 ## When to Choose Which
 
-### Choose Go For:
+### Choose Go For
 
 1. **Cloud-Native Microservices**
    - Docker, Kubernetes ecosystems
@@ -640,7 +646,7 @@ pub extern "C" fn analyze_data_go(data: *const u8, len: usize) -> *mut c_char {
    - Proxy servers
    - Load balancers
 
-### Choose Rust For:
+### Choose Rust For
 
 1. **Performance-Critical Systems**
    - Game engines
@@ -667,7 +673,7 @@ pub extern "C" fn analyze_data_go(data: *const u8, len: usize) -> *mut c_char {
 ## Summary Table
 
 | Aspect | Go | Rust | Winner |
-|--------|-----|------|--------|
+| -------- | ----- | ------ | -------- |
 | Learning Curve | Gentle | Steep | Go |
 | Development Speed | Fast | Moderate | Go |
 | Runtime Performance | Good | Excellent | Rust |

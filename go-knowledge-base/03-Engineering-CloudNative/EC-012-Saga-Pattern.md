@@ -366,7 +366,7 @@ func (o *Orchestrator) Start(ctx context.Context, saga *Saga) error {
 ## 5. Failure Scenarios and Mitigation
 
 | Scenario | Symptom | Cause | Mitigation |
-|----------|---------|-------|------------|
+| ---------- | --------- | ------- | ------------ |
 | **Compensation Failure** | Inconsistent state | Compensation operation fails | Retry, alerts, manual intervention |
 | **Orphaned Saga** | Saga stuck in incomplete state | Process crash | Recovery job, timeout detection |
 | **Duplicate Execution** | Same step executed multiple times | Retry without idempotency | Idempotency keys per step |

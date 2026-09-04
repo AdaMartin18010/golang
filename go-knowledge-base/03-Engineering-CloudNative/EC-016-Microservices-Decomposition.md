@@ -996,7 +996,7 @@ func (p *OutboxPublisher) processOutbox(ctx context.Context) {
 ### Decomposition Strategy Comparison
 
 | Strategy | Pros | Cons | Best For |
-|----------|------|------|----------|
+| ---------- | ------ | ------ | ---------- |
 | **By Business Capability** | Clear ownership, aligns with org | May have data duplication | Most greenfield projects |
 | **By Subdomain** | DDD alignment, clear boundaries | Requires domain expertise | Complex domain systems |
 | **By Transaction** | Data consistency preserved | Limited decomposition | Financial systems |
@@ -1024,7 +1024,7 @@ Cohesion│                    │                    │ Cohesion
 ### Data Consistency Patterns
 
 | Pattern | Consistency | Complexity | Latency | Use Case |
-|---------|-------------|------------|---------|----------|
+| --------- | ------------- | ------------ | --------- | ---------- |
 | **Saga (Orchestration)** | Eventual | High | Medium | Long-running processes |
 | **Saga (Choreography)** | Eventual | Medium | Low | Simple workflows |
 | **Two-Phase Commit** | Strong | Very High | High | Critical financial |
@@ -1390,56 +1390,56 @@ Key metrics to track:
 package benchmark_test
 
 import (
-	"context"
-	"sync"
-	"testing"
-	"time"
+ "context"
+ "sync"
+ "testing"
+ "time"
 )
 
 // BenchmarkBasicOperation measures baseline performance
 func BenchmarkBasicOperation(b *testing.B) {
-	ctx := context.Background()
-	
-	b.ResetTimer()
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			// Simulate operation
-			_ = ctx
-		}
-	})
+ ctx := context.Background()
+
+ b.ResetTimer()
+ b.RunParallel(func(pb *testing.PB) {
+  for pb.Next() {
+   // Simulate operation
+   _ = ctx
+  }
+ })
 }
 
 // BenchmarkConcurrentLoad tests concurrent performance
 func BenchmarkConcurrentLoad(b *testing.B) {
-	var wg sync.WaitGroup
-	
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			// Simulate work
-			time.Sleep(1 * time.Microsecond)
-		}()
-	}
-	wg.Wait()
+ var wg sync.WaitGroup
+
+ b.ResetTimer()
+ for i := 0; i < b.N; i++ {
+  wg.Add(1)
+  go func() {
+   defer wg.Done()
+   // Simulate work
+   time.Sleep(1 * time.Microsecond)
+  }()
+ }
+ wg.Wait()
 }
 
 // BenchmarkMemoryAllocation tracks allocations
 func BenchmarkMemoryAllocation(b *testing.B) {
-	b.ReportAllocs()
-	
-	for i := 0; i < b.N; i++ {
-		data := make([]byte, 1024)
-		_ = data
-	}
+ b.ReportAllocs()
+
+ for i := 0; i < b.N; i++ {
+  data := make([]byte, 1024)
+  _ = data
+ }
 }
 ```
 
 ### 10.2 Performance Comparison
 
 | Implementation | ns/op | allocs/op | memory/op | Throughput |
-|---------------|-------|-----------|-----------|------------|
+| --------------- | ------- | ----------- | ----------- | ------------ |
 | **Baseline** | 100 ns | 0 | 0 B | 10M ops/s |
 | **With Context** | 150 ns | 1 | 32 B | 6.7M ops/s |
 | **With Metrics** | 300 ns | 2 | 64 B | 3.3M ops/s |
@@ -1448,7 +1448,7 @@ func BenchmarkMemoryAllocation(b *testing.B) {
 ### 10.3 Production Performance
 
 | Metric | P50 | P95 | P99 | Target |
-|--------|-----|-----|-----|--------|
+| -------- | ----- | ----- | ----- | -------- |
 | Latency | 100μs | 250μs | 500μs | < 1ms |
 | Throughput | 50K | 80K | 100K | > 50K RPS |
 | Error Rate | 0.01% | 0.05% | 0.1% | < 0.1% |
@@ -1457,7 +1457,7 @@ func BenchmarkMemoryAllocation(b *testing.B) {
 ### 10.4 Optimization Recommendations
 
 | Priority | Optimization | Impact | Effort |
-|----------|-------------|--------|--------|
+| ---------- | ------------- | -------- | -------- |
 | 🔴 High | Connection pooling | 50% latency | Low |
 | 🔴 High | Caching layer | 80% throughput | Medium |
 | 🟡 Medium | Async processing | 30% latency | Medium |

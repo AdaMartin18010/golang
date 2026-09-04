@@ -11,7 +11,7 @@
 ### 1.1 REST Constraints
 
 | Constraint | Description | Implementation |
-|------------|-------------|----------------|
+| ------------ | ------------- | ---------------- |
 | Client-Server | Separation of concerns | API consumers independent of servers |
 | Stateless | No client context on server | JWT tokens, session IDs in requests |
 | Cacheable | Responses can be cached | Cache-Control headers, ETag |
@@ -22,7 +22,7 @@
 ### 1.2 HTTP Methods
 
 | Method | Idempotent | Safe | Purpose |
-|--------|-----------|------|---------|
+| -------- | ----------- | ------ | --------- |
 | GET | Yes | Yes | Retrieve resource |
 | POST | No | No | Create resource |
 | PUT | Yes | No | Update/replace resource |
@@ -237,7 +237,7 @@ func ParseFilters(c *gin.Context) map[string]string {
 ### 4.1 HTTP Status Codes
 
 | Code | Meaning | Usage |
-|------|---------|-------|
+| ------ | --------- | ------- |
 | 200 | OK | Success |
 | 201 | Created | Resource created |
 | 204 | No Content | Success, empty body |
@@ -458,7 +458,7 @@ func CreateUser(c *gin.Context) {
 ### 7.1 Versioning Strategies
 
 | Strategy | Example | Pros | Cons |
-|----------|---------|------|------|
+| ---------- | --------- | ------ | ------ |
 | URL Path | /v1/users | Clear, simple | URL changes |
 | Header | Accept-Version: v1 | Clean URLs | Less visible |
 | Query Param | ?version=v1 | Simple | Messy URLs |
@@ -608,7 +608,7 @@ Week 7-8: 性能优化
 ### 技术选型
 
 | 组件 | 技术 | 理由 |
-|------|------|------|
+| ------ | ------ | ------ |
 | API | gRPC | 性能 |
 | DB | PostgreSQL | 可靠 |
 | Cache | Redis | 速度 |

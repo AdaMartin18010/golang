@@ -7,7 +7,7 @@
 ## Version Information
 
 | Attribute | Value |
-|-----------|-------|
+| ----------- | ------- |
 | **Current Version** | Redis 8.6 (Latest Stable) |
 | **Release Date** | Q2 2025 |
 | **Previous Major** | Redis 7.2 |
@@ -18,7 +18,7 @@
 Redis 8.6 delivers unprecedented performance improvements:
 
 | Metric | Redis 7.2 | Redis 8.6 | Improvement |
-|--------|-----------|-----------|-------------|
+| -------- | ----------- | ----------- | ------------- |
 | **Max Throughput** | 700K ops/sec | **3.5M ops/sec** | **5x** |
 | **P99 Latency** | 0.5ms | 0.1ms | 5x faster |
 | **Memory Efficiency** | Baseline | +40% | Better compression |
@@ -52,7 +52,7 @@ INCRBY counter:page_views 10
 **Key Commands:**
 
 | Command | Description |
-|---------|-------------|
+| --------- | ------------- |
 | `SET` | Store a string value |
 | `GET` | Retrieve a string value |
 | `INCR`/`DECR` | Atomic increment/decrement |
@@ -84,7 +84,7 @@ BLPOP queue:tasks 30
 **Key Commands:**
 
 | Command | Description |
-|---------|-------------|
+| --------- | ------------- |
 | `LPUSH`/`RPUSH` | Add to left/right |
 | `LPOP`/`RPOP` | Remove from left/right |
 | `LRANGE` | Get range of elements |
@@ -117,7 +117,7 @@ SINTER tags:post:1001 tags:post:1002
 **Key Commands:**
 
 | Command | Description |
-|---------|-------------|
+| --------- | ------------- |
 | `SADD` | Add member to set |
 | `SREM` | Remove member from set |
 | `SISMEMBER` | Check membership |
@@ -150,7 +150,7 @@ ZINCRBY leaderboard:game1 50 "player1"
 **Key Commands:**
 
 | Command | Description |
-|---------|-------------|
+| --------- | ------------- |
 | `ZADD` | Add member with score |
 | `ZRANGE`/`ZREVRANGE` | Get range by rank |
 | `ZRANGEBYSCORE` | Get range by score |
@@ -182,7 +182,7 @@ HINCRBY user:1001 login_count 1
 **Key Commands:**
 
 | Command | Description |
-|---------|-------------|
+| --------- | ------------- |
 | `HSET` | Set field value |
 | `HGET` | Get field value |
 | `HMSET`/`HMGET` | Multiple field operations |
@@ -214,7 +214,7 @@ BITOP AND result:online online:2025-01-15 online:2025-01-16
 **Key Commands:**
 
 | Command | Description |
-|---------|-------------|
+| --------- | ------------- |
 | `SETBIT` | Set bit at offset |
 | `GETBIT` | Get bit at offset |
 | `BITCOUNT` | Count set bits |
@@ -243,7 +243,7 @@ PFMERGE visitors:total visitors:page1 visitors:page2
 **Key Commands:**
 
 | Command | Description |
-|---------|-------------|
+| --------- | ------------- |
 | `PFADD` | Add elements |
 | `PFCOUNT` | Estimate cardinality |
 | `PFMERGE` | Merge HyperLogLogs |
@@ -273,7 +273,7 @@ GEORADIUSBYMEMBER restaurants "Zuni Cafe" 3 km
 **Key Commands:**
 
 | Command | Description |
-|---------|-------------|
+| --------- | ------------- |
 | `GEOADD` | Add location |
 | `GEOPOS` | Get position |
 | `GEODIST` | Calculate distance |
@@ -305,7 +305,7 @@ XPENDING events: mygroup
 **Key Commands:**
 
 | Command | Description |
-|---------|-------------|
+| --------- | ------------- |
 | `XADD` | Add entry to stream |
 | `XREAD` | Read from stream(s) |
 | `XREADGROUP` | Consumer group read |
@@ -361,7 +361,7 @@ VSET.ADD my_vectors "doc1" [0.1, 0.2, 0.3, ...]
 ```
 
 | Parameter | Description | Default |
-|-----------|-------------|---------|
+| ----------- | ------------- | --------- |
 | `DIM` | Vector dimension | Required |
 | `DISTANCE` | Distance metric (COSINE, EUCLIDEAN, DOT) | COSINE |
 | `M` | Maximum connections per element | 16 |
@@ -377,7 +377,7 @@ VSET.SEARCH my_vectors
 ```
 
 | Parameter | Description | Default |
-|-----------|-------------|---------|
+| ----------- | ------------- | --------- |
 | `QUERY` | Query vector | Required |
 | `K` | Number of nearest neighbors | 10 |
 | `EF_SEARCH` | Search exploration factor | 50 |
@@ -559,7 +559,7 @@ print(response)
 #### Performance Characteristics
 
 | Metric | Value |
-|--------|-------|
+| -------- | ------- |
 | **Max Dimensions** | 16,384 |
 | **Supported Metrics** | Cosine, Euclidean, Dot Product |
 | **Index Type** | HNSW (Hierarchical Navigable Small World) |
@@ -572,7 +572,7 @@ print(response)
 Redis 8.6 Vector Set leverages SIMD instructions for optimal performance:
 
 | Platform | Instruction Set | Speedup |
-|----------|-----------------|---------|
+| ---------- | ----------------- | --------- |
 | x86_64 | AVX-512 | 8x |
 | x86_64 | AVX2 | 4x |
 | ARM64 | Neon | 6x |
@@ -599,7 +599,7 @@ Where:
 #### Comparison with Existing Policies
 
 | Policy | Eviction Criteria | Best For |
-|--------|------------------|----------|
+| -------- | ------------------ | ---------- |
 | **LRU** | Least Recently Used | Read-heavy caches |
 | **LFU** | Least Frequently Used | Access-pattern caches |
 | **TTL** | Expiration time | Time-sensitive data |
@@ -669,7 +669,7 @@ class ModelCheckpointManager:
 #### Why LRM for AI Workloads?
 
 | AI Workload Pattern | LRU Behavior | LRM Behavior |
-|---------------------|--------------|--------------|
+| --------------------- | -------------- | -------------- |
 | Model checkpoints | Keeps old checkpoints (read once) | Evicts old checkpoints (modified long ago) |
 | Feature stores | May evict hot features | Preserves recently updated features |
 | Training datasets | Unpredictable eviction | Predictable, modification-based |
@@ -972,7 +972,7 @@ func (pp *PaymentProcessor) handlePayment(ctx context.Context, msg redis.XMessag
 #### Comparison: Before vs After Redis 8.6
 
 | Aspect | Pre-8.6 (Manual) | Redis 8.6 (Native) |
-|--------|------------------|-------------------|
+| -------- | ------------------ | ------------------- |
 | Implementation | Client-side tracking | Built-in |
 | Storage overhead | External DB needed | Internal, optimized |
 | Latency | 2-3 round trips | Single command |
@@ -1098,7 +1098,7 @@ tls-key-file /path/to/key.pem
 ### Breaking Changes
 
 | Feature | 7.2 | 8.6 |
-|---------|-----|-----|
+| --------- | ----- | ----- |
 | ACL V2 | Supported | Deprecated, use ACL V3 |
 | Protocol | RESP2/3 | RESP3 default |
 | Memory | Jemalloc | Jemalloc 5.3 with better fragmentation |
@@ -1139,7 +1139,7 @@ redis-cli CONFIG SET stream-idempotency-window 86400000
 ## Summary Table: All Data Structures
 
 | Data Structure | Time Complexity (Access) | Time Complexity (Insert) | Best For |
-|----------------|--------------------------|--------------------------|----------|
+| ---------------- | -------------------------- | -------------------------- | ---------- |
 | String | O(1) | O(1) | Caching, counters |
 | List | O(n) | O(1) | Queues, streams |
 | Set | O(1) | O(1) | Uniqueness, relationships |

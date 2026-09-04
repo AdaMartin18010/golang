@@ -607,7 +607,7 @@ func NewTypeMapper() *TypeMapper {
 ### Adapter vs Alternative Approaches
 
 | Approach | Flexibility | Performance | Maintenance | When to Use |
-|----------|-------------|-------------|-------------|-------------|
+| ---------- | ------------- | ------------- | ------------- | ------------- |
 | **Adapter Pattern** | High | Medium | Medium | Protocol/format bridging |
 | **Direct Modification** | N/A | High | Low | When you control both sides |
 | **Proxy with Translation** | Medium | High | Low | Simple transformations |

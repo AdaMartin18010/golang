@@ -39,7 +39,7 @@ $$\text{Commit}() = \text{INSERT}(\text{new}) \circ \text{UPDATE}(\text{dirty}) 
 ### 1.3 约束条件
 
 | 约束 | 形式化 | 说明 |
-|------|--------|------|
+| ------ | -------- | ------ |
 | **原子性** | $\forall t \in \text{Transaction}: \text{AllOrNothing}(t)$ | 事务要么全成功要么全失败 |
 | **一致性** | $\text{Valid}(\text{Database}, \text{Constraints})$ | 数据满足约束 |
 | **隔离性** | $\text{Concurrent}(t_1, t_2) \to \text{Serializable}$ | 并发等同串行 |
@@ -100,7 +100,7 @@ $$\text{Commit}() = \text{INSERT}(\text{new}) \circ \text{UPDATE}(\text{dirty}) 
 ### 2.2 缓存策略对比
 
 | 模式 | 写操作 | 一致性 | 复杂度 | 适用场景 |
-|------|--------|--------|--------|----------|
+| ------ | -------- | -------- | -------- | ---------- |
 | **Cache-Aside** | 先写 DB，后删 Cache | 低 | 低 | 读多写少 |
 | **Read-Through** | 自动加载 | 中 | 中 | 通用 |
 | **Write-Through** | 同时写 DB 和 Cache | 高 | 中 | 写重要 |
@@ -545,7 +545,7 @@ func (c *RedisCache) Delete(ctx context.Context, key string) error {
 ### 4.1 数据库故障模式
 
 | 故障类型 | 症状 | 根因 | 缓解策略 |
-|---------|------|------|----------|
+| --------- | ------ | ------ | ---------- |
 | **连接池耗尽** | Too many connections | 连接未释放 | 连接池配置、超时设置 |
 | **死锁** | Lock wait timeout | 事务顺序不一致 | 统一访问顺序、重试 |
 | **慢查询** | 响应延迟 | 缺少索引 | 查询优化、索引设计 |
@@ -722,7 +722,7 @@ Write-Through Pattern
 ### 5.3 事务隔离级别影响
 
 | 隔离级别 | 脏读 | 不可重复读 | 幻读 | 性能 |
-|----------|------|------------|------|------|
+| ---------- | ------ | ------------ | ------ | ------ |
 | READ UNCOMMITTED | ✗ | ✗ | ✗ | 最快 |
 | READ COMMITTED | ✓ | ✗ | ✗ | 快 |
 | REPEATABLE READ | ✓ | ✓ | ✗ | 中等 |
@@ -735,7 +735,7 @@ Write-Through Pattern
 ### 6.1 ORM vs SQL Builder vs Raw SQL
 
 | 维度 | ORM (GORM) | SQL Builder (sqlx) | Raw SQL |
-|------|------------|-------------------|---------|
+| ------ | ------------ | ------------------- | --------- |
 | **开发速度** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
 | **性能控制** | ⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
 | **类型安全** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
@@ -745,7 +745,7 @@ Write-Through Pattern
 ### 6.2 缓存策略选择
 
 | 场景 | 推荐策略 | 理由 |
-|------|----------|------|
+| ------ | ---------- | ------ |
 | 读多写少 | Cache-Aside | 简单有效 |
 | 强一致性 | Write-Through | 缓存 DB 一致 |
 | 写密集 | Write-Behind | 批量写优化 |
@@ -837,56 +837,56 @@ func TestUserRepository_Integration(t *testing.T) {
 package benchmark_test
 
 import (
-	"context"
-	"sync"
-	"testing"
-	"time"
+ "context"
+ "sync"
+ "testing"
+ "time"
 )
 
 // BenchmarkBasicOperation measures baseline performance
 func BenchmarkBasicOperation(b *testing.B) {
-	ctx := context.Background()
-	
-	b.ResetTimer()
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			// Simulate operation
-			_ = ctx
-		}
-	})
+ ctx := context.Background()
+
+ b.ResetTimer()
+ b.RunParallel(func(pb *testing.PB) {
+  for pb.Next() {
+   // Simulate operation
+   _ = ctx
+  }
+ })
 }
 
 // BenchmarkConcurrentLoad tests concurrent performance
 func BenchmarkConcurrentLoad(b *testing.B) {
-	var wg sync.WaitGroup
-	
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			// Simulate work
-			time.Sleep(1 * time.Microsecond)
-		}()
-	}
-	wg.Wait()
+ var wg sync.WaitGroup
+
+ b.ResetTimer()
+ for i := 0; i < b.N; i++ {
+  wg.Add(1)
+  go func() {
+   defer wg.Done()
+   // Simulate work
+   time.Sleep(1 * time.Microsecond)
+  }()
+ }
+ wg.Wait()
 }
 
 // BenchmarkMemoryAllocation tracks allocations
 func BenchmarkMemoryAllocation(b *testing.B) {
-	b.ReportAllocs()
-	
-	for i := 0; i < b.N; i++ {
-		data := make([]byte, 1024)
-		_ = data
-	}
+ b.ReportAllocs()
+
+ for i := 0; i < b.N; i++ {
+  data := make([]byte, 1024)
+  _ = data
+ }
 }
 ```
 
 ### 10.2 Performance Comparison
 
 | Implementation | ns/op | allocs/op | memory/op | Throughput |
-|---------------|-------|-----------|-----------|------------|
+| --------------- | ------- | ----------- | ----------- | ------------ |
 | **Baseline** | 100 ns | 0 | 0 B | 10M ops/s |
 | **With Context** | 150 ns | 1 | 32 B | 6.7M ops/s |
 | **With Metrics** | 300 ns | 2 | 64 B | 3.3M ops/s |
@@ -895,7 +895,7 @@ func BenchmarkMemoryAllocation(b *testing.B) {
 ### 10.3 Production Performance
 
 | Metric | P50 | P95 | P99 | Target |
-|--------|-----|-----|-----|--------|
+| -------- | ----- | ----- | ----- | -------- |
 | Latency | 100μs | 250μs | 500μs | < 1ms |
 | Throughput | 50K | 80K | 100K | > 50K RPS |
 | Error Rate | 0.01% | 0.05% | 0.1% | < 0.1% |
@@ -904,7 +904,7 @@ func BenchmarkMemoryAllocation(b *testing.B) {
 ### 10.4 Optimization Recommendations
 
 | Priority | Optimization | Impact | Effort |
-|----------|-------------|--------|--------|
+| ---------- | ------------- | -------- | -------- |
 | 🔴 High | Connection pooling | 50% latency | Low |
 | 🔴 High | Caching layer | 80% throughput | Medium |
 | 🟡 Medium | Async processing | 30% latency | Medium |

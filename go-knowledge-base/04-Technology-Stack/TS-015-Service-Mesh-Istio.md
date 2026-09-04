@@ -337,7 +337,7 @@ spec:
 ## 生产建议
 
 | 场景 | 建议 |
-|------|------|
+| ------ | ------ |
 | 渐进式采用 | 按命名空间启用，先观察模式 |
 | 资源限制 | Sidecar 设置 CPU/Memory limits |
 | 启动顺序 | 确保 Sidecar 先于应用就绪 |
@@ -362,37 +362,37 @@ spec:
 package techstack_test
 
 import (
-	"context"
-	"testing"
-	"time"
+ "context"
+ "testing"
+ "time"
 )
 
 // BenchmarkBasicOperation measures baseline performance
 func BenchmarkBasicOperation(b *testing.B) {
-	ctx := context.Background()
-	
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_ = ctx
-		// Simulate operation
-	}
+ ctx := context.Background()
+
+ b.ResetTimer()
+ for i := 0; i < b.N; i++ {
+  _ = ctx
+  // Simulate operation
+ }
 }
 
 // BenchmarkConcurrentLoad tests concurrent operations
 func BenchmarkConcurrentLoad(b *testing.B) {
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			// Simulate concurrent operation
-			time.Sleep(1 * time.Microsecond)
-		}
-	})
+ b.RunParallel(func(pb *testing.PB) {
+  for pb.Next() {
+   // Simulate concurrent operation
+   time.Sleep(1 * time.Microsecond)
+  }
+ })
 }
 ```
 
 ### 10.2 Performance Characteristics
 
 | Operation | Latency | Throughput | Resource Usage |
-|-----------|---------|------------|----------------|
+| ----------- | --------- | ------------ | ---------------- |
 | **Simple** | 1ms | 1K RPS | Low |
 | **Complex** | 10ms | 100 RPS | Medium |
 | **Batch** | 100ms | 10K records | High |
@@ -400,7 +400,7 @@ func BenchmarkConcurrentLoad(b *testing.B) {
 ### 10.3 Production Metrics
 
 | Metric | Target | Alert | Critical |
-|--------|--------|-------|----------|
+| -------- | -------- | ------- | ---------- |
 | Latency p99 | < 100ms | > 200ms | > 500ms |
 | Error Rate | < 0.1% | > 0.5% | > 1% |
 | Throughput | > 1K | < 500 | < 100 |

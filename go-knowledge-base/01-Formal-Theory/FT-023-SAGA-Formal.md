@@ -106,7 +106,7 @@ Therefore, system is always left in a consistent state. ∎
 ### 1.4 Comparison with 2PC
 
 | Aspect | 2PC/3PC | SAGA |
-|--------|---------|------|
+| -------- | --------- | ------ |
 | **Isolation** | Strong (locks) | Weak (compensations) |
 | **Consistency** | Immediate | Eventual |
 | **Availability** | Lower (blocking) | Higher (non-blocking) |

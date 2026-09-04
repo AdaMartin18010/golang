@@ -89,7 +89,7 @@ Object storage has become the de facto standard for unstructured data, AI/ML dat
 **Key Characteristics**:
 
 | Feature | Description |
-|---------|-------------|
+| --------- | ------------- |
 | Flat Namespace | No hierarchical directory structure |
 | Rich Metadata | Custom metadata per object |
 | HTTP Access | RESTful API interface |
@@ -147,7 +147,7 @@ MinIO is a high-performance, S3-compatible object storage system written in Go. 
 **MinIO vs S3 Performance Comparison**:
 
 | Metric | AWS S3 | MinIO (Local) | Improvement |
-|--------|--------|---------------|-------------|
+| -------- | -------- | --------------- | ------------- |
 | Read Throughput | ~100 MB/s | ~500 MB/s | 5x |
 | Write Throughput | ~50 MB/s | ~300 MB/s | 6x |
 | Latency (p99) | 50-100ms | 1-5ms | 10-50x |
@@ -436,7 +436,7 @@ File systems remain critical for local storage, databases, and high-performance 
 ### 2.2 File System Comparison
 
 | Feature | ext4 | XFS | ZFS | Btrfs |
-|---------|------|-----|-----|-------|
+| --------- | ------ | ----- | ----- | ------- |
 | **Maximum File Size** | 16 TB | 8 EB | 16 EB | 16 EB |
 | **Maximum Volume Size** | 1 EB | 8 EB | 256 ZB | 16 EB |
 | **Journaling** | Yes (metadata) | Yes (metadata) | N/A (COW) | N/A (COW) |
@@ -454,7 +454,7 @@ A comprehensive study by George Mason University evaluated file system performan
 **Results**:
 
 | Operation | ext4 | XFS | Btrfs | ZFS |
-|-----------|------|-----|-------|-----|
+| ----------- | ------ | ----- | ------- | ----- |
 | File Creation (files/sec) | 45,000 | 78,000 | 32,000 | 28,000 |
 | File Deletion (files/sec) | 52,000 | 85,000 | 38,000 | 31,000 |
 | Directory Traversal (files/sec) | 1.2M | 2.1M | 890K | 720K |
@@ -535,7 +535,7 @@ Compute Express Link (CXL) is a high-speed interconnect enabling memory pooling 
 ### 3.2 CXL Roadmap
 
 | Version | Release | Key Features | Memory Bandwidth |
-|---------|---------|--------------|------------------|
+| --------- | --------- | -------------- | ------------------ |
 | CXL 2.0 | 2020 | Memory pooling, switching | DDR4 equivalent |
 | CXL 3.0 | 2022 | Fabric capabilities, 256B flit | 2x DDR5 |
 | CXL 3.1 | 2023 | Enhanced memory sharing, security | 2x DDR5 |
@@ -548,7 +548,7 @@ Compute Express Link (CXL) is a high-speed interconnect enabling memory pooling 
 ### 3.4 Latency Comparison
 
 | Memory Type | Latency (ns) | Bandwidth (GB/s) | Use Case |
-|-------------|--------------|------------------|----------|
+| ------------- | -------------- | ------------------ | ---------- |
 | HBM3e | ~10 | 1,200+ | AI training, GPU memory |
 | DDR5 Local | ~80 | 50-100 | General compute |
 | CXL-attached (Type 3) | ~200-300 | 50-100 per device | Memory expansion |
@@ -595,7 +595,7 @@ Compute Express Link (CXL) is a high-speed interconnect enabling memory pooling 
 ### 4.1 NVMe Evolution
 
 | Generation | Year | PCIe Lanes | Throughput (GB/s) | IOPS (K) | Latency (μs) |
-|------------|------|------------|-------------------|----------|--------------|
+| ------------ | ------ | ------------ | ------------------- | ---------- | -------------- |
 | NVMe 1.3 | 2017 | Gen3 x4 | 3.5 | 500 | 100 |
 | NVMe 1.4 | 2019 | Gen4 x4 | 7.0 | 1,000 | 50 |
 | NVMe 2.0 | 2021 | Gen4 x4 | 7.0 | 1,500 | 30 |
@@ -607,7 +607,7 @@ Compute Express Link (CXL) is a high-speed interconnect enabling memory pooling 
 **Performance Improvement**: 2x throughput, 10x lower latency
 
 | Operation | PCIe Gen4 | PCIe Gen5 | Improvement |
-|-----------|-----------|-----------|-------------|
+| ----------- | ----------- | ----------- | ------------- |
 | Sequential Read | 7,000 MB/s | 14,000 MB/s | 2x |
 | Sequential Write | 5,500 MB/s | 12,000 MB/s | 2.2x |
 | Random Read (4K) | 1.0M IOPS | 2.5M IOPS | 2.5x |
@@ -618,7 +618,7 @@ Compute Express Link (CXL) is a high-speed interconnect enabling memory pooling 
 ### 4.3 NVMe-oF (NVMe over Fabrics)
 
 | Transport | Latency (μs) | Throughput | Use Case |
-|-----------|--------------|------------|----------|
+| ----------- | -------------- | ------------ | ---------- |
 | Local NVMe | 5-10 | 14 GB/s | Direct attached |
 | InfiniBand | 2-3 | 200+ GB/s | HPC, AI clusters |
 | RoCEv2 | <5 | 100+ GB/s | Enterprise storage |
@@ -736,7 +736,7 @@ Data Lakehouse combines the flexibility of data lakes with the reliability and p
 ### 5.2 Format Comparison
 
 | Feature | Apache Iceberg | Delta Lake | Apache Hudi | Apache Paimon |
-|---------|----------------|------------|-------------|---------------|
+| --------- | ---------------- | ------------ | ------------- | --------------- |
 | **ACID Transactions** | Yes | Yes | Yes | Yes |
 | **Time Travel** | Yes | Yes | Yes | Yes |
 | **Schema Evolution** | Full | Full | Full | Full |
@@ -792,7 +792,7 @@ Data Lakehouse combines the flexibility of data lakes with the reliability and p
 ### 5.4 Use Case Selection
 
 | Use Case | Recommended Format | Reason |
-|----------|-------------------|--------|
+| ---------- | ------------------- | -------- |
 | Cloud-native analytics | Iceberg | Best AWS/GCP/Azure integration |
 | Databricks/Spark | Delta Lake | Native integration, proven at scale |
 | CDC/Streaming ingestion | Hudi | Best upsert and CDC support |
@@ -1189,7 +1189,7 @@ func (b *BoltStore) Close() error {
 ### 7.4 S3 SDKs Comparison
 
 | Feature | AWS SDK v2 | MinIO SDK |
-|---------|------------|-----------|
+| --------- | ------------ | ----------- |
 | Performance | Good | Excellent (5x) |
 | S3 Compatible | Yes (native) | Yes |
 | Multipart Upload | Yes | Yes |
@@ -1205,7 +1205,7 @@ func (b *BoltStore) Close() error {
 ### 8.1 Storage Engine Comparison
 
 | Engine | Write (K ops/s) | Read (K ops/s) | Range Scan (K ops/s) | Disk Usage | Memory |
-|--------|-----------------|----------------|----------------------|------------|--------|
+| -------- | ----------------- | ---------------- | ---------------------- | ------------ | -------- |
 | Pebble | 180 | 220 | 150 | 1.2x raw | 512MB |
 | Badger | 250 | 180 | 120 | 1.0x raw | 768MB |
 | BoltDB | 80 | 300 | 200 | 2.0x raw | OS cache |
@@ -1213,7 +1213,7 @@ func (b *BoltStore) Close() error {
 ### 8.2 Latency Percentiles
 
 | Engine | p50 (μs) | p90 (μs) | p95 (μs) | p99 (μs) |
-|--------|----------|----------|----------|----------|
+| -------- | ---------- | ---------- | ---------- | ---------- |
 | Pebble | 12 | 25 | 35 | 80 |
 | Badger | 15 | 30 | 45 | 100 |
 | BoltDB | 8 | 15 | 20 | 50 |

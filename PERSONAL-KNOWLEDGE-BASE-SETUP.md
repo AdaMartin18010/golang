@@ -226,7 +226,7 @@ pknowledge/04-projects/experiments/
 ### 4.1 笔记工具
 
 | 工具 | 用途 | 配置 |
-|------|------|------|
+| ------ | ------ | ------ |
 | **Obsidian** | 主笔记工具 | Zettelkasten 插件 |
 | **VS Code** | 代码 + Markdown | Go 插件 |
 | **Git** | 版本控制 | 私有仓库 |
@@ -234,7 +234,7 @@ pknowledge/04-projects/experiments/
 ### 4.2 阅读工具
 
 | 工具 | 用途 |
-|------|------|
+| ------ | ------ |
 | **Zotero** | 论文管理 |
 | **PDF Expert** | PDF 批注 |
 | **Readwise** | 文章高亮同步 |

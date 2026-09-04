@@ -1,6 +1,6 @@
 # 任务上下文取消模式 (Task Context Cancellation Patterns)
 
-> **分类**: 工程与云原生  
+> **分类**: 工程与云原生
 > **标签**: #context #cancellation #graceful-shutdown #patterns
 
 ---
@@ -21,14 +21,14 @@ type CancellableTask struct {
 func (ct *CancellableTask) Run(ctx context.Context) error {
     // 添加清理函数
     defer ct.runCleanup()
-    
+
     // 主要处理循环
     for {
         select {
         case <-ctx.Done():
             // 收到取消信号
             return ct.handleCancellation(ctx)
-            
+
         case work := <-ct.workQueue:
             // 检查取消状态
             if err := ct.checkContext(ctx); err != nil {
@@ -36,7 +36,7 @@ func (ct *CancellableTask) Run(ctx context.Context) error {
                 ct.requeue(work)
                 return err
             }
-            
+
             if err := ct.processWork(ctx, work); err != nil {
                 return err
             }
@@ -47,16 +47,16 @@ func (ct *CancellableTask) Run(ctx context.Context) error {
 func (ct *CancellableTask) handleCancellation(ctx context.Context) error {
     // 记录取消原因
     cause := context.Cause(ctx)
-    
+
     switch {
     case errors.Is(cause, context.DeadlineExceeded):
         log.Printf("Task %s cancelled due to timeout", ct.id)
         return &TaskCancelledError{Reason: "timeout", Cause: cause}
-        
+
     case errors.Is(cause, context.Canceled):
         log.Printf("Task %s cancelled by user", ct.id)
         return &TaskCancelledError{Reason: "user_request", Cause: cause}
-        
+
     default:
         log.Printf("Task %s cancelled: %v", ct.id, cause)
         return &TaskCancelledError{Reason: "unknown", Cause: cause}
@@ -83,7 +83,7 @@ func (ct *CancellableTask) runCleanup() {
     cleanup := ct.cleanup
     ct.cleanup = nil
     ct.mu.Unlock()
-    
+
     // 逆序执行清理
     for i := len(cleanup) - 1; i >= 0; i-- {
         cleanup[i]()
@@ -109,7 +109,7 @@ func NewHierarchicalCanceller(parent *HierarchicalCanceller) *HierarchicalCancel
     hc := &HierarchicalCanceller{
         children: make(map[string]*HierarchicalCanceller),
     }
-    
+
     if parent != nil {
         hc.parent = parent
         hc.ctx, hc.cancel = context.WithCancel(parent.ctx)
@@ -117,7 +117,7 @@ func NewHierarchicalCanceller(parent *HierarchicalCanceller) *HierarchicalCancel
     } else {
         hc.ctx, hc.cancel = context.WithCancel(context.Background())
     }
-    
+
     return hc
 }
 
@@ -130,7 +130,7 @@ func (hc *HierarchicalCanceller) addChild(child *HierarchicalCanceller) {
 func (hc *HierarchicalCanceller) Cancel(cause error) {
     // 取消自己
     hc.cancel()
-    
+
     // 级联取消所有子任务
     hc.mu.RLock()
     children := make([]*HierarchicalCanceller, 0, len(hc.children))
@@ -138,7 +138,7 @@ func (hc *HierarchicalCanceller) Cancel(cause error) {
         children = append(children, child)
     }
     hc.mu.RUnlock()
-    
+
     var wg sync.WaitGroup
     for _, child := range children {
         wg.Add(1)
@@ -147,7 +147,7 @@ func (hc *HierarchicalCanceller) Cancel(cause error) {
             c.Cancel(fmt.Errorf("parent cancelled: %w", cause))
         }(child)
     }
-    
+
     wg.Wait()
 }
 
@@ -181,13 +181,13 @@ func (cm *CancellationManager) CancelWithPolicy(ctx context.Context, executor *T
     switch policy {
     case Immediate:
         return cm.cancelImmediate(ctx, executor)
-        
+
     case Graceful:
         return cm.cancelGraceful(ctx, executor)
-        
+
     case Drain:
         return cm.cancelDrain(ctx, executor)
-        
+
     default:
         return cm.cancelImmediate(ctx, executor)
     }
@@ -196,22 +196,22 @@ func (cm *CancellationManager) CancelWithPolicy(ctx context.Context, executor *T
 func (cm *CancellationManager) cancelGraceful(ctx context.Context, executor *TaskExecutor) error {
     // 停止接受新任务
     executor.StopAccepting()
-    
+
     // 等待进行中的任务完成
     ctx, cancel := context.WithTimeout(ctx, cm.gracePeriod)
     defer cancel()
-    
+
     done := make(chan struct{})
     go func() {
         executor.WaitForRunningTasks()
         close(done)
     }()
-    
+
     select {
     case <-done:
         log.Println("All tasks completed gracefully")
         return nil
-        
+
     case <-ctx.Done():
         log.Println("Grace period expired, forcing cancellation")
         return cm.cancelImmediate(ctx, executor)
@@ -221,20 +221,20 @@ func (cm *CancellationManager) cancelGraceful(ctx context.Context, executor *Tas
 func (cm *CancellationManager) cancelDrain(ctx context.Context, executor *TaskExecutor) error {
     // 停止接受新任务
     executor.StopAccepting()
-    
+
     // 处理队列中所有任务
     for {
         select {
         case <-ctx.Done():
             return ctx.Err()
-            
+
         default:
             task, err := executor.Dequeue(ctx)
             if err == ErrQueueEmpty {
                 // 队列已空，取消进行中的任务
                 return cm.cancelImmediate(ctx, executor)
             }
-            
+
             // 处理任务
             if err := executor.ExecuteTask(ctx, task); err != nil {
                 log.Printf("Task execution failed during drain: %v", err)
@@ -257,17 +257,17 @@ type CancellationWithTimeout struct {
 func (cwt *CancellationWithTimeout) CancelTask(ctx context.Context, taskID string) error {
     ctx, cancel := context.WithTimeout(ctx, cwt.timeout)
     defer cancel()
-    
+
     result := make(chan error, 1)
-    
+
     go func() {
         result <- cwt.doCancel(taskID)
     }()
-    
+
     select {
     case err := <-result:
         return err
-        
+
     case <-ctx.Done():
         return fmt.Errorf("cancel operation timed out: %w", ctx.Err())
     }
@@ -277,25 +277,25 @@ func (cwt *CancellationWithTimeout) CancelTask(ctx context.Context, taskID strin
 func (cwt *CancellationWithTimeout) CancelBatch(ctx context.Context, taskIDs []string) CancelBatchResult {
     ctx, cancel := context.WithTimeout(ctx, cwt.timeout)
     defer cancel()
-    
+
     result := CancelBatchResult{
         Succeeded: make([]string, 0),
         Failed:    make(map[string]error),
     }
-    
+
     var wg sync.WaitGroup
     var mu sync.Mutex
-    
+
     for _, id := range taskIDs {
         wg.Add(1)
         go func(taskID string) {
             defer wg.Done()
-            
+
             err := cwt.doCancel(taskID)
-            
+
             mu.Lock()
             defer mu.Unlock()
-            
+
             if err != nil {
                 result.Failed[taskID] = err
             } else {
@@ -303,14 +303,14 @@ func (cwt *CancellationWithTimeout) CancelBatch(ctx context.Context, taskIDs []s
             }
         }(id)
     }
-    
+
     // 等待或超时
     done := make(chan struct{})
     go func() {
         wg.Wait()
         close(done)
     }()
-    
+
     select {
     case <-done:
         return result
@@ -349,7 +349,7 @@ func (cwt *CancellationWithTimeout) CancelBatch(ctx context.Context, taskIDs []s
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -408,7 +408,7 @@ spec:
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -450,7 +450,7 @@ A: 使用连接池、限流、熔断等模式。
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -566,7 +566,7 @@ CAP 定理和 BASE 理论的实际应用。
 
 ---
 
-**质量评级**: S (全面扩展)  
+**质量评级**: S (全面扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -682,7 +682,7 @@ CAP 定理和 BASE 理论的实际应用。
 
 ---
 
-**质量评级**: S (全面扩展)  
+**质量评级**: S (全面扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -817,21 +817,21 @@ func NewService(cfg Config) *DefaultService {
 func (s *DefaultService) Process(ctx context.Context, req Request) (Response, error) {
     ctx, cancel := context.WithTimeout(ctx, s.config.Timeout)
     defer cancel()
-    
+
     // 检查缓存
     if cached, ok := s.cache.Get(req.ID); ok {
         return Response{ID: req.ID, Result: cached}, nil
     }
-    
+
     // 处理逻辑
     result, err := s.doProcess(ctx, req)
     if err != nil {
         return Response{ID: req.ID, Error: err}, err
     }
-    
+
     // 更新缓存
     s.cache.Set(req.ID, result, 5*time.Minute)
-    
+
     return Response{ID: req.ID, Result: result}, nil
 }
 
@@ -853,7 +853,9 @@ func (s *DefaultService) Health() HealthStatus {
 ### 4. 配置示例
 
 `yaml
+
 # config.yaml
+
 server:
   host: 0.0.0.0
   port: 8080
@@ -893,13 +895,13 @@ import (
     "context"
     "testing"
     "time"
-    
+
     "github.com/stretchr/testify/assert"
 )
 
 func TestService_Process(t *testing.T) {
-    svc := NewService(Config{Timeout: 5 * time.Second})
-    
+    svc := NewService(Config{Timeout: 5* time.Second})
+
     tests := []struct {
         name    string
         req     Request
@@ -914,12 +916,12 @@ func TestService_Process(t *testing.T) {
             wantErr: false,
         },
     }
-    
+
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
             ctx := context.Background()
             resp, err := svc.Process(ctx, tt.req)
-            
+
             if tt.wantErr {
                 assert.Error(t, err)
             } else {
@@ -931,10 +933,10 @@ func TestService_Process(t *testing.T) {
 }
 
 func BenchmarkService_Process(b *testing.B) {
-    svc := NewService(Config{Timeout: 5 * time.Second})
+    svc := NewService(Config{Timeout: 5* time.Second})
     req := Request{ID: "bench", Data: "data"}
     ctx := context.Background()
-    
+
     b.ResetTimer()
     for i := 0; i < b.N; i++ {
         svc.Process(ctx, req)
@@ -945,7 +947,9 @@ func BenchmarkService_Process(b *testing.B) {
 ### 6. 部署配置
 
 `dockerfile
+
 # Dockerfile
+
 FROM golang:1.26.2-alpine AS builder
 
 WORKDIR /app
@@ -967,7 +971,9 @@ CMD ["./main"]
 `
 
 `yaml
+
 # docker-compose.yml
+
 version: '3.8'
 
 services:
@@ -1028,7 +1034,7 @@ volumes:
 ### 7. 监控指标
 
 | 指标名称 | 类型 | 描述 | 告警阈值 |
-|----------|------|------|----------|
+| ---------- | ------ | ------ | ---------- |
 | request_duration | Histogram | 请求处理时间 | p99 > 100ms |
 | request_total | Counter | 总请求数 | - |
 | error_total | Counter | 错误总数 | rate > 1% |
@@ -1039,17 +1045,18 @@ volumes:
 
 `
 问题诊断流程:
+
 1. 检查日志
    kubectl logs -f pod-name
-   
+
 2. 检查指标
-   curl http://localhost:9090/metrics
-   
+   curl <http://localhost:9090/metrics>
+
 3. 检查健康状态
-   curl http://localhost:8080/health
-   
+   curl <http://localhost:8080/health>
+
 4. 分析性能
-   go tool pprof http://localhost:9090/debug/pprof/profile
+   go tool pprof <http://localhost:9090/debug/pprof/profile>
 `
 
 ### 9. 最佳实践总结
@@ -1070,6 +1077,6 @@ volumes:
 
 ---
 
-**质量评级**: S (完整扩展)  
-**文档大小**: 经过本次扩展已达到 S 级标准  
+**质量评级**: S (完整扩展)
+**文档大小**: 经过本次扩展已达到 S 级标准
 **完成日期**: 2026-04-02

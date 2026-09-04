@@ -1,8 +1,8 @@
 # FT-027: Gossip Protocol - Formal Theory and Analysis
 
-> **Dimension**: Formal Theory  
-> **Level**: S (>15KB)  
-> **Tags**: #gossip #epidemic-protocols #dissemination #distributed-systems #scalability  
+> **Dimension**: Formal Theory
+> **Level**: S (>15KB)
+> **Tags**: #gossip #epidemic-protocols #dissemination #distributed-systems #scalability
 > **Authoritative Sources**:
 > - Demers, A., et al. (1987). "Epidemic Algorithms for Replicated Database Maintenance". PODC
 > - Karp, R., et al. (2000). "Randomized Rumor Spreading". FOCS
@@ -218,7 +218,7 @@ Every Round:
   if informed:
     pushTarget ← SelectRandom(Π \\ {p})
     Send(INFO, data) to pushTarget
-  
+
   // Pull phase
   pullTarget ← SelectRandom(Π \\ {p})
   Send(QUERY) to pullTarget
@@ -273,18 +273,18 @@ State:
 
 Every Round:
   start ← Now()
-  
+
   // Adjust fanout based on progress
   if completionEstimate > TARGET_TIME:
     fanout ← min(fanout + 1, MAX_FANOUT)
   else if completionEstimate < TARGET_TIME / 2:
     fanout ← max(fanout - 1, MIN_FANOUT)
-  
+
   // Send to fanout targets
   targets ← SelectRandom(Π \\ {p}, fanout)
   for each target in targets:
     Send(INFO) to target
-  
+
   lastRoundTime ← Now() - start
   completionEstimate ← EstimateCompletion(fanout, lastRoundTime)
 ```
@@ -298,10 +298,10 @@ Protocol AntiEntropyGossip:
 
 On GossipRound:
   target ← SelectRandom(Π \\ {p})
-  
+
   // Exchange digests
   Send(DIGEST, HashTreeRoot(localState)) to target
-  
+
   On ReceiveDigest(theirDigest):
     diff ← ComputeDiff(localState, theirDigest)
     if diff.missingLocally ≠ ∅:
@@ -337,7 +337,7 @@ Init ==
 GossipRound ==
   /\ round < MaxRound
   /\ round' = round + 1
-  /\ LET newInformed == 
+  /\ LET newInformed ==
          informed \union
          {target \in Processes \\ informed:
            \E gossiper \in informed:
@@ -355,7 +355,7 @@ Next ==
 
 \* Safety: Once informed, always informed
 Safety ==
-  \A r \in 0..round: 
+  \A r \in 0..round:
     \A p \in Processes:
       p \in informed => [](p \in informed)
 
@@ -396,13 +396,13 @@ Push ==
      IN informedPush' = informedPush \union targets
   /\ informedPull' = informedPull
 
-\* Pull phase  
+\* Pull phase
 Pull ==
   /\ round' = round + 1
   /\ LET targets == UNION {
          RandomSubset(1, Processes \\ {p}) : p \in Processes \\ informedPull
        }
-     IN informedPull' = informedPull \union 
+     IN informedPull' = informedPull \union
          (informedPush \intersect targets)
   /\ informedPush' = informedPush
 
@@ -416,7 +416,7 @@ PushPull ==
          RandomSubset(1, Processes \\ {p}) : p \in Processes \\ (informedPush \union informedPull)
        }
      IN /\ informedPush' = informedPush \union pushTargets
-        /\ informedPull' = informedPull \union 
+        /\ informedPull' = informedPull \union
             (informedPush \intersect pullQueries)
 
 Next ==
@@ -497,16 +497,16 @@ type Config struct {
 type PushGossip struct {
 	config    *Config
 	transport Transport
-	
+
 	mu        sync.RWMutex
 	nodes     map[string]*Node
 	informed  map[string]bool
 	messages  map[string]*Message
-	
+
 	msgCh     chan *Message
 	stopCh    chan struct{}
 	wg        sync.WaitGroup
-	
+
 	round     int64
 	msgCount  int64
 }
@@ -540,16 +540,16 @@ func (g *PushGossip) Disseminate(data []byte) (string, error) {
 		TTL:       g.config.MaxRounds,
 		Source:    "local",
 	}
-	
+
 	g.mu.Lock()
 	g.messages[msg.ID] = msg
 	g.informed["local"] = true
 	g.mu.Unlock()
-	
+
 	// Start dissemination
 	g.wg.Add(1)
 	go g.disseminate(msg)
-	
+
 	return msg.ID, nil
 }
 
@@ -568,7 +568,7 @@ func (g *PushGossip) Stop() {
 
 func (g *PushGossip) disseminate(msg *Message) {
 	defer g.wg.Done()
-	
+
 	rounds := 0
 	for rounds < g.config.MaxRounds {
 		select {
@@ -576,7 +576,7 @@ func (g *PushGossip) disseminate(msg *Message) {
 			return
 		case <-time.After(g.config.RoundInterval):
 		}
-		
+
 		g.mu.RLock()
 		if !g.informed["local"] {
 			g.mu.RUnlock()
@@ -584,11 +584,11 @@ func (g *PushGossip) disseminate(msg *Message) {
 		}
 		nodes := g.getRandomNodes(g.config.Fanout)
 		g.mu.RUnlock()
-		
+
 		for _, node := range nodes {
 			go g.sendMessage(node, msg)
 		}
-		
+
 		rounds++
 		atomic.AddInt64(&g.round, 1)
 	}
@@ -596,7 +596,7 @@ func (g *PushGossip) disseminate(msg *Message) {
 
 func (g *PushGossip) gossipLoop() {
 	defer g.wg.Done()
-	
+
 	for {
 		select {
 		case <-g.stopCh:
@@ -610,15 +610,15 @@ func (g *PushGossip) gossipLoop() {
 func (g *PushGossip) handleIncoming(msg *Message) {
 	g.mu.Lock()
 	defer g.mu.Unlock()
-	
+
 	// Check if already received
 	if _, ok := g.messages[msg.ID]; ok {
 		return
 	}
-	
+
 	g.messages[msg.ID] = msg
 	g.informed["local"] = true
-	
+
 	// Continue dissemination
 	if msg.TTL > 0 {
 		msg.TTL--
@@ -642,12 +642,12 @@ func (g *PushGossip) getRandomNodes(k int) []*Node {
 		}
 		return result
 	}
-	
+
 	// Weighted random selection
 	result := make([]*Node, 0, k)
 	candidates := make([]*Node, 0, len(g.nodes))
 	weights := make([]float64, 0, len(g.nodes))
-	
+
 	for _, n := range g.nodes {
 		candidates = append(candidates, n)
 		w := n.Weight
@@ -656,14 +656,14 @@ func (g *PushGossip) getRandomNodes(k int) []*Node {
 		}
 		weights = append(weights, w)
 	}
-	
+
 	// Simple weighted selection
 	for i := 0; i < k && len(candidates) > 0; i++ {
 		totalWeight := 0.0
 		for _, w := range weights {
 			totalWeight += w
 		}
-		
+
 		r := rand.Float64() * totalWeight
 		for j, w := range weights {
 			r -= w
@@ -676,7 +676,7 @@ func (g *PushGossip) getRandomNodes(k int) []*Node {
 			}
 		}
 	}
-	
+
 	return result
 }
 
@@ -684,12 +684,12 @@ func (g *PushGossip) getRandomNodes(k int) []*Node {
 func (g *PushGossip) Stats() (rounds, messages int64, coverage float64) {
 	rounds = atomic.LoadInt64(&g.round)
 	messages = atomic.LoadInt64(&g.msgCount)
-	
+
 	g.mu.RLock()
 	totalNodes := len(g.nodes) + 1
 	informedCount := len(g.informed)
 	g.mu.RUnlock()
-	
+
 	coverage = float64(informedCount) / float64(totalNodes)
 	return
 }
@@ -702,12 +702,12 @@ func (g *PushGossip) Stats() (rounds, messages int64, coverage float64) {
 type PullGossip struct {
 	config    *Config
 	transport Transport
-	
+
 	mu        sync.RWMutex
 	nodes     map[string]*Node
 	hasInfo   bool
 	messages  map[string]*Message
-	
+
 	stopCh    chan struct{}
 	wg        sync.WaitGroup
 }
@@ -732,10 +732,10 @@ func (g *PullGossip) Start() error {
 
 func (g *PullGossip) pullLoop() {
 	defer g.wg.Done()
-	
+
 	ticker := time.NewTicker(g.config.RoundInterval)
 	defer ticker.Stop()
-	
+
 	for {
 		select {
 		case <-g.stopCh:
@@ -754,7 +754,7 @@ func (g *PullGossip) doPull() {
 		g.mu.RUnlock()
 		return
 	}
-	
+
 	// Select random node
 	var target *Node
 	for _, n := range g.nodes {
@@ -762,7 +762,7 @@ func (g *PullGossip) doPull() {
 		break
 	}
 	g.mu.RUnlock()
-	
+
 	// Send query
 	g.transport.SendQuery(target)
 }
@@ -771,7 +771,7 @@ func (g *PullGossip) doPull() {
 func (g *PullGossip) OnInfoReceived(msg *Message) {
 	g.mu.Lock()
 	defer g.mu.Unlock()
-	
+
 	if _, ok := g.messages[msg.ID]; !ok {
 		g.messages[msg.ID] = msg
 		g.hasInfo = true
@@ -786,7 +786,7 @@ func (g *PullGossip) OnInfoReceived(msg *Message) {
 type PushPullGossip struct {
 	push  *PushGossip
 	pull  *PullGossip
-	
+
 	config    *Config
 	transport Transport
 }
@@ -836,13 +836,13 @@ type MerkleTree struct {
 type AntiEntropyGossip struct {
 	config    *Config
 	transport Transport
-	
+
 	mu        sync.RWMutex
 	nodes     map[string]*Node
 	data      map[string][]byte
 	versions  map[string]uint64
 	tree      *MerkleTree
-	
+
 	stopCh    chan struct{}
 	wg        sync.WaitGroup
 }
@@ -863,7 +863,7 @@ func NewAntiEntropyGossip(config *Config, transport Transport) *AntiEntropyGossi
 func (g *AntiEntropyGossip) Put(key string, value []byte) {
 	g.mu.Lock()
 	defer g.mu.Unlock()
-	
+
 	g.data[key] = value
 	g.versions[key]++
 	g.rebuildTree()
@@ -873,7 +873,7 @@ func (g *AntiEntropyGossip) Put(key string, value []byte) {
 func (g *AntiEntropyGossip) Get(key string) ([]byte, uint64, bool) {
 	g.mu.RLock()
 	defer g.mu.RUnlock()
-	
+
 	val, ok := g.data[key]
 	ver := g.versions[key]
 	return val, ver, ok
@@ -883,7 +883,7 @@ func (g *AntiEntropyGossip) Get(key string) ([]byte, uint64, bool) {
 func (g *AntiEntropyGossip) GetDigest() []byte {
 	g.mu.RLock()
 	defer g.mu.RUnlock()
-	
+
 	if g.tree == nil {
 		return nil
 	}
@@ -894,10 +894,10 @@ func (g *AntiEntropyGossip) GetDigest() []byte {
 func (g *AntiEntropyGossip) ComputeDiff(remoteDigest []byte, remoteVersions map[string]uint64) ([]string, []string) {
 	g.mu.RLock()
 	defer g.mu.RUnlock()
-	
+
 	missingLocally := make([]string, 0)
 	missingRemotely := make([]string, 0)
-	
+
 	// Find keys we don't have or have older versions of
 	for key, remoteVer := range remoteVersions {
 		localVer, ok := g.versions[key]
@@ -907,14 +907,14 @@ func (g *AntiEntropyGossip) ComputeDiff(remoteDigest []byte, remoteVersions map[
 			missingRemotely = append(missingRemotely, key)
 		}
 	}
-	
+
 	// Find keys only we have
 	for key := range g.versions {
 		if _, ok := remoteVersions[key]; !ok {
 			missingRemotely = append(missingRemotely, key)
 		}
 	}
-	
+
 	return missingLocally, missingRemotely
 }
 
@@ -927,12 +927,12 @@ func (g *AntiEntropyGossip) rebuildTree() {
 		h.Write(value)
 		hashes = append(hashes, h.Sum(nil))
 	}
-	
+
 	if len(hashes) == 0 {
 		g.tree = nil
 		return
 	}
-	
+
 	// Compute root
 	root := hashes[0]
 	for i := 1; i < len(hashes); i++ {
@@ -941,7 +941,7 @@ func (g *AntiEntropyGossip) rebuildTree() {
 		h.Write(hashes[i])
 		root = h.Sum(nil)
 	}
-	
+
 	g.tree = &MerkleTree{
 		Root:   root,
 		Leaves: g.data,
@@ -957,10 +957,10 @@ func (g *AntiEntropyGossip) Start() error {
 
 func (g *AntiEntropyGossip) entropyLoop() {
 	defer g.wg.Done()
-	
+
 	ticker := time.NewTicker(g.config.RoundInterval)
 	defer ticker.Stop()
-	
+
 	for {
 		select {
 		case <-g.stopCh:
@@ -977,7 +977,7 @@ func (g *AntiEntropyGossip) doAntiEntropyRound() {
 		g.mu.RUnlock()
 		return
 	}
-	
+
 	// Select random node
 	var target *Node
 	for _, n := range g.nodes {
@@ -990,7 +990,7 @@ func (g *AntiEntropyGossip) doAntiEntropyRound() {
 		versions[k] = v
 	}
 	g.mu.RUnlock()
-	
+
 	// Send digest
 	g.transport.SendDigest(target, digest, versions)
 }

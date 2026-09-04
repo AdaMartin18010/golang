@@ -26,8 +26,8 @@ Let $V_{current}$ be the current version serving 100% traffic. A canary deployme
 **System Constraints:**
 
 | Constraint | Formal Definition | Impact |
-|------------|-------------------|--------|
-| **Blast Radius** | $|\{affected\_users\}| < \theta_{max}$ | Must limit impact of failures |
+| ------------ | ------------------- | -------- |
+| **Blast Radius** | $ | \{affected\_users\} | < \theta_{max}$ | Must limit impact of failures |
 | **Rollback Time** | $T_{rollback} < T_{SLA}$ | Must recover quickly |
 | **Metric Confidence** | $confidence(metrics) > 0.95$ | Decisions need statistical validity |
 | **Version Compatibility** | $compatible(V_{current}, V_{new})$ | Database/schema migrations |
@@ -54,7 +54,7 @@ $$\forall t: risk(V_{new}, \alpha(t)) < risk_{acceptable} \land detect(failure) 
 ### 2.1 Canary Stage Definition
 
 | Stage | Traffic % | Duration | Criteria | Action on Failure |
-|-------|-----------|----------|----------|-------------------|
+| ------- | ----------- | ---------- | ---------- | ------------------- |
 | **Baseline** | 0% | 5 min | Metrics collection | N/A |
 | **Canary 1** | 5% | 10 min | Error rate < 1% | Rollback |
 | **Canary 2** | 25% | 15 min | P99 latency < baseline + 20% | Rollback |
@@ -384,7 +384,7 @@ func DefaultThresholds() []MetricThreshold {
 ## 5. Failure Scenarios and Mitigations
 
 | Scenario | Impact | Detection | Mitigation |
-|----------|--------|-----------|------------|
+| ---------- | -------- | ----------- | ------------ |
 | **Canary Crash** | 5-25% errors | Error rate spike | Automatic rollback |
 | **Performance Regression** | Slow responses | Latency increase | Threshold-based rollback |
 | **Metric False Positive** | Unnecessary rollback | Inconsistent signals | Multiple metric correlation |
@@ -395,7 +395,7 @@ func DefaultThresholds() []MetricThreshold {
 ## 6. Semantic Trade-off Analysis
 
 | Aspect | Canary | Blue-Green | Rolling Update |
-|--------|--------|------------|----------------|
+| -------- | -------- | ------------ | ---------------- |
 | **Risk Level** | Low | Low | Medium |
 | **Resource Cost** | Medium | High | Low |
 | **Rollback Speed** | Fast | Instant | Medium |

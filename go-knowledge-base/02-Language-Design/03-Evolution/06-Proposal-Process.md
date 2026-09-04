@@ -118,7 +118,7 @@ flowchart TD
 ### 2.2 各阶段详解
 
 | 阶段 | 负责人 | 时长 | 输出 |
-|------|--------|------|------|
+| ------ | -------- | ------ | ------ |
 | **Draft** | 提案作者 | 1-4周 | 设计文档草案 |
 | **Proposed** | 社区 | 2-8周 | 反馈与讨论 |
 | **Review** | Go Team | 2-4周 | 技术评估报告 |
@@ -162,7 +162,7 @@ $$\text{StdlibProposal} = \langle \text{package}, \text{api}, \text{useCase} \ra
 ### 4.1 历史重要提案
 
 | 提案 | 版本 | 状态 | 影响 |
-|------|------|------|------|
+| ------ | ------ | ------ | ------ |
 | [Generics](https://go.googlesource.com/proposal/+/refs/heads/master/design/go2draft-generics-overview.md) | Go 1.18 | ✅ 已实现 | 类型参数 |
 | [Error Values](https://go.googlesource.com/proposal/+/master/design/29934-error-values.md) | Go 1.13 | ✅ 已实现 | `%w` 包装 |
 | [Modules](https://go.googlesource.com/proposal/+/master/design/24301-versioned-go.md) | Go 1.11 | ✅ 已实现 | 依赖管理 |
@@ -603,7 +603,7 @@ gantt
 ### 7.1 成功提案的特征
 
 | 特征 | 说明 | 示例 |
-|------|------|------|
+| ------ | ------ | ------ |
 | **具体** | 清晰描述问题，而非模糊概念 | "泛型" 而非 "更好的抽象" |
 | **可行** | 提供实现路径 | 包含原型代码 |
 | **兼容** | 考虑向后兼容 | Go 1 兼容性保证 |

@@ -161,7 +161,7 @@ Therefore, atomicity is maintained. ∎
 ### 1.5 Comparison with 2PC
 
 | Property | 2PC | 3PC |
-|----------|-----|-----|
+| ---------- | ----- | ----- |
 | **Blocking** | Yes (coordinator failure) | No |
 | **Message Rounds** | 2 | 3 |
 | **Log Writes** | 2-3 per participant | 3 per participant |

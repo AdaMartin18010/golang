@@ -125,7 +125,7 @@ SSI 检测并防止所有串行化异常。
 ### 3.1 ANSI SQL 隔离级别
 
 | 隔离级别 | 读现象 | 形式化保证 |
-|---------|--------|-----------|
+| --------- | -------- | ----------- |
 | READ UNCOMMITTED | 脏读、不可重复读、幻读 | 无 (仅限 PG 实现为 READ COMMITTED) |
 | READ COMMITTED | 不可重复读、幻读 | 每次语句新快照 |
 | REPEATABLE READ | 幻读 (PG 无幻读) | 事务级快照 |
@@ -195,7 +195,7 @@ $$T_1 \text{ reads } x, \text{ writes } y \land T_2 \text{ reads } y, \text{ wri
 **锁模式**:
 
 | 锁 | 冲突 | 说明 |
-|----|------|------|
+| ---- | ------ | ------ |
 | ACCESS SHARE | ACCESS EXCLUSIVE | SELECT |
 | ROW SHARE | ACCESS EXCLUSIVE, EXCLUSIVE | SELECT FOR UPDATE/SHARE |
 | ROW EXCLUSIVE | SHARE, SHARE ROW EXCLUSIVE, EXCLUSIVE, ACCESS EXCLUSIVE | INSERT, UPDATE, DELETE |
@@ -292,7 +292,7 @@ T1 (XID=100)          T2 (XID=200)          T3 (XID=300)
 ### 5.3 事务并发矩阵
 
 | 场景 | T1 | T2 | 结果 | 说明 |
-|------|----|----|------|------|
+| ------ | ---- | ---- | ------ | ------ |
 | 读-读 | SELECT | SELECT | 无冲突 | MVCC 允许 |
 | 读-写 | SELECT | UPDATE | 无冲突 | 不同版本 |
 | 写-读 | UPDATE | SELECT | 无冲突 | T2 看旧版本 |
@@ -420,95 +420,95 @@ $$LSN \in \mathbb{N}^+ \text{ (单调递增)}$$
 package postgres_test
 
 import (
-	"context"
-	"testing"
-	
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
+ "context"
+ "testing"
+
+ "github.com/jackc/pgx/v5"
+ "github.com/jackc/pgx/v5/pgxpool"
 )
 
 // BenchmarkSimpleQuery measures simple query latency
 func BenchmarkSimpleQuery(b *testing.B) {
-	pool, _ := pgxpool.New(context.Background(), "postgres://localhost/test")
-	defer pool.Close()
-	
-	ctx := context.Background()
-	
-	b.ResetTimer()
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			var id int
-			_ = pool.QueryRow(ctx, "SELECT 1").Scan(&id)
-		}
-	})
+ pool, _ := pgxpool.New(context.Background(), "postgres://localhost/test")
+ defer pool.Close()
+
+ ctx := context.Background()
+
+ b.ResetTimer()
+ b.RunParallel(func(pb *testing.PB) {
+  for pb.Next() {
+   var id int
+   _ = pool.QueryRow(ctx, "SELECT 1").Scan(&id)
+  }
+ })
 }
 
 // BenchmarkPreparedStatement shows prepared statement benefits
 func BenchmarkPreparedStatement(b *testing.B) {
-	pool, _ := pgxpool.New(context.Background(), "postgres://localhost/test")
-	defer pool.Close()
-	
-	ctx := context.Background()
-	
-	b.Run("WithoutPrepare", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			_, _ = pool.Exec(ctx, "INSERT INTO test VALUES ($1)", i)
-		}
-	})
-	
-	b.Run("WithPrepare", func(b *testing.B) {
-		_, _ = pool.Prepare(ctx, "insert", "INSERT INTO test VALUES ($1)")
-		for i := 0; i < b.N; i++ {
-			_, _ = pool.Exec(ctx, "insert", i)
-		}
-	})
+ pool, _ := pgxpool.New(context.Background(), "postgres://localhost/test")
+ defer pool.Close()
+
+ ctx := context.Background()
+
+ b.Run("WithoutPrepare", func(b *testing.B) {
+  for i := 0; i < b.N; i++ {
+   _, _ = pool.Exec(ctx, "INSERT INTO test VALUES ($1)", i)
+  }
+ })
+
+ b.Run("WithPrepare", func(b *testing.B) {
+  _, _ = pool.Prepare(ctx, "insert", "INSERT INTO test VALUES ($1)")
+  for i := 0; i < b.N; i++ {
+   _, _ = pool.Exec(ctx, "insert", i)
+  }
+ })
 }
 
 // BenchmarkTransactionBatch compares transaction strategies
 func BenchmarkTransactionBatch(b *testing.B) {
-	pool, _ := pgxpool.New(context.Background(), "postgres://localhost/test")
-	defer pool.Close()
-	
-	ctx := context.Background()
-	
-	b.Run("IndividualInserts", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			_, _ = pool.Exec(ctx, "INSERT INTO test VALUES ($1)", i)
-		}
-	})
-	
-	b.Run("BatchInsert", func(b *testing.B) {
-		batch := &pgx.Batch{}
-		for i := 0; i < 1000; i++ {
-			batch.Queue("INSERT INTO test VALUES ($1)", i)
-		}
-		br := pool.SendBatch(ctx, batch)
-		_ = br.Close()
-	})
+ pool, _ := pgxpool.New(context.Background(), "postgres://localhost/test")
+ defer pool.Close()
+
+ ctx := context.Background()
+
+ b.Run("IndividualInserts", func(b *testing.B) {
+  for i := 0; i < b.N; i++ {
+   _, _ = pool.Exec(ctx, "INSERT INTO test VALUES ($1)", i)
+  }
+ })
+
+ b.Run("BatchInsert", func(b *testing.B) {
+  batch := &pgx.Batch{}
+  for i := 0; i < 1000; i++ {
+   batch.Queue("INSERT INTO test VALUES ($1)", i)
+  }
+  br := pool.SendBatch(ctx, batch)
+  _ = br.Close()
+ })
 }
 
 // BenchmarkConnectionPool measures pool scalability
 func BenchmarkConnectionPool(b *testing.B) {
-	config, _ := pgxpool.ParseConfig("postgres://localhost/test")
-	config.MaxConns = 100
-	pool, _ := pgxpool.NewWithConfig(context.Background(), config)
-	defer pool.Close()
-	
-	ctx := context.Background()
-	
-	b.ResetTimer()
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			_, _ = pool.Exec(ctx, "SELECT 1")
-		}
-	})
+ config, _ := pgxpool.ParseConfig("postgres://localhost/test")
+ config.MaxConns = 100
+ pool, _ := pgxpool.NewWithConfig(context.Background(), config)
+ defer pool.Close()
+
+ ctx := context.Background()
+
+ b.ResetTimer()
+ b.RunParallel(func(pb *testing.PB) {
+  for pb.Next() {
+   _, _ = pool.Exec(ctx, "SELECT 1")
+  }
+ })
 }
 ```
 
 ### 8.2 Database Performance Comparison
 
 | Driver | Simple Query | Prepared | Transaction | Pool Efficiency |
-|--------|--------------|----------|-------------|-----------------|
+| -------- | -------------- | ---------- | ------------- | ----------------- |
 | **pgx** | 120μs | 80μs | 150μs | 95% |
 | **lib/pq** | 180μs | 140μs | 220μs | 88% |
 | **go-sql-driver/mysql** | 100μs | 70μs | 130μs | 92% |
@@ -517,7 +517,7 @@ func BenchmarkConnectionPool(b *testing.B) {
 ### 8.3 Transaction Isolation Performance
 
 | Isolation Level | Throughput | Latency (p99) | Concurrency Anomalies |
-|-----------------|------------|---------------|----------------------|
+| ----------------- | ------------ | --------------- | ---------------------- |
 | Read Uncommitted | 50K TPS | 5ms | Many |
 | Read Committed | 45K TPS | 8ms | Some |
 | Repeatable Read | 35K TPS | 12ms | Few |
@@ -529,7 +529,7 @@ func BenchmarkConnectionPool(b *testing.B) {
 From high-volume PostgreSQL deployments:
 
 | Metric | P50 | P95 | P99 | Max |
-|--------|-----|-----|-----|-----|
+| -------- | ----- | ----- | ----- | ----- |
 | Query Latency | 2ms | 10ms | 50ms | 500ms |
 | Connection Acquisition | 100μs | 500μs | 2ms | 10ms |
 | Transaction Duration | 5ms | 50ms | 200ms | 2s |
@@ -539,7 +539,7 @@ From high-volume PostgreSQL deployments:
 
 ```sql
 -- Index optimization
-CREATE INDEX CONCURRENTLY idx_orders_user_id 
+CREATE INDEX CONCURRENTLY idx_orders_user_id
 ON orders(user_id) WHERE status = 'active';
 
 -- Partitioning for time-series
@@ -554,7 +554,7 @@ work_mem = 64MB
 ```
 
 | Optimization | Latency Impact | Throughput Impact | Effort |
-|-------------|----------------|-------------------|--------|
+| ------------- | ---------------- | ------------------- | -------- |
 | Connection pooling | -80% | +300% | Low |
 | Prepared statements | -30% | +50% | Low |
 | Proper indexing | -90% | +1000% | Medium |

@@ -9,6 +9,7 @@ Microservices require common functionality (logging, monitoring, configuration, 
 #### Problem Statement
 
 Given:
+
 - A set of microservices S = {s₁, s₂, ..., sₙ}
 - Cross-cutting concerns C = {c₁, c₂, ..., cₘ} where each cᵢ includes:
   - Observability (metrics, logging, tracing)
@@ -17,6 +18,7 @@ Given:
   - Resilience (circuit breaking, retries)
 
 Find a deployment model D such that:
+
 ```
 Minimize: CodeDuplication(S, C)
 Minimize: Coupling(S, C)
@@ -205,22 +207,22 @@ type SidecarConfig struct {
     // Application connection
     AppHost string
     AppPort int
-    
+
     // Sidecar listener
     ListenPort    int
     AdminPort     int
     MetricsPort   int
-    
+
     // TLS configuration
     TLSCertPath   string
     TLSKeyPath    string
     CAPath        string
-    
+
     // Resilience settings
     CircuitBreaker CircuitBreakerConfig
     Retry          RetryConfig
     Timeout        TimeoutConfig
-    
+
     // Observability
     LogLevel      string
     TraceEndpoint string
@@ -249,38 +251,38 @@ type TimeoutConfig struct {
 type Sidecar struct {
     config      *SidecarConfig
     logger      *zap.Logger
-    
+
     // Proxies
     appProxy    *httputil.ReverseProxy
-    
+
     // Components
     metrics     *Metrics
     tracer      *Tracer
     breaker     *CircuitBreaker
     retrier     *Retrier
     authenticator *Authenticator
-    
+
     // Servers
     proxyServer  *http.Server
     adminServer  *http.Server
     metricsServer *http.Server
-    
+
     ctx         context.Context
     cancel      context.CancelFunc
 }
 
 func NewSidecar(cfg *SidecareConfig) (*Sidecar, error) {
     logger, _ := zap.NewProduction()
-    
+
     ctx, cancel := context.WithCancel(context.Background())
-    
+
     s := &Sidecar{
         config: cfg,
         logger: logger,
         ctx:    ctx,
         cancel: cancel,
     }
-    
+
     // Setup application proxy
     appURL := &url.URL{
         Scheme: "http",
@@ -288,21 +290,21 @@ func NewSidecar(cfg *SidecareConfig) (*Sidecar, error) {
     }
     s.appProxy = httputil.NewSingleHostReverseProxy(appURL)
     s.appProxy.ErrorHandler = s.handleProxyError
-    
+
     // Initialize components
     s.metrics = NewMetrics()
     s.tracer = NewTracer(cfg.TraceEndpoint)
-    
+
     if cfg.CircuitBreaker.Enabled {
         s.breaker = NewCircuitBreaker(cfg.CircuitBreaker)
     }
-    
+
     if cfg.Retry.Enabled {
         s.retrier = NewRetrier(cfg.Retry)
     }
-    
+
     s.setupServers()
-    
+
     return s, nil
 }
 
@@ -310,7 +312,7 @@ func (s *Sidecar) setupServers() {
     // Main proxy server
     proxyMux := http.NewServeMux()
     proxyMux.Handle("/", s.wrapMiddleware(s.appProxy))
-    
+
     s.proxyServer = &http.Server{
         Addr:         fmt.Sprintf(":%d", s.config.ListenPort),
         Handler:      proxyMux,
@@ -318,22 +320,22 @@ func (s *Sidecar) setupServers() {
         WriteTimeout: s.config.Timeout.Request,
         IdleTimeout:  s.config.Timeout.Idle,
     }
-    
+
     // Admin server (health, config)
     adminMux := http.NewServeMux()
     adminMux.HandleFunc("/health", s.healthHandler)
     adminMux.HandleFunc("/ready", s.readyHandler)
     adminMux.HandleFunc("/config", s.configHandler)
-    
+
     s.adminServer = &http.Server{
         Addr:    fmt.Sprintf(":%d", s.config.AdminPort),
         Handler: adminMux,
     }
-    
+
     // Metrics server (Prometheus)
     metricsMux := http.NewServeMux()
     metricsMux.Handle("/metrics", promhttp.Handler())
-    
+
     s.metricsServer = &http.Server{
         Addr:    fmt.Sprintf(":%d", s.config.MetricsPort),
         Handler: metricsMux,
@@ -343,7 +345,7 @@ func (s *Sidecar) setupServers() {
 // wrapMiddleware applies all sidecar middleware
 func (s *Sidecar) wrapMiddleware(handler http.Handler) http.Handler {
     h := handler
-    
+
     // Order matters: outside-in for request, inside-out for response
     h = s.loggingMiddleware(h)
     h = s.tracingMiddleware(h)
@@ -352,19 +354,19 @@ func (s *Sidecar) wrapMiddleware(handler http.Handler) http.Handler {
     h = s.circuitBreakerMiddleware(h)
     h = s.retryMiddleware(h)
     h = s.timeoutMiddleware(h)
-    
+
     return h
 }
 
 func (s *Sidecar) loggingMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         start := time.Now()
-        
+
         // Wrap response writer to capture status
         wrapped := &responseRecorder{ResponseWriter: w}
-        
+
         next.ServeHTTP(wrapped, r)
-        
+
         s.logger.Info("request",
             zap.String("method", r.Method),
             zap.String("path", r.URL.Path),
@@ -379,14 +381,14 @@ func (s *Sidecar) tracingMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         // Extract or create trace context
         ctx := s.tracer.Extract(r.Context(), r.Header)
-        
+
         // Start span
         span, ctx := s.tracer.StartSpan(ctx, "sidecar_proxy")
         defer span.Finish()
-        
+
         // Add trace headers for application
         s.tracer.Inject(ctx, r.Header)
-        
+
         next.ServeHTTP(w, r.WithContext(ctx))
     })
 }
@@ -397,16 +399,16 @@ func (s *Sidecar) circuitBreakerMiddleware(next http.Handler) http.Handler {
             next.ServeHTTP(w, r)
             return
         }
-        
+
         if !s.breaker.Allow() {
             s.metrics.RecordCircuitBreakerOpen()
             http.Error(w, "Service Unavailable", http.StatusServiceUnavailable)
             return
         }
-        
+
         wrapped := &responseRecorder{ResponseWriter: w}
         next.ServeHTTP(wrapped, r)
-        
+
         // Record result
         if wrapped.statusCode >= 500 {
             s.breaker.RecordFailure()
@@ -422,22 +424,22 @@ func (s *Sidecar) retryMiddleware(next http.Handler) http.Handler {
             next.ServeHTTP(w, r)
             return
         }
-        
+
         var lastErr error
-        
+
         for attempt := 0; attempt < s.retrier.MaxAttempts; attempt++ {
             if attempt > 0 {
                 // Calculate backoff
                 delay := s.retrier.CalculateBackoff(attempt)
                 time.Sleep(delay)
-                
+
                 // Clone request for retry
                 r = r.Clone(r.Context())
             }
-            
+
             wrapped := &responseRecorder{ResponseWriter: w}
             next.ServeHTTP(wrapped, r)
-            
+
             // Success
             if wrapped.statusCode < 500 {
                 if attempt > 0 {
@@ -445,15 +447,15 @@ func (s *Sidecar) retryMiddleware(next http.Handler) http.Handler {
                 }
                 return
             }
-            
+
             // Check if retryable
             if !s.retrier.IsRetryable(wrapped.statusCode) {
                 return
             }
-            
+
             lastErr = fmt.Errorf("attempt %d failed with status %d", attempt+1, wrapped.statusCode)
         }
-        
+
         s.metrics.RecordRetryExhausted()
         s.logger.Warn("retry exhausted",
             zap.Error(lastErr),
@@ -464,27 +466,27 @@ func (s *Sidecar) retryMiddleware(next http.Handler) http.Handler {
 
 func (s *Sidecar) Run() error {
     errCh := make(chan error, 3)
-    
+
     // Start servers
     go func() {
         s.logger.Info("starting proxy server", zap.Int("port", s.config.ListenPort))
         errCh <- s.proxyServer.ListenAndServe()
     }()
-    
+
     go func() {
         s.logger.Info("starting admin server", zap.Int("port", s.config.AdminPort))
         errCh <- s.adminServer.ListenAndServe()
     }()
-    
+
     go func() {
         s.logger.Info("starting metrics server", zap.Int("port", s.config.MetricsPort))
         errCh <- s.metricsServer.ListenAndServe()
     }()
-    
+
     // Wait for shutdown signal
     sigCh := make(chan os.Signal, 1)
     signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
-    
+
     select {
     case err := <-errCh:
         return err
@@ -496,28 +498,28 @@ func (s *Sidecar) Run() error {
 func (s *Sidecar) Shutdown() error {
     s.logger.Info("shutting down sidecar...")
     s.cancel()
-    
+
     ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
     defer cancel()
-    
+
     var errs []error
-    
+
     if err := s.proxyServer.Shutdown(ctx); err != nil {
         errs = append(errs, fmt.Errorf("proxy shutdown: %w", err))
     }
-    
+
     if err := s.adminServer.Shutdown(ctx); err != nil {
         errs = append(errs, fmt.Errorf("admin shutdown: %w", err))
     }
-    
+
     if err := s.metricsServer.Shutdown(ctx); err != nil {
         errs = append(errs, fmt.Errorf("metrics shutdown: %w", err))
     }
-    
+
     if len(errs) > 0 {
         return fmt.Errorf("shutdown errors: %v", errs)
     }
-    
+
     return nil
 }
 
@@ -528,7 +530,7 @@ func (s *Sidecar) healthHandler(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "unhealthy", http.StatusServiceUnavailable)
         return
     }
-    
+
     w.WriteHeader(http.StatusOK)
     w.Write([]byte(`{"status":"healthy"}`))
 }
@@ -579,7 +581,7 @@ func NewMetrics() *Metrics {
             },
         ),
     }
-    
+
     prometheus.MustRegister(
         m.requestDuration,
         m.requestsTotal,
@@ -587,7 +589,7 @@ func NewMetrics() *Metrics {
         m.retrySuccess,
         m.retryExhausted,
     )
-    
+
     return m
 }
 ```
@@ -601,23 +603,23 @@ sidecar:
   app:
     host: "127.0.0.1"
     port: 8080
-  
+
   # Listener configuration
   proxy:
     port: 8000
     read_timeout: 30s
     write_timeout: 30s
     idle_timeout: 120s
-  
+
   # Admin endpoints
   admin:
     port: 8001
-  
+
   # Prometheus metrics
   metrics:
     port: 8002
     path: "/metrics"
-  
+
   # TLS configuration (mTLS)
   tls:
     enabled: true
@@ -625,7 +627,7 @@ sidecar:
     key_file: "/etc/certs/sidecar.key"
     ca_file: "/etc/certs/ca.crt"
     client_auth: "require_and_verify"
-  
+
   # Circuit breaker
   circuit_breaker:
     enabled: true
@@ -633,7 +635,7 @@ sidecar:
     success_threshold: 2
     timeout: 30s
     half_open_max_calls: 3
-  
+
   # Retry policy
   retry:
     enabled: true
@@ -641,13 +643,13 @@ sidecar:
     base_delay: 100ms
     max_delay: 2s
     retryable_status_codes: [502, 503, 504]
-  
+
   # Observability
   tracing:
     enabled: true
     endpoint: "http://jaeger:14268/api/traces"
     sample_rate: 0.1
-  
+
   logging:
     level: "info"
     format: "json"
@@ -658,7 +660,7 @@ sidecar:
 ### Sidecar vs In-Process
 
 | Aspect | Sidecar | In-Process Library | Notes |
-|--------|---------|-------------------|-------|
+| -------- | --------- | ------------------- | ------- |
 | **Resource Usage** | Higher (extra container) | Lower | Sidecar needs CPU/memory |
 | **Latency** | Higher (~1-3ms) | Lower | Network hop vs function call |
 | **Language Support** | Universal | Language-specific | Sidecar works with any language |
@@ -725,7 +727,7 @@ func TestSidecarProxy(t *testing.T) {
         w.Write([]byte(`{"status":"ok"}`))
     }))
     defer app.Close()
-    
+
     // Create sidecar
     cfg := &SidecarConfig{
         AppHost: "localhost",
@@ -736,32 +738,32 @@ func TestSidecarProxy(t *testing.T) {
         CircuitBreaker: CircuitBreakerConfig{Enabled: false},
         Retry: RetryConfig{Enabled: false},
     }
-    
+
     sidecar, err := NewSidecar(cfg)
     require.NoError(t, err)
-    
+
     go sidecar.Run()
     defer sidecar.Shutdown()
-    
+
     // Wait for startup
     time.Sleep(100 * time.Millisecond)
-    
+
     // Test proxy functionality
     t.Run("proxies request to app", func(t *testing.T) {
         resp, err := http.Get("http://localhost:18000/test")
         require.NoError(t, err)
         defer resp.Body.Close()
-        
+
         assert.Equal(t, http.StatusOK, resp.StatusCode)
         assert.Equal(t, "value", resp.Header.Get("X-App-Header"))
     })
-    
+
     t.Run("adds tracing headers", func(t *testing.T) {
         req, _ := http.NewRequest("GET", "http://localhost:18000/test", nil)
         resp, err := http.DefaultClient.Do(req)
         require.NoError(t, err)
         defer resp.Body.Close()
-        
+
         assert.NotEmpty(t, resp.Header.Get("X-Trace-ID"))
     })
 }
@@ -778,7 +780,7 @@ func TestSidecarCircuitBreaker(t *testing.T) {
         w.WriteHeader(http.StatusOK)
     }))
     defer app.Close()
-    
+
     cfg := &SidecarConfig{
         AppHost: "localhost",
         AppPort: parsePort(app.URL),
@@ -791,25 +793,25 @@ func TestSidecarCircuitBreaker(t *testing.T) {
         },
         Retry: RetryConfig{Enabled: false},
     }
-    
+
     sidecar, err := NewSidecar(cfg)
     require.NoError(t, err)
-    
+
     go sidecar.Run()
     defer sidecar.Shutdown()
-    
+
     time.Sleep(100 * time.Millisecond)
-    
+
     // Trigger failures to open circuit
     for i := 0; i < 5; i++ {
         http.Get("http://localhost:18010/test")
     }
-    
+
     // Circuit should be open now
     resp, err := http.Get("http://localhost:18010/test")
     require.NoError(t, err)
     defer resp.Body.Close()
-    
+
     assert.Equal(t, http.StatusServiceUnavailable, resp.StatusCode)
 }
 
@@ -824,7 +826,7 @@ func TestSidecarRetry(t *testing.T) {
         w.WriteHeader(http.StatusOK)
     }))
     defer app.Close()
-    
+
     cfg := &SidecarConfig{
         AppHost: "localhost",
         AppPort: parsePort(app.URL),
@@ -836,19 +838,19 @@ func TestSidecarRetry(t *testing.T) {
             BaseDelay:   10 * time.Millisecond,
         },
     }
-    
+
     sidecar, err := NewSidecar(cfg)
     require.NoError(t, err)
-    
+
     go sidecar.Run()
     defer sidecar.Shutdown()
-    
+
     time.Sleep(100 * time.Millisecond)
-    
+
     resp, err := http.Get("http://localhost:18020/test")
     require.NoError(t, err)
     defer resp.Body.Close()
-    
+
     assert.Equal(t, http.StatusOK, resp.StatusCode)
     assert.Equal(t, 3, attemptCount) // Retried until success
 }
@@ -865,6 +867,7 @@ The Sidecar Pattern provides:
 5. **Simplified Applications**: Developers focus on business logic
 
 Key considerations:
+
 - Resource overhead (memory/CPU per sidecar)
 - Latency impact (minimal with localhost)
 - Debugging complexity (distributed logs)

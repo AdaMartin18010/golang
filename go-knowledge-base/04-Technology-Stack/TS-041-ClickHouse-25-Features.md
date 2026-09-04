@@ -1,9 +1,9 @@
 # TS-041-ClickHouse-25-Features
 
-> **Dimension**: 04-Technology-Stack  
-> **Status**: S-Level Academic  
-> **Created**: 2026-04-03  
-> **Version**: ClickHouse 25.x  
+> **Dimension**: 04-Technology-Stack
+> **Status**: S-Level Academic
+> **Created**: 2026-04-03
+> **Version**: ClickHouse 25.x
 > **Size**: >20KB
 
 ---
@@ -22,7 +22,7 @@ CREATE TABLE events (
     event_data JSON
 );
 
-INSERT INTO events VALUES 
+INSERT INTO events VALUES
 (now(), '{"type": "click", "target": "button"}');
 
 SELECT event_data.type FROM events;
@@ -41,7 +41,7 @@ CREATE TABLE metrics (
 
 ```sql
 CREATE DYNAMIC TABLE hourly_stats AS
-SELECT 
+SELECT
     toStartOfHour(timestamp) as hour,
     count() as cnt
 FROM events

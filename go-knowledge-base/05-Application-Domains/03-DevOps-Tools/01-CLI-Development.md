@@ -11,7 +11,7 @@
 ### 1.1 CLI vs GUI vs API Comparison
 
 | Aspect | CLI | GUI | Web API |
-|--------|-----|-----|---------|
+| -------- | ----- | ----- | --------- |
 | Automation | Excellent (scripts) | Poor | Good (curl/scripts) |
 | Learning Curve | Moderate | Low | High |
 | Remote Access | SSH | VNC/RDP | HTTP |
@@ -23,7 +23,7 @@
 ### 1.2 CLI Application Types
 
 | Type | Examples | Characteristics |
-|------|----------|-----------------|
+| ------ | ---------- | ----------------- |
 | System Tools | kubectl, docker, git | Complex hierarchies, plugins |
 | Build Tools | make, npm, go | Task-oriented, dependency management |
 | Dev Tools | linters, formatters, generators | Single-purpose, pipe-friendly |
@@ -164,7 +164,7 @@
 ### 3.1 CLI Performance Optimization
 
 | Technique | Before | After | Benefit |
-|-----------|--------|-------|---------|
+| ----------- | -------- | ------- | --------- |
 | Concurrent operations | Sequential | Parallel | 5-10x faster |
 | Lazy loading | Load all | On-demand | Lower memory |
 | Streaming | Buffer all | Process chunks | Handle large files |
@@ -249,7 +249,7 @@ func (pr *ProgressReporter) Finish() {
 ### 4.1 CLI Framework Comparison
 
 | Framework | Maturity | Features | Learning Curve | Best For |
-|-----------|----------|----------|----------------|----------|
+| ----------- | ---------- | ---------- | ---------------- | ---------- |
 | Cobra | ★★★★★ | ★★★★★ | Medium | Large projects, kubectl-style |
 | urfave/cli | ★★★★★ | ★★★★☆ | Low | Simple to medium projects |
 | Kingpin | ★★★★☆ | ★★★★☆ | Low | Flag-heavy applications |
@@ -259,7 +259,7 @@ func (pr *ProgressReporter) Finish() {
 ### 4.2 Recommended Stack
 
 | Component | Library | Purpose |
-|-----------|---------|---------|
+| ----------- | --------- | --------- |
 | Framework | Cobra | Command structure |
 | Config | Viper | Configuration management |
 | Colors | fatih/color | Terminal colors |
@@ -954,7 +954,7 @@ func SaveConfig(config *Config) error {
 ### 8.1 CLI Security Checklist
 
 | Category | Requirement | Implementation |
-|----------|-------------|----------------|
+| ---------- | ------------- | ---------------- |
 | Credentials | Secure storage | OS keyring integration |
 | Tokens | Encryption at rest | AES-256 encryption |
 | API Calls | TLS only | Force TLS 1.3 |

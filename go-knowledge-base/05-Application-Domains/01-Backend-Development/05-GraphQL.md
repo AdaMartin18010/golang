@@ -11,7 +11,7 @@
 ### 1.1 GraphQL vs REST Comparison
 
 | Aspect | GraphQL | REST |
-|--------|---------|------|
+| -------- | --------- | ------ |
 | Data Fetching | Precise, single request | Multiple endpoints, over/under-fetching |
 | Schema | Strong typing, introspection | OpenAPI/Swagger documentation |
 | Versioning | Schema evolution | URL versioning (v1, v2) |
@@ -595,7 +595,7 @@ func (c *CacheMiddleware) getTTL(ctx context.Context) time.Duration {
 ### 4.1 Recommended Libraries
 
 | Component | Library | Purpose |
-|-----------|---------|---------|
+| ----------- | --------- | --------- |
 | Schema Generation | gqlgen | Type-safe GraphQL server |
 | DataLoader | graph-gophers/dataloader | Batching and caching |
 | Subscriptions | gqlgen (built-in) | WebSocket subscriptions |
@@ -1083,7 +1083,7 @@ func Constraint(ctx context.Context, obj interface{}, next graphql.Resolver, for
 ### 8.1 Security Checklist
 
 | Category | Requirement | Implementation |
-|----------|-------------|----------------|
+| ---------- | ------------- | ---------------- |
 | Query | Depth limiting | Max 10 levels |
 | Query | Complexity limiting | Max 1000 points |
 | Query | Timeout | 10 seconds max |

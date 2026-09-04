@@ -607,7 +607,7 @@ type QueueStats struct {
 ### Priority Queue Strategies
 
 | Strategy | Latency for P0 | Fairness | Complexity | Use Case |
-|----------|---------------|----------|------------|----------|
+| ---------- | --------------- | ---------- | ------------ | ---------- |
 | **Strict Priority** | Lowest | Poor (starvation) | Low | Emergency systems |
 | **Weighted Fair** | Low | Good | Medium | General purpose |
 | **Aging/Time-based** | Medium | Very Good | Medium | Batch systems |

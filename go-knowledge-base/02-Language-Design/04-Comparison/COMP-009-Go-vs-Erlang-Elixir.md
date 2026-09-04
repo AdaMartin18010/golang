@@ -616,7 +616,7 @@ func callRemote(ctx context.Context, addr string, data []byte) ([]byte, error) {
 ## Performance Comparison
 
 | Metric | Elixir/Erlang | Go | Notes |
-|--------|---------------|-----|-------|
+| -------- | --------------- | ----- | ------- |
 | Process/Goroutine Spawn | 1-2 μs | 1-2 μs | Similar |
 | Memory per Process | ~300 bytes | ~2KB | Erlang lighter |
 | Max Processes | Millions | Millions | Similar |
@@ -632,7 +632,7 @@ func callRemote(ctx context.Context, addr string, data []byte) ([]byte, error) {
 ### Choose Erlang/Elixir When
 
 | Criterion | Weight | Score | Rationale |
-|-----------|--------|-------|-----------|
+| ----------- | -------- | ------- | ----------- |
 | Maximum uptime | Critical | 10/10 | 99.999% achievable |
 | Hot code reload | High | 10/10 | Unique feature |
 | Soft real-time | High | 10/10 | Millisecond latency guarantees |
@@ -642,7 +642,7 @@ func callRemote(ctx context.Context, addr string, data []byte) ([]byte, error) {
 ### Choose Go When
 
 | Criterion | Weight | Score | Rationale |
-|-----------|--------|-------|-----------|
+| ----------- | -------- | ------- | ----------- |
 | Raw performance | High | 10/10 | Faster computation |
 | Easy deployment | High | 10/10 | Single binary |
 | Team scaling | Medium | 9/10 | Easier to hire |
@@ -654,7 +654,7 @@ func callRemote(ctx context.Context, addr string, data []byte) ([]byte, error) {
 ## Summary
 
 | Aspect | Erlang/Elixir | Go | Winner |
-|--------|---------------|-----|--------|
+| -------- | --------------- | ----- | -------- |
 | Fault Tolerance | Excellent | Good | Erlang/Elixir |
 | Concurrency Model | Actor | CSP | Tie |
 | Distributed Systems | Built-in | Libraries | Erlang/Elixir |

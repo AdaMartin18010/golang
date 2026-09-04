@@ -7,7 +7,7 @@ Ansible is an open-source automation tool for configuration management, applicat
 ### 1.1 Core Capabilities
 
 | Capability | Description | Use Case |
-|------------|-------------|----------|
+| ------------ | ------------- | ---------- |
 | Configuration Management | Idempotent system configuration | Server provisioning |
 | Application Deployment | Multi-tier app deployment | CI/CD pipelines |
 | Orchestration | Workflow coordination | Complex deployments |
@@ -1182,7 +1182,7 @@ scp_if_ssh = True
 ## 7. Comparison with Alternatives
 
 | Feature | Ansible | Puppet | Chef | SaltStack |
-|---------|---------|--------|------|-----------|
+| --------- | --------- | -------- | ------ | ----------- |
 | Agentless | Yes | No | No | Optional |
 | Language | YAML | DSL | Ruby | YAML/Python |
 | Master/Agent | No | Yes | Yes | Yes/Optional |

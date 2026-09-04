@@ -58,7 +58,7 @@ where:
 **Failure Models**:
 
 | Model | Detection | Recovery | Example |
-|-------|-----------|----------|---------|
+| ------- | ----------- | ---------- | --------- |
 | Crash-Stop | Permanent | No | SWIM |
 | Crash-Recovery | Temporary | Yes | Extended SWIM |
 | Byzantine | Arbitrary | No | Byzantine Gossip |
@@ -99,7 +99,7 @@ SWIM consists of three independent components:
 **State Variables**:
 
 | Variable | Type | Description |
-|----------|------|-------------|
+| ---------- | ------ | ------------- |
 | $members$ | $\mathcal{P}(\Pi)$ | Current membership list |
 | $suspects$ | $\mathcal{P}(\Pi)$ | Suspicious processes |
 | $incarnation$ | $\mathbb{N}$ | Local incarnation number |

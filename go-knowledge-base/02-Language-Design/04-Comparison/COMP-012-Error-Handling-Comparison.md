@@ -632,7 +632,7 @@ function assertDefined<T>(value: T | undefined | null): asserts value is T {
 ## Comparison Matrix
 
 | Aspect | Go | Rust | Java | Python | Swift | TS/JS |
-|--------|-----|------|------|--------|-------|-------|
+| -------- | ----- | ------ | ------ | -------- | ------- | ------- |
 | Explicit | ✓✓ | ✓✓ | Partial | ✗ | Partial | Variable |
 | Compile-time | ✓ | ✓ | Checked ex | ✗ | ✓ | ✗ |
 | Ergonomics | Good | Excellent | Poor | Good | Excellent | Good |

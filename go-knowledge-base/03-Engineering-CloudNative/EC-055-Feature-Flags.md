@@ -26,7 +26,7 @@ Let $\mathcal{F} = \{f_1, f_2, ..., f_n\}$ be a set of feature flags for applica
 **Flag Types:**
 
 | Type | Purpose | Lifecycle | Targeting |
-|------|---------|-----------|-----------|
+| ------ | --------- | ----------- | ----------- |
 | **Release** | Dark launch | Short | User segments |
 | **Experiment** | A/B testing | Medium | Percentage |
 | **Operational** | Kill switch | Permanent | Emergency only |
@@ -35,11 +35,11 @@ Let $\mathcal{F} = \{f_1, f_2, ..., f_n\}$ be a set of feature flags for applica
 **System Constraints:**
 
 | Constraint | Formal Definition | Impact |
-|------------|-------------------|--------|
+| ------------ | ------------------- | -------- |
 | **Evaluation Latency** | $T_{eval}(f) < 10ms$ | Cannot impact request performance |
 | **Consistency** | $\forall req: eval(f, req) = deterministic$ | Same user must see same feature |
 | **Propagation Speed** | $T_{flag\_change} < 1min$ | Quick enable/disable required |
-| **Cardinality** | $|\mathcal{F}| \leq 1000$ | Too many flags create complexity |
+| **Cardinality** | $ | \mathcal{F} | \leq 1000$ | Too many flags create complexity |
 
 ### 1.2 Problem Statement
 
@@ -636,7 +636,7 @@ func contains(s, substr string) bool {
 ## 5. Failure Scenarios and Mitigations
 
 | Scenario | Impact | Detection | Mitigation |
-|----------|--------|-----------|------------|
+| ---------- | -------- | ----------- | ------------ |
 | **Flag Service Down** | Cannot evaluate new flags | Connection error | Local cache + Default values |
 | **Flag Leak** | Users see wrong features | Analytics anomaly | Gradual rollout + Monitoring |
 | **Performance Degradation** | Request latency | Response time | Async evaluation + Caching |
@@ -648,7 +648,7 @@ func contains(s, substr string) bool {
 ## 6. Semantic Trade-off Analysis
 
 | Aspect | Client-Side | Server-Side | Hybrid |
-|--------|-------------|-------------|--------|
+| -------- | ------------- | ------------- | -------- |
 | **Latency** | Zero network | Network call | Cached |
 | **Security** | Exposed rules | Protected | Protected |
 | **Consistency** | Harder | Easier | Balanced |

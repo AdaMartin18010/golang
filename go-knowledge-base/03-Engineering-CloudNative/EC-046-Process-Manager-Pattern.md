@@ -24,11 +24,11 @@ $$T = \{(S_i, op_i) \mid i \in [1, n], op_i \in \{invoke, compensate\}\}$$
 **System Constraints:**
 
 | Constraint | Formal Definition | Impact |
-|------------|-------------------|--------|
+| ------------ | ------------------- | -------- |
 | **Network Partition** | $\exists t: S_i \nleftrightarrow S_j$ | Services may become unreachable during execution |
 | **Partial Failure** | $\exists S_k \in T: failure(S_k) \land \forall i \neq k: success(S_i)$ | Need compensation mechanism |
 | **Eventual Consistency** | $\forall s_i: \Diamond \square (s_i \models \phi)$ | Temporary inconsistency is acceptable |
-| **No Global Clock** | $\nexists C: \forall S_i, S_j: |clock_i - clock_j| < \epsilon$ | Ordering requires vector clocks |
+| **No Global Clock** | $\nexists C: \forall S_i, S_j: | clock_i - clock_j | < \epsilon$ | Ordering requires vector clocks |
 | **Idempotency Required** | $\forall op: op(x) = op(op(x))$ | Retry safety for at-least-once delivery |
 
 ### 1.2 Problem Statement
@@ -1335,7 +1335,7 @@ func (r *RecoveryService) Recover(ctx context.Context) error {
 ### 5.3 Production Hardening
 
 | Aspect | Strategy | Implementation |
-|--------|----------|----------------|
+| -------- | ---------- | ---------------- |
 | **Idempotency** | Request deduplication | Idempotency key in headers, check before execution |
 | **Observability** | Distributed tracing | OpenTelemetry spans for all operations |
 | **Metrics** | Key performance indicators | Counter/Histogram for success rate, duration |
@@ -1372,7 +1372,7 @@ strong consistency guarantees; use Choreography for simple, independent flows.
 ### 6.2 Synchronous vs Asynchronous Compensation
 
 | Approach | Latency | Reliability | Complexity | Use Case |
-|----------|---------|-------------|------------|----------|
+| ---------- | --------- | ------------- | ------------ | ---------- |
 | **Synchronous** | Higher | Easier to track | Lower | Financial transactions |
 | **Asynchronous** | Lower | Requires queue | Higher | High-throughput flows |
 | **Parallel** | Lowest | Harder to debug | Medium | Independent compensations |
@@ -1380,7 +1380,7 @@ strong consistency guarantees; use Choreography for simple, independent flows.
 ### 6.3 Storage Backend Trade-offs
 
 | Backend | Consistency | Availability | Performance | Cost |
-|---------|-------------|--------------|-------------|------|
+| --------- | ------------- | -------------- | ------------- | ------ |
 | PostgreSQL | Strong | Good | Medium | Low |
 | MongoDB | Eventual | Excellent | High | Medium |
 | Event Store DB | Strong | Good | Medium | High |

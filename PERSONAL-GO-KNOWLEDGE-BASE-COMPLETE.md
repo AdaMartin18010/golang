@@ -55,7 +55,7 @@ pknowledge/                    # 个人知识库
 ### 2.1 概念卡片 (4张)
 
 | 卡片 | 主题 | 状态 |
-|------|------|------|
+| ------ | ------ | ------ |
 | `2026040201-f-bounded-polymorphism.md` | F-有界多态性 | ✅ |
 | `2026040202-green-tea-gc.md` | Green Tea GC | ✅ |
 | `2026040203-errors-astype.md` | errors.AsType | ✅ |
@@ -123,7 +123,7 @@ pknowledge/                    # 个人知识库
 ### 4.1 已配置工具
 
 | 工具 | 功能 | 位置 |
-|------|------|------|
+| ------ | ------ | ------ |
 | `track_go_releases.py` | Go 版本跟踪 | `scripts/knowledge-tracker/` |
 | `track_papers.py` | 论文跟踪 | `scripts/knowledge-tracker/` |
 | `knowledge-tracker.yml` | 每日自动运行 | `.github/workflows/` |
@@ -173,7 +173,7 @@ pknowledge/04-projects/experiments/
 ### 6.1 Go 1.26 核心技术
 
 | 特性 | 理论背景 | 性能影响 |
-|------|----------|----------|
+| ------ | ---------- | ---------- |
 | F-有界多态性 | 类型理论 | 架构优化 |
 | Green Tea GC | 内存管理 | -10~40% GC |
 | errors.AsType | 泛型单态化 | +68% 速度 |
@@ -255,7 +255,7 @@ pknowledge/04-projects/experiments/
 ### 量化目标
 
 | 指标 | 年度目标 | 当前 |
-|------|----------|------|
+| ------ | ---------- | ------ |
 | 卡片数 | 200+ | 4 |
 | 深度文章 | 12+ | 0 |
 | 实验项目 | 20+ | 1 |
@@ -302,7 +302,7 @@ pknowledge/04-projects/experiments/
 ## 确认事项
 
 | # | 事项 | 建议 | 状态 |
-|---|------|------|------|
+| --- | ------ | ------ | ------ |
 | 1 | 开始填充卡片 | 是 | 待确认 |
 | 2 | 执行学习路径 Month 1 | 是 | 待确认 |
 | 3 | 继续深化形式化方法 | 是 | 待确认 |

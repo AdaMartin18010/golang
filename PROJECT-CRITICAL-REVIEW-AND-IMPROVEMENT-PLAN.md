@@ -23,7 +23,7 @@
 #### ✅ 优点
 
 | 方面 | 评价 | 评分 |
-|------|------|------|
+| ------ | ------ | ------ |
 | Clean Architecture 结构 | 四层架构清晰，目录结构遵循标准 | 8/10 |
 | 接口抽象 | Repository/Service 接口定义合理 | 7/10 |
 | 依赖方向 | 依赖倒置原则基本正确 | 7/10 |
@@ -32,7 +32,7 @@
 #### ❌ 缺陷
 
 | 问题 | 严重度 | 说明 |
-|------|--------|------|
+| ------ | -------- | ------ |
 | **依赖注入缺失** | 🔴 P0 | 依赖注入只是概念，Wire 未实际集成 |
 | **过度工程化** | 🟡 P1 | pkg/utils/ 包含 50+ 个小模块，很多都是 wrapper |
 | **重复抽象** | 🟡 P1 | jwt、rbac、oauth2 等存在 internal/ 和 pkg/ 重复实现 |
@@ -70,7 +70,7 @@ return &Connection{db: nil}, fmt.Errorf("not implemented: use Ent client")
 #### ❌ 严重缺陷
 
 | 问题 | 严重度 | 说明 |
-|------|--------|------|
+| ------ | -------- | ------ |
 | **测试失败** | 🔴 P0 | `internal/framework/logger` 测试实际失败 |
 | **Mock 过度使用** | 🟡 P1 | 大量测试使用 mock，缺乏集成测试 |
 | **覆盖率虚高** | 🟡 P1 | 22 个 coverage 文件显示覆盖率分析混乱 |
@@ -92,7 +92,7 @@ return &Connection{db: nil}, fmt.Errorf("not implemented: use Ent client")
 #### ✅ 优点
 
 | 组件 | 实现质量 | 说明 |
-|------|----------|------|
+| ------ | ---------- | ------ |
 | JWT | 良好 | pkg/security/jwt/ 实现完整，支持 RSA |
 | RBAC | 中等 | 基本 RBAC 实现，但缺少复杂场景 |
 | ABAC | 中等 | 有策略引擎框架，但策略定义繁琐 |
@@ -100,7 +100,7 @@ return &Connection{db: nil}, fmt.Errorf("not implemented: use Ent client")
 #### ❌ 缺陷
 
 | 问题 | 严重度 | 说明 |
-|------|--------|------|
+| ------ | -------- | ------ |
 | **无密码学最佳实践** | 🔴 P0 | 密钥管理、加密算法选择缺乏指导 |
 | **Vault 集成是模拟** | 🔴 P0 | internal/security/vault/ 是 mock 实现 |
 | **无安全中间件链** | 🟡 P1 | 中间件之间缺乏协同（CSP、HSTS、X-Frame-Options） |
@@ -133,7 +133,7 @@ if cfg.PrivateKeyPath == "" {
 #### ❌ 严重缺陷
 
 | 问题 | 严重度 | 说明 |
-|------|--------|------|
+| ------ | -------- | ------ |
 | **eBPF 完全未实现** | 🔴 P0 | 声称有 Cilium eBPF，实际是空壳 |
 | **Metrics 未导出** | 🔴 P0 | OTLP metrics 只有 MeterProvider，无 exporter |
 | **无结构化日志** | 🟡 P1 | 日志字段不统一，缺乏标准化 |
@@ -156,7 +156,7 @@ json := `{"total_requests":` + strconv.FormatInt(stats["total_requests"].(int64)
 #### ✅ 优点（最强项）
 
 | 方面 | 评分 | 说明 |
-|------|------|------|
+| ------ | ------ | ------ |
 | 文档数量 | 9/10 | 超过 100 个 Markdown 文件 |
 | 注释质量 | 8/10 | 详细的中文注释，包含使用示例 |
 | 架构说明 | 7/10 | docs/architecture/ 结构清晰 |
@@ -165,7 +165,7 @@ json := `{"total_requests":` + strconv.FormatInt(stats["total_requests"].(int64)
 #### ❌ 缺陷
 
 | 问题 | 严重度 | 说明 |
-|------|--------|------|
+| ------ | -------- | ------ |
 | **文档与代码不同步** | 🔴 P0 | 大量文档描述未实现功能 |
 | **过度文档化** | 🟡 P1 | 大量重复、自我参照的 "完成报告" |
 | **过时文档未清理** | 🟡 P1 | archive/ 目录仍保留在历史 git 中 |
@@ -179,7 +179,7 @@ json := `{"total_requests":` + strconv.FormatInt(stats["total_requests"].(int64)
 #### ❌ 严重缺陷
 
 | 问题 | 严重度 | 说明 |
-|------|--------|------|
+| ------ | -------- | ------ |
 | **panic 在生产代码** | 🔴 P0 | internal/application/workflow/workflow.go:38 |
 | **无连接池配置** | 🔴 P0 | 数据库连接池参数未暴露 |
 | **无超时控制** | 🔴 P0 | HTTP 客户端、数据库查询缺乏超时 |
@@ -208,7 +208,7 @@ func GetUserService(ctx context.Context) *usersvc.Service {
 #### ❌ 代码异味
 
 | 问题 | 数量 | 示例 |
-|------|------|------|
+| ------ | ------ | ------ |
 | TODO/FIXME 注释 | 50+ | 有些超过半年未解决 |
 | 空实现 | 15+ | eBPF、PostgreSQL、Vault 等 |
 | 重复代码 | 多处 | jwt 在 pkg/auth/jwt 和 pkg/security/jwt |
@@ -220,7 +220,7 @@ func GetUserService(ctx context.Context) *usersvc.Service {
 ## 二、详细评分矩阵
 
 | 维度 | 评分 | 权重 | 加权分 | 主要问题 |
-|------|------|------|--------|----------|
+| ------ | ------ | ------ | -------- | ---------- |
 | **代码完成度** | 5/10 | 20% | 1.0 | 大量 TODO、空实现 |
 | **测试质量** | 5/10 | 15% | 0.75 | 测试失败、mock 过度 |
 | **安全实践** | 5/10 | 15% | 0.75 | Vault 模拟、无安全最佳实践 |
@@ -254,7 +254,7 @@ return nil, fmt.Errorf("user service not found in context")
 #### 3. 实现或移除空组件 [3天]
 
 | 组件 | 决策 | 行动 |
-|------|------|------|
+| ------ | ------ | ------ |
 | eBPF | 移除 | 删除 internal/infrastructure/observability/ebpf/ |
 | PostgreSQL 连接 | 移除 | 删除，使用 Ent 即可 |
 | OTLP Metrics | 实现 | 添加 otlpmetricgrpc exporter |

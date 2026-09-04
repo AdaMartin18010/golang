@@ -7,7 +7,7 @@ Jaeger is an open-source distributed tracing system originally developed by Uber
 ### 1.1 Core Capabilities
 
 | Capability | Description | Version |
-|------------|-------------|---------|
+| ------------ | ------------- | --------- |
 | Distributed Context Propagation | Tracks requests across service boundaries | 1.40+ |
 | Performance/Latency Optimization | Identifies bottlenecks and performance issues | All |
 | Root Cause Analysis | Traces error propagation through the system | All |
@@ -807,7 +807,7 @@ func NewOptimizedCollector(cfg CollectorConfig) (*Collector, error) {
 ### 5.3 Resource Allocation
 
 | Component | Small (<1K req/s) | Medium (1K-10K) | Large (>10K) |
-|-----------|-------------------|-----------------|--------------|
+| ----------- | ------------------- | ----------------- | -------------- |
 | Collector CPU | 1 core | 4 cores | 16 cores |
 | Collector Memory | 2GB | 8GB | 32GB |
 | ES Data Nodes | 3 | 6 | 12+ |
@@ -926,7 +926,7 @@ spec:
 ### 7.1 Feature Comparison
 
 | Feature | Jaeger | Zipkin | Tempo | AWS X-Ray |
-|---------|--------|--------|-------|-----------|
+| --------- | -------- | -------- | ------- | ----------- |
 | Open Source | Yes | Yes | Yes | No |
 | OpenTelemetry Native | Yes | Partial | Yes | Partial |
 | Storage Options | ES, Cassandra, Kafka | ES, Cassandra, MySQL | TempoDB, S3, GCS | AWS Only |

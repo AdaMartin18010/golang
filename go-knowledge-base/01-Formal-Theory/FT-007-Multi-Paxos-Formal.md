@@ -86,7 +86,7 @@ $$(\mathcal{L}(p_i)[k].\text{term} = \mathcal{L}(p_j)[k].\text{term}) \Rightarro
 **定义 2.4 (Leader 状态变量)**
 
 | 变量 | 类型 | 说明 |
-|------|------|------|
+| ------ | ------ | ------ |
 | $isLeader$ | $\mathbb{B}$ | 是否自认为是 Leader |
 | $leaderTerm$ | $\mathbb{N}$ | Leader 任期 |
 | $nextIndex$ | $\Pi \rightarrow \mathcal{I}$ | 每个 follower 的下一个发送索引 |
@@ -257,7 +257,7 @@ $\square$
 ### 4.3 Paxos 变体对比矩阵
 
 | 属性 | Basic Paxos | Multi-Paxos | Fast Paxos | Flexible Paxos | EPaxos |
-|------|-------------|-------------|------------|----------------|--------|
+| ------ | ------------- | ------------- | ------------ | ---------------- | -------- |
 | **正常情况延迟** | 2 RTT | 1 RTT | 1 RTT | 1-2 RTT | 1 RTT |
 | **Leader 变更** | 2 RTT | 2 RTT | 2 RTT | 2 RTT | 1 RTT |
 | **消息复杂度** | $O(n^2)$ | $O(n)$ | $O(n)$ | $O(n)$ | $O(n)$ |

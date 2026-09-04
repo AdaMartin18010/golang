@@ -722,7 +722,7 @@ func (sc *StripeConvoy) getStripeIndex(entityKey string) int {
 ### Convoy Strategy Comparison
 
 | Strategy | Ordering Guarantee | Throughput | Latency | Complexity | Best For |
-|----------|-------------------|------------|---------|------------|----------|
+| ---------- | ------------------- | ------------ | --------- | ------------ | ---------- |
 | **Kafka Partition** | Strong | High | Low-Med | Low | Most use cases |
 | **Actor Model** | Strong | Med | Low | Med | Variable entity count |
 | **Lock Stripes** | Strong | Med-High | Low | Low | In-memory processing |

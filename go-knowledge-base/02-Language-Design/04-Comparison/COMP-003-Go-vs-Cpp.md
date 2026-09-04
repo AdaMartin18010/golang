@@ -64,7 +64,7 @@ std::vector<int> createLargeVector() {
 // Template metaprogramming
  template<typename T>
 class Container {
-    static_assert(std::is_copy_constructible_v<T>, 
+    static_assert(std::is_copy_constructible_v<T>,
                   "T must be copy constructible");
     std::vector<T> data;
 public:
@@ -74,6 +74,7 @@ public:
 ```
 
 **C++ Systems Programming Strengths:**
+
 - Deterministic resource management (RAII)
 - Template metaprogramming
 - Direct hardware access
@@ -142,7 +143,7 @@ func processWithResource() error {
         return err
     }
     defer res.Close()  // Guaranteed to run
-    
+
     // Process...
     return nil
 }
@@ -152,6 +153,7 @@ func releaseSystemResource(handle int) error { return nil }
 ```
 
 **Go Systems Programming Strengths:**
+
 - Fast compilation
 - Memory safety (no dangling pointers)
 - Goroutine-based concurrency
@@ -182,11 +184,11 @@ void stackAllocation() {
 void heapAllocation() {
     // Unique ownership
     auto ptr1 = std::make_unique<int>(42);
-    
+
     // Shared ownership
     auto ptr2 = std::make_shared<int>(42);
     auto ptr3 = ptr2;  // Shared
-    
+
     // Custom deleter
     auto file = std::unique_ptr<FILE, decltype(&fclose)>(
         fopen("test.txt", "r"),
@@ -201,7 +203,7 @@ class PoolAllocator {
         alignas(alignof(T)) char memory[sizeof(T) * 1024];
         bool used[1024] = {};
     } pool;
-    
+
 public:
     T* allocate() {
         for (int i = 0; i < 1024; ++i) {
@@ -212,7 +214,7 @@ public:
         }
         throw std::bad_alloc();
     }
-    
+
     void deallocate(T* p) {
         size_t idx = (reinterpret_cast<char*>(p) - pool.memory) / sizeof(T);
         pool.used[idx] = false;
@@ -266,7 +268,7 @@ var bufferPool = sync.Pool{
 func processWithPool() {
     buf := bufferPool.Get().(*Buffer)
     defer bufferPool.Put(buf)
-    
+
     // Use buffer...
     copy(buf.data, []byte("data"))
 }
@@ -278,7 +280,7 @@ func unsafeExample() {
     // Convert slice to array pointer (Go 1.17+)
     slice := make([]byte, 100)
     ptr := (*[100]byte)(unsafe.Pointer(&slice[0]))
-    
+
     // Or more safely with unsafe.Slice
     arr := unsafe.Slice(&slice[0], len(slice))
     _ = arr
@@ -295,7 +297,7 @@ func forceGC() {
 **Memory Characteristics:**
 
 | Aspect | C++ | Go |
-|--------|-----|-----|
+| -------- | ----- | ----- |
 | Allocation Control | Complete | Limited |
 | Deallocation | Manual/RAII | GC |
 | Fragmentation | Configurable | Automatic |
@@ -369,10 +371,10 @@ func sumArray(data []float32) float32 {
 func parallelSum(data []float32) float32 {
     numCPU := runtime.NumCPU()
     chunkSize := (len(data) + numCPU - 1) / numCPU
-    
+
     var wg sync.WaitGroup
     partialSums := make([]float32, numCPU)
-    
+
     for i := 0; i < numCPU; i++ {
         wg.Add(1)
         go func(idx, start int) {
@@ -388,9 +390,9 @@ func parallelSum(data []float32) float32 {
             partialSums[idx] = sum
         }(i, i*chunkSize)
     }
-    
+
     wg.Wait()
-    
+
     var total float32
     for _, s := range partialSums {
         total += s
@@ -429,21 +431,22 @@ func (p *Points) Transform(fn func(x, y, z float32) (float32, float32, float32))
 ### Data Structure Implementation
 
 **C++ Vector:**
+
 ```cpp
 template<typename T>
 class Vector {
     T* data_;
     size_t size_;
     size_t capacity_;
-    
+
 public:
     Vector() : data_(nullptr), size_(0), capacity_(0) {}
-    
+
     ~Vector() {
         clear();
         ::operator delete(data_);
     }
-    
+
     // Move semantics
     Vector(Vector&& other) noexcept
         : data_(other.data_),
@@ -453,7 +456,7 @@ public:
         other.size_ = 0;
         other.capacity_ = 0;
     }
-    
+
     // Copy semantics
     Vector(const Vector& other) : size_(other.size_), capacity_(other.size_) {
         data_ = static_cast<T*>(::operator new(sizeof(T) * capacity_));
@@ -461,42 +464,43 @@ public:
             new (&data_[i]) T(other.data_[i]);
         }
     }
-    
+
     void push_back(const T& value) {
         if (size_ >= capacity_) {
             reserve(capacity_ == 0 ? 1 : capacity_ * 2);
         }
         new (&data_[size_++]) T(value);
     }
-    
+
     void reserve(size_t new_cap) {
         if (new_cap <= capacity_) return;
-        
+
         T* new_data = static_cast<T*>(::operator new(sizeof(T) * new_cap));
-        
+
         for (size_t i = 0; i < size_; ++i) {
             new (&new_data[i]) T(std::move(data_[i]));
             data_[i].~T();
         }
-        
+
         ::operator delete(data_);
         data_ = new_data;
         capacity_ = new_cap;
     }
-    
+
     void clear() {
         for (size_t i = 0; i < size_; ++i) {
             data_[i].~T();
         }
         size_ = 0;
     }
-    
+
     T& operator[](size_t i) { return data_[i]; }
     size_t size() const { return size_; }
 };
 ```
 
 **Go Slice:**
+
 ```go
 package main
 
@@ -549,7 +553,7 @@ func (s *IntSlice) Reserve(n int) {
 ### Comparative Performance
 
 | Benchmark | C++ (O3) | Go 1.21 | Ratio |
-|-----------|----------|---------|-------|
+| ----------- | ---------- | --------- | ------- |
 | Binary Tree | 1.0x | 1.8x | C++ 1.8x faster |
 | Fannkuch Redux | 1.0x | 2.2x | C++ 2.2x faster |
 | N-Body | 1.0x | 1.5x | C++ 1.5x faster |
@@ -562,7 +566,7 @@ func (s *IntSlice) Reserve(n int) {
 ### Compilation Speed
 
 | Lines of Code | C++ (Clang) | Go |
-|---------------|-------------|-----|
+| --------------- | ------------- | ----- |
 | 1,000 | 2s | 0.5s |
 | 10,000 | 15s | 1s |
 | 100,000 | 120s | 5s |
@@ -572,10 +576,10 @@ func (s *IntSlice) Reserve(n int) {
 
 ## Use Case Decision Matrix
 
-### Choose C++ When...
+### Choose C++ When
 
 | Criterion | Weight | Score | Rationale |
-|-----------|--------|-------|-----------|
+| ----------- | -------- | ------- | ----------- |
 | Maximum performance | Critical | 10/10 | Zero-cost abstractions |
 | Real-time systems | Critical | 10/10 | No GC pauses |
 | Game engines | High | 10/10 | Industry standard |
@@ -583,10 +587,10 @@ func (s *IntSlice) Reserve(n int) {
 | Existing C++ codebase | Critical | 10/10 | Migration cost |
 | Hardware drivers | High | 10/10 | Direct access |
 
-### Choose Go When...
+### Choose Go When
 
 | Criterion | Weight | Score | Rationale |
-|-----------|--------|-------|-----------|
+| ----------- | -------- | ------- | ----------- |
 | Fast development | High | 9/10 | Quick compile cycles |
 | Network services | High | 10/10 | Excellent stdlib |
 | Team scaling | Medium | 9/10 | Easy to learn |
@@ -627,7 +631,7 @@ extern "C" {
         char* data;
         size_t len;
     };
-    
+
     ProcessingResult* process_data(const char* input, size_t len);
     void free_result(ProcessingResult* result);
 }
@@ -667,20 +671,20 @@ func (p *Processor) Process(data []byte) ([]byte, error) {
     if len(data) == 0 {
         return nil, fmt.Errorf("empty input")
     }
-    
+
     cInput := (*C.char)(unsafe.Pointer(&data[0]))
     cLen := C.size_t(len(data))
-    
+
     result := C.process_data(cInput, cLen)
     if result == nil {
         return nil, fmt.Errorf("processing failed")
     }
     defer C.free_result(result)
-    
+
     if result.status != 0 {
         return nil, fmt.Errorf("processing error: %d", result.status)
     }
-    
+
     // Copy data
     output := C.GoBytes(unsafe.Pointer(result.data), C.int(result.len))
     return output, nil
@@ -690,7 +694,7 @@ func (p *Processor) Process(data []byte) ([]byte, error) {
 #### Step 3: Code Pattern Mapping
 
 | C++ Pattern | Go Equivalent |
-|-------------|---------------|
+| ------------- | --------------- |
 | `std::unique_ptr<T>` | Value or `*T` with careful lifecycle |
 | `std::shared_ptr<T>` | Manual refcount or redesign |
 | `std::vector<T>` | Slice `[]T` |
@@ -737,7 +741,7 @@ func main() {}  // Required but not used
 ## Summary Table
 
 | Aspect | C++ | Go | Winner |
-|--------|-----|-----|--------|
+| -------- | ----- | ----- | -------- |
 | Raw Performance | Excellent | Good | C++ |
 | Compilation Speed | Slow | Fast | Go |
 | Memory Control | Complete | Limited | C++ |
@@ -755,6 +759,7 @@ func main() {}  // Required but not used
 ## Conclusion
 
 **Use C++ for:**
+
 - Game engines and graphics
 - High-frequency trading
 - Real-time systems
@@ -762,6 +767,7 @@ func main() {}  // Required but not used
 - Performance-critical libraries
 
 **Use Go for:**
+
 - Cloud infrastructure
 - Network services
 - DevOps tools

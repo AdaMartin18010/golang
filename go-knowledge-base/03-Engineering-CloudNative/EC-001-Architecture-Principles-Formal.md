@@ -24,7 +24,7 @@ $$\text{CloudNative}(S) \Leftrightarrow \text{Containerized}(S) \land \text{Dyna
 ### 1.2 约束条件
 
 | 约束类型 | 形式化 | 说明 |
-|---------|--------|------|
+| --------- | -------- | ------ |
 | **可移植性** | $\forall env: \text{Deployable}(S, env)$ | 可在任意环境部署 |
 | **可伸缩性** | $\text{Scale}(S) \propto \text{Load}$ | 负载与资源线性关系 |
 | **高可用性** | $P(\text{available}) \geq 0.999$ | 99.9% 可用性目标 |
@@ -48,7 +48,7 @@ $$\text{Config}(S) \cap \text{Code}(S) = \emptyset$$
 **定义 2.1 (十二因素形式化)**
 
 | 因素 | 形式化 | 实现模式 |
-|------|--------|----------|
+| ------ | -------- | ---------- |
 | **Codebase** | $\exists! repo: \text{Codebase}(app) = repo$ | 单一代码库，多部署 |
 | **Dependencies** | $\text{Explicit}(deps) \land \text{Isolated}(deps)$ | 显式依赖声明 |
 | **Config** | $\text{Config} \cap \text{Code} = \emptyset$ | 环境变量配置 |
@@ -383,7 +383,7 @@ func (tc *TelemetryCollector) InstrumentHandler(handler http.HandlerFunc) http.H
 ### 4.1 常见故障模式
 
 | 故障类型 | 场景 | 影响 | 缓解策略 |
-|---------|------|------|----------|
+| --------- | ------ | ------ | ---------- |
 | **级联故障** | 依赖服务宕机导致连锁反应 | 系统全面瘫痪 | 熔断器、舱壁隔离 |
 | **资源耗尽** | 内存/连接池耗尽 | 服务无响应 | 资源限制、优雅降级 |
 | **配置漂移** | 环境配置不一致 | 部署失败 | 配置外部化、ConfigMap |
@@ -567,7 +567,7 @@ Layer 1: Observability
 ### 6.1 架构模式对比矩阵
 
 | 维度 | Monolith | Microservices | Serverless | PaaS |
-|------|----------|---------------|------------|------|
+| ------ | ---------- | --------------- | ------------ | ------ |
 | **开发速度** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
 | **运维复杂度** | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
 | **可伸缩性** | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |

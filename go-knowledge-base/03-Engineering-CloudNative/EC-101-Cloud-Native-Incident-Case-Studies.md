@@ -84,23 +84,23 @@ func (v *CronJobValidator) Validate(cronJob *batchv1.CronJob) error {
     if cronJob.Spec.ConcurrencyPolicy == batchv1.AllowConcurrent {
         return fmt.Errorf("concurrencyPolicy: Allow is forbidden")
     }
-    
+
     // Check job template pod count
     jobSpec := cronJob.Spec.JobTemplate.Spec.Template.Spec
     podCount := int32(0)
-    
+
     for _, container := range jobSpec.Containers {
         if container.Resources.Requests.Cpu().MilliValue() > 1000 {
             return fmt.Errorf("container CPU request exceeds limit")
         }
     }
-    
+
     // Check schedule frequency
     schedule := cronJob.Spec.Schedule
     if isHighFrequency(schedule) && cronJob.Spec.ConcurrencyPolicy == batchv1.AllowConcurrent {
         return fmt.Errorf("high-frequency CronJob must use Forbid or Replace")
     }
-    
+
     return nil
 }
 ```
@@ -355,7 +355,7 @@ func (m *CircuitBreakerMonitor) AlertIfTooManyOpen(threshold int) {
             log.Printf("Circuit open: %s", service)
         }
     }
-    
+
     if openCount > threshold {
         alert("Too many circuits open: %d", openCount)
     }
@@ -490,12 +490,12 @@ func shouldScale(metrics ScalingMetrics) (bool, string) {
     if metrics.podReadyPercent < 80 {
         return false, "pods_still_warming"
     }
-    
+
     // Consider latency for scale decisions
     if metrics.requestLatency > 500 && metrics.cpuUtilization > 60 {
         return true, "high_latency_and_cpu"
     }
-    
+
     return false, "stable"
 }
 ```
@@ -605,14 +605,14 @@ func (bv *BackupVerifier) VerifyBackup(backupPath string) error {
         return err
     }
     defer os.RemoveAll(tempDir)
-    
+
     // Run etcd in temporary mode
-    cmd := exec.Command("etcd", 
+    cmd := exec.Command("etcd",
         "--data-dir", tempDir,
         "--listen-client-urls", "http://localhost:12379",
         "--advertise-client-urls", "http://localhost:12379",
     )
-    
+
     // Check if we can read all keys
     cli, err := clientv3.New(clientv3.Config{
         Endpoints: []string{"localhost:12379"},
@@ -620,12 +620,12 @@ func (bv *BackupVerifier) VerifyBackup(backupPath string) error {
     if err != nil {
         return err
     }
-    
+
     resp, err := cli.Get(context.Background(), "", clientv3.WithPrefix())
     if err != nil {
         return fmt.Errorf("backup verification failed: %w", err)
     }
-    
+
     log.Printf("Backup verified: %d keys", len(resp.Kvs))
     return nil
 }
@@ -752,7 +752,7 @@ func NewHTTPClient() *HTTPClient {
         ttl:    5 * time.Minute,
         cache:  make(map[string]cacheEntry),
     }
-    
+
     dialer := &net.Dialer{
         Resolver: &net.Resolver{
             PreferGo: true,
@@ -761,7 +761,7 @@ func NewHTTPClient() *HTTPClient {
         Timeout:   30 * time.Second,
         KeepAlive: 30 * time.Second,
     }
-    
+
     transport := &http.Transport{
         DialContext:           dialer.DialContext,
         MaxIdleConns:          100,
@@ -770,7 +770,7 @@ func NewHTTPClient() *HTTPClient {
         TLSHandshakeTimeout:   10 * time.Second,
         ExpectContinueTimeout: 1 * time.Second,
     }
-    
+
     return &HTTPClient{
         client: &http.Client{
             Transport: transport,
@@ -892,18 +892,18 @@ func (w *PVCProtectionWebhook) ValidateDelete(ctx context.Context, pvc *v1.Persi
     if err != nil {
         return err
     }
-    
+
     if len(pods) > 0 {
-        return fmt.Errorf("PVC %s/%s is still in use by pods: %v", 
+        return fmt.Errorf("PVC %s/%s is still in use by pods: %v",
             pvc.Namespace, pvc.Name, podNames(pods))
     }
-    
+
     // Check for recent backups
     if !w.hasRecentBackup(pvc) {
         return fmt.Errorf("PVC %s/%s has no recent backup (within 24h)",
             pvc.Namespace, pvc.Name)
     }
-    
+
     return nil
 }
 ```
@@ -933,7 +933,7 @@ spec:
         app: postgres
     storageLocation: default
     ttl: 720h0m0s
-    
+
 ---
 # Backup verification job
 apiVersion: batch/v1
@@ -1054,10 +1054,10 @@ func (qm *QuotaMonitor) AlertOnHighUsage(namespace string, threshold float64) {
         log.Printf("Failed to get quota: %v", err)
         return
     }
-    
+
     cpuUsed := quota.Status.Used[corev1.ResourceCPU]
     cpuHard := quota.Status.Hard[corev1.ResourceCPU]
-    
+
     usage := float64(cpuUsed.MilliValue()) / float64(cpuHard.MilliValue())
     if usage > threshold {
         alert("Quota usage high in %s: %.0f%%", namespace, usage*100)
@@ -1178,26 +1178,26 @@ type SecurityWebhook struct {
 
 func (w *SecurityWebhook) Validate(ctx context.Context, pod *v1.Pod) error {
     cacheKey := fmt.Sprintf("policy:%s:%s", pod.Namespace, pod.Spec.ServiceAccountName)
-    
+
     // Check cache first
     if _, found := w.cache.Get(cacheKey); found {
         return nil
     }
-    
+
     // Query with timeout
     ctx, cancel := context.WithTimeout(ctx, w.timeout)
     defer cancel()
-    
+
     policy, err := w.getPolicy(ctx, pod.Namespace)
     if err != nil {
         // Log but don't fail - fail open
         log.Printf("Policy check failed, allowing: %v", err)
         return nil
     }
-    
+
     // Cache result
     w.cache.Set(cacheKey, policy, 5*time.Minute)
-    
+
     return w.validatePod(pod, policy)
 }
 ```
@@ -1223,7 +1223,7 @@ spec:
     rules:
     - alert: WebhookHighLatency
       expr: |
-        histogram_quantile(0.99, 
+        histogram_quantile(0.99,
           sum(rate(apiserver_admission_webhook_admission_duration_seconds_bucket[5m])) by (name, le)
         ) > 1
       for: 5m
@@ -1231,7 +1231,7 @@ spec:
         severity: warning
       annotations:
         summary: "Webhook {{ $labels.name }} has high latency"
-        
+
     - alert: WebhookErrors
       expr: |
         sum(rate(apiserver_admission_webhook_rejection_count[5m])) by (name) > 0.1
@@ -1312,22 +1312,22 @@ type ContainerdMonitor struct {
 func (m *ContainerdMonitor) checkShimCount(node string) error {
     // Query node-exporter for process count
     query := `count(containerd_shim_processes{node="%s"})`
-    
+
     value, err := m.client.Query(fmt.Sprintf(query, node))
     if err != nil {
         return err
     }
-    
+
     shimCount := int(value)
     if shimCount > 500 {
         alert("High shim count on %s: %d", node, shimCount)
     }
-    
+
     if shimCount > 800 {
         // Trigger preventive restart
         return m.drainAndRestart(node)
     }
-    
+
     return nil
 }
 ```

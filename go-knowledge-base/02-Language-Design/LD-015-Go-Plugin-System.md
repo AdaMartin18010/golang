@@ -382,7 +382,7 @@ func main() {
 **定义 5.1 (支持平台)**
 
 | 平台 | 支持 | 说明 |
-|------|------|------|
+| ------ | ------ | ------ |
 | Linux | ✓ | ELF 动态链接 |
 | macOS | ✗ | Mach-O 不支持 |
 | Windows | ✗ | PE/COFF 不支持 |
@@ -410,7 +410,7 @@ Build ID 包含:
 ### 5.3 常见问题
 
 | 问题 | 原因 | 解决方案 |
-|------|------|---------|
+| ------ | ------ | --------- |
 | `plugin was built with a different version of package` | 包版本不匹配 | 确保所有依赖版本一致 |
 | `plugin.Open: plugin was built with a different version of package X` | Build ID 不匹配 | 使用相同的 GOPATH/vendor |
 | `symbol not found` | 符号未导出 | 检查首字母大写 |

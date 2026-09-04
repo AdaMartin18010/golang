@@ -96,7 +96,7 @@ $$
 **Definition 2.2 (Leader State)**: The leader maintains additional state:
 
 | Variable | Type | Description |
-|----------|------|-------------|
+| ---------- | ------ | ------------- |
 | $nextIndex$ | $\Pi \rightarrow \mathbb{N}$ | Next slot to send to each follower |
 | $matchIndex$ | $\Pi \rightarrow \mathbb{N}$ | Highest slot known replicated |
 | $pending$ | $\mathcal{P}(\mathbb{N})$ | Slots with proposed but uncommitted commands |
@@ -1201,7 +1201,7 @@ func (f *ConsensusFactory) Create(id string) (interface{}, error) {
 ### 8.1 Protocol Comparison Matrix
 
 | Property | Classic Paxos | Multi-Paxos | EPaxos | Flexible Paxos |
-|----------|---------------|-------------|--------|----------------|
+| ---------- | --------------- | ------------- | -------- | ---------------- |
 | **Leader** | Single leader | Stable leader | Leaderless | Configurable |
 | **Latency (uncontested)** | 2 RTT | 2 RTT (1 RTT with leader) | 1 RTT (fast path) | 1-2 RTT |
 | **Latency (contested)** | 2 RTT | 2 RTT | 2 RTT (slow path) | 1-2 RTT |
@@ -1214,17 +1214,17 @@ func (f *ConsensusFactory) Create(id string) (interface{}, error) {
 ### 8.2 Quorum Comparison
 
 | Protocol | Phase-1 Quorum | Phase-2 Quorum | Intersection |
-|----------|----------------|----------------|--------------|
+| ---------- | ---------------- | ---------------- | -------------- |
 | Classic Paxos | ⌈n/2⌉ + 1 | ⌈n/2⌉ + 1 | Required |
 | Multi-Paxos | ⌈n/2⌉ + 1 | ⌈n/2⌉ + 1 | Required |
 | EPaxos (fast) | ⌈3n/4⌉ | N/A | Implicit |
 | EPaxos (slow) | ⌈n/2⌉ + 1 | ⌈n/2⌉ + 1 | Required |
-| Flexible Paxos | n - f | f + 1 | |Q₁| + |Q₂| > n |
+| Flexible Paxos | n - f | f + 1 | | Q₁ | + | Q₂ | > n |
 
 ### 8.3 Use Case Recommendations
 
 | Scenario | Recommended Protocol | Rationale |
-|----------|---------------------|-----------|
+| ---------- | --------------------- | ----------- |
 | Single datacenter | Multi-Paxos | Simple, high throughput |
 | Geo-distributed | EPaxos | Minimizes WAN RTT |
 | Read-heavy | Flexible Paxos | Small phase-2 quorums |

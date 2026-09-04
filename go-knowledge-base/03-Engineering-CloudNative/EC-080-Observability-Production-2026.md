@@ -18,7 +18,7 @@ This document provides production-tested patterns, real-world benchmarks, and ar
 ### 1.1 Market Adoption Metrics
 
 | Metric | 2024 | 2025 | 2026 (Projected) |
-|--------|------|------|------------------|
+| -------- | ------ | ------ | ------------------ |
 | Enterprise Adoption | 28% | 48.5% | 95% |
 | CNCF Project Status | Incubating | Graduated | **Graduated** |
 | Active Contributors | 2,500+ | 3,200+ | **4,000+** |
@@ -71,7 +71,7 @@ spec:
 **Beyla Auto-Discovery Capabilities:**
 
 | Language | Metrics | Traces | Requirements |
-|----------|---------|--------|--------------|
+| ---------- | --------- | -------- | -------------- |
 | Go | ✅ Full | ✅ Full | None (eBPF) |
 | Java | ✅ Full | ✅ Full | None (eBPF) |
 | Python | ✅ Full | ✅ Partial | None (eBPF) |
@@ -185,7 +185,7 @@ service:
 **Reality Check**: OpenTelemetry adoption typically results in **4-5x telemetry size increase** compared to legacy solutions.
 
 | Telemetry Type | Before OTel | After OTel | Growth Factor |
-|----------------|-------------|------------|---------------|
+| ---------------- | ------------- | ------------ | --------------- |
 | Trace Volume | 10M spans/day | 50M spans/day | **5x** |
 | Metric Cardinality | 500K series | 2M series | **4x** |
 | Log Volume | 100GB/day | 350GB/day | **3.5x** |
@@ -317,7 +317,7 @@ func (s *AdaptiveSampler) Description() string {
 **Benchmark Results: eBPF Overhead Analysis**
 
 | Tool | CPU Overhead | Memory Overhead | Network Impact | Use Case |
-|------|-------------|-----------------|----------------|----------|
+| ------ | ------------- | ----------------- | ---------------- | ---------- |
 | **Pixie** | 0.5-1% | 50MB/node | None | Full observability |
 | **Cilium (w/ Hubble)** | 0.3-0.8% | 30MB/node | None | Network policy + flow |
 | **Tetragon** | 0.2-0.5% | 20MB/node | None | Security events |
@@ -569,7 +569,7 @@ spec:
 ### 3.2 Detailed Comparison Matrix
 
 | Feature | Thanos | Cortex | Mimir | VictoriaMetrics |
-|---------|--------|--------|-------|-----------------|
+| --------- | -------- | -------- | ------- | ----------------- |
 | **Deployment Complexity** | Medium | High | Medium | Low |
 | **Operational Overhead** | Medium | High | Medium | Low |
 | **Query Performance** | Good | Excellent | Excellent | Good |
@@ -847,7 +847,7 @@ class InfluxToPrometheusMigrator:
 **Key Jaeger v2 Features:**
 
 | Feature | Jaeger v1 | Jaeger v2 | Impact |
-|---------|-----------|-----------|--------|
+| --------- | ----------- | ----------- | -------- |
 | Protocol | Jaeger/Zipkin | **OTLP Native** | No conversion overhead |
 | Sampling | Head-based only | **Tail-based** | 90% better retention |
 | Architecture | Multi-service | **Unified binary** | 60% resource reduction |
@@ -936,7 +936,7 @@ service:
 ### 4.3 Distributed Tracing Tools Comparison
 
 | Feature | Jaeger v2 | Grafana Tempo | Zipkin | SigNoz |
-|---------|-----------|---------------|--------|--------|
+| --------- | ----------- | --------------- | -------- | -------- |
 | **OTLP Native** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes |
 | **Tail Sampling** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes |
 | **Storage Cost** | Low (ClickHouse) | Very Low (Object) | Medium | Low |
@@ -1031,7 +1031,7 @@ Key Drivers:
 ### 5.2 Continuous Profiling Tools Comparison
 
 | Tool | Language Support | Overhead | Storage | Cost Model |
-|------|-----------------|----------|---------|------------|
+| ------ | ----------------- | ---------- | --------- | ------------ |
 | **Parca** | Go, Rust, C/C++, Python, Java | <0.5% | Object Storage (S3) | Free/OSS |
 | **Pyroscope** | Go, Python, Java, Ruby, Node.js, .NET, PHP, Rust | <1% | Object Storage (S3) | Grafana Cloud |
 | **Polar Signals** | Go, Rust, C/C++, Python, Java, Node.js, Ruby | <0.5% | Managed | SaaS |
@@ -1247,7 +1247,7 @@ Standard Profile Types:
 ### 6.1 Error Budget Table
 
 | Availability Target | Downtime/Year | Downtime/Month | Downtime/Week | Error Budget | Use Case |
-|--------------------|---------------|----------------|---------------|--------------|----------|
+| -------------------- | --------------- | ---------------- | --------------- | -------------- | ---------- |
 | **99.9%** (3-nines) | 8h 45m | 43m 49s | 10m 4s | 0.1% | Internal tools, non-critical |
 | **99.95%** (3.5-nines) | 4h 22m | 21m 54s | 5m 2s | 0.05% | Standard business apps |
 | **99.99%** (4-nines) | 52m 35s | 4m 22s | 1m 0s | 0.01% | Customer-facing services |
@@ -1463,7 +1463,7 @@ func (eb *ErrorBudget) pageOnCall(ctx context.Context) error {
 **Platform Engineering Teams with Mature Observability:**
 
 | Metric | Without Platform Eng | With Platform Eng | Improvement |
-|--------|---------------------|-------------------|-------------|
+| -------- | --------------------- | ------------------- | ------------- |
 | Deployment Frequency | 1-2/week | 7-10/week | **3.5x** |
 | Lead Time for Changes | 2-4 weeks | 2-3 days | **5-10x** |
 | MTTR (Mean Time to Recovery) | 2-4 hours | 15-30 min | **4-8x** |
@@ -1722,7 +1722,7 @@ service:
 ### 7.5 Real-World Cost Reduction Cases
 
 | Company | Strategy | Before | After | Savings |
-|---------|----------|--------|-------|---------|
+| --------- | ---------- | -------- | ------- | --------- |
 | **Shopify** | Tail sampling + aggregation | $50K/mo | $12K/mo | **76%** |
 | **Uber** | Attribute trimming + routing | $120K/mo | $28K/mo | **77%** |
 | **Netflix** | Custom sampling algorithms | $200K/mo | $45K/mo | **78%** |
@@ -1738,7 +1738,7 @@ service:
 **As of April 2026:**
 
 | Signal | Status | Package | Stability |
-|--------|--------|---------|-----------|
+| -------- | -------- | --------- | ----------- |
 | **Traces** | ✅ Stable | `go.opentelemetry.io/otel/sdk/trace` | v1.0+ |
 | **Metrics** | ✅ Stable | `go.opentelemetry.io/otel/sdk/metric` | v1.0+ |
 | **Logs** | ✅ Stable | `go.opentelemetry.io/otel/sdk/log` | v1.0+ |
@@ -2224,7 +2224,7 @@ collector-eu:
 ### 10.1 OTel Collector Throughput
 
 | Configuration | Spans/sec | CPU Cores | Memory | Notes |
-|--------------|-----------|-----------|--------|-------|
+| -------------- | ----------- | ----------- | -------- | ------- |
 | Minimal (1 receiver, 1 exporter) | 50,000 | 0.5 | 256MB | No processors |
 | Standard (batch + resource) | 40,000 | 1.0 | 512MB | Most common |
 | Complex (tail sampling) | 15,000 | 2.0 | 2GB | Decision wait = 30s |
@@ -2233,7 +2233,7 @@ collector-eu:
 ### 10.2 Storage Benchmarks
 
 | Backend | Ingestion (spans/sec) | Query (p99) | Storage/1M spans | Compression |
-|---------|----------------------|-------------|------------------|-------------|
+| --------- | ---------------------- | ------------- | ------------------ | ------------- |
 | Jaeger + Cassandra | 50K | 500ms | 2.5MB | None |
 | Jaeger + ES | 30K | 300ms | 3.0MB | LZ4 |
 | **Jaeger v2 + ClickHouse** | **100K** | **50ms** | **0.5MB** | **Tracezip** |
@@ -2294,7 +2294,7 @@ Overhead                    60%        80%       80%
 ### Common OTLP Ports
 
 | Service | gRPC Port | HTTP Port |
-|---------|-----------|-----------|
+| --------- | ----------- | ----------- |
 | OTel Collector | 4317 | 4318 |
 | Jaeger | 14250 | 14268 |
 | Tempo | 4317 | 4318 |

@@ -7,7 +7,7 @@ Kubernetes networking is fundamentally different from traditional Docker network
 ### 1.1 Core Principles
 
 | Principle | Description | Implementation |
-|-----------|-------------|----------------|
+| ----------- | ------------- | ---------------- |
 | Pod IP Uniqueness | Every Pod has a unique IP | CNI Plugin |
 | Pod-to-Pod Connectivity | Direct communication without NAT | Overlay/Underlay Network |
 | Pod-to-Service Abstraction | Stable endpoints for dynamic Pods | kube-proxy + iptables/IPVS |
@@ -1045,7 +1045,7 @@ data:
 ## 7. Comparison with Alternatives
 
 | Feature | Calico | Cilium | Flannel | Weave Net |
-|---------|--------|--------|---------|-----------|
+| --------- | -------- | -------- | --------- | ----------- |
 | Network Policy | Full support | Full + eBPF | Limited | Full |
 | Encryption | WireGuard/IPsec | WireGuard | VXLAN | NaCl |
 | Performance | Good | Excellent (eBPF) | Good | Good |

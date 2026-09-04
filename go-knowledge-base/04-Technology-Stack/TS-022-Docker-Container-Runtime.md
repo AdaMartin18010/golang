@@ -7,7 +7,7 @@ Docker is a platform for developing, shipping, and running applications in conta
 ### 1.1 Core Components
 
 | Component | Description | Technology |
-|-----------|-------------|------------|
+| ----------- | ------------- | ------------ |
 | Docker Engine | Container runtime daemon | containerd + runc |
 | Docker Image | Read-only template for containers | Union filesystem |
 | Docker Container | Running instance of an image | Namespaces + Cgroups |
@@ -23,36 +23,36 @@ flowchart TB
         SDK["Go SDK"]
         API["REST API"]
     end
-    
+
     subgraph Engine["Docker Engine (dockerd)"]
         API_S["HTTP REST API"]
         CORE["Docker Core"]
-        
+
         subgraph Runtime["Container Runtime"]
             CONTD["containerd<br/>High-level Runtime"]
             SHIM["containerd-shim"]
             RUN["runc<br/>Low-level Runtime"]
         end
-        
+
         subgraph Network["Networking"]
             NET["libnetwork<br/>CNM Implementation"]
             IPT["iptables"]
             DNS["Embedded DNS"]
         end
-        
+
         subgraph Storage["Storage"]
             GRAPH["Graph Driver<br/>overlay2/aufs"]
             VOL["Volume Driver"]
             REG["Registry Client"]
         end
     end
-    
+
     subgraph Kernel["Linux Kernel"]
         NS["Namespaces<br/>PID, NET, IPC, MNT, UTS, USER"]
         CG["cgroups<br/>cpu, memory, blkio, pids"]
         SEC["Security<br/>Capabilities, Seccomp, AppArmor"]
     end
-    
+
     CLI --> API_S
     SDK --> API_S
     API --> API_S
@@ -140,38 +140,38 @@ func CreateContainer(id string, spec *specs.Spec, opts *CreateOpts) (*Container,
     if err := validateSpec(spec); err != nil {
         return nil, err
     }
-    
+
     // 2. Create container directory
     containerDir := filepath.Join(opts.Root, id)
     if err := os.MkdirAll(containerDir, 0700); err != nil {
         return nil, err
     }
-    
+
     // 3. Write config.json
     configPath := filepath.Join(containerDir, "config.json")
     if err := writeJSON(configPath, spec); err != nil {
         return nil, err
     }
-    
+
     // 4. Create rootfs
     rootfs := filepath.Join(containerDir, "rootfs")
     if err := setupRootfs(rootfs, spec); err != nil {
         return nil, err
     }
-    
+
     // 5. Create init pipe for synchronization
     parentPipe, childPipe, err := utils.NewSockPair("init")
     if err != nil {
         return nil, err
     }
     defer parentPipe.Close()
-    
+
     // 6. Start container process
     cmd, err := StartContainer(spec, childPipe, opts)
     if err != nil {
         return nil, err
     }
-    
+
     // 7. Set up cgroups
     if spec.Linux != nil && spec.Linux.Resources != nil {
         cgroupMgr, err := createCgroupManager(id, spec.Linux.CgroupsPath, spec.Linux.Resources)
@@ -182,12 +182,12 @@ func CreateContainer(id string, spec *specs.Spec, opts *CreateOpts) (*Container,
             return nil, err
         }
     }
-    
+
     // 8. Wait for initialization
     if err := waitForInit(parentPipe); err != nil {
         return nil, err
     }
-    
+
     return &Container{
         ID:     id,
         State:  StateCreating,
@@ -205,19 +205,19 @@ func StartContainer(spec *specs.Spec, pipe *os.File, opts *CreateOpts) (*exec.Cm
             syscall.CLONE_NEWNET |
             syscall.CLONE_NEWIPC,
     }
-    
+
     // Set up stdio
     cmd.Stdin = opts.Stdin
     cmd.Stdout = opts.Stdout
     cmd.Stderr = opts.Stderr
-    
+
     // Pass state to init process
     cmd.Env = append(cmd.Env, "_LIBCONTAINER_INITPIPE="+strconv.Itoa(int(pipe.Fd())))
-    
+
     if err := cmd.Start(); err != nil {
         return nil, err
     }
-    
+
     return cmd, nil
 }
 ```
@@ -248,7 +248,7 @@ func (c *Client) CreateContainer(ctx context.Context, id string, spec *oci.Spec,
             snapshotter.Remove(ctx, id+"-snapshot")
         }
     }()
-    
+
     // 2. Mount rootfs
     root, err := os.MkdirTemp("", "containerd-")
     if err != nil {
@@ -257,10 +257,10 @@ func (c *Client) CreateContainer(ctx context.Context, id string, spec *oci.Spec,
     if err := mount.All(mounts, root); err != nil {
         return nil, err
     }
-    
+
     // 3. Update spec with root path
     spec.Root.Path = root
-    
+
     // 4. Create containerd container
     r := &runtime.CreateContainerRequest{
         PodSandboxId: id,
@@ -277,12 +277,12 @@ func (c *Client) CreateContainer(ctx context.Context, id string, spec *oci.Spec,
         },
         SandboxConfig: &runtime.PodSandboxConfig{},
     }
-    
+
     resp, err := c.runtime.CreateContainer(ctx, r)
     if err != nil {
         return nil, err
     }
-    
+
     return &container{
         id:  resp.ContainerId,
         c:   c,
@@ -296,7 +296,7 @@ func (c *container) NewTask(ctx context.Context, ioCreate cio.Creator, opts ...N
     if err != nil {
         return nil, err
     }
-    
+
     // 2. Create task request
     request := &tasks.CreateTaskRequest{
         ContainerId: c.id,
@@ -305,13 +305,13 @@ func (c *container) NewTask(ctx context.Context, ioCreate cio.Creator, opts ...N
         Stdout:      i.Stdout,
         Stderr:      i.Stderr,
     }
-    
+
     // 3. Create task
     response, err := c.c.task.Create(ctx, request)
     if err != nil {
         return nil, err
     }
-    
+
     return &task{
         id:     response.ContainerId,
         pid:    response.Pid,
@@ -334,14 +334,14 @@ type Driver struct {
 // Create creates a new layer
 func (d *Driver) Create(id, parent string, opts *graphdriver.CreateOpts) error {
     dir := d.dir(id)
-    
+
     // Create layer directories
     root := path.Join(dir, "root")
     diff := path.Join(dir, "diff")
     work := path.Join(dir, "work")
     lower := path.Join(dir, "lower")
     merged := path.Join(dir, "merged")
-    
+
     if err := os.MkdirAll(root, 0700); err != nil {
         return err
     }
@@ -354,7 +354,7 @@ func (d *Driver) Create(id, parent string, opts *graphdriver.CreateOpts) error {
     if err := os.MkdirAll(merged, 0755); err != nil {
         return err
     }
-    
+
     // Set up lower directories
     var lowerDirs []string
     if parent != "" {
@@ -363,17 +363,17 @@ func (d *Driver) Create(id, parent string, opts *graphdriver.CreateOpts) error {
         if err != nil {
             parentLower = []byte(path.Join(parentDir, "diff"))
         }
-        lowerDirs = append([]string{path.Join(parentDir, "diff")}, 
+        lowerDirs = append([]string{path.Join(parentDir, "diff")},
             strings.Split(string(parentLower), ":")...)
     }
-    
+
     // Write lower file
     if len(lowerDirs) > 0 {
         if err := os.WriteFile(lower, []byte(strings.Join(lowerDirs, ":")), 0666); err != nil {
             return err
         }
     }
-    
+
     return nil
 }
 
@@ -384,24 +384,24 @@ func (d *Driver) Get(id, mountLabel string) (containerfs.ContainerFS, error) {
     lower := path.Join(dir, "lower")
     merged := path.Join(dir, "merged")
     work := path.Join(dir, "work")
-    
+
     lowerDirs := []string{diff}
-    
+
     // Read parent layers
     if lowerData, err := os.ReadFile(lower); err == nil {
         lowerDirs = append(lowerDirs, strings.Split(string(lowerData), ":")...)
     }
-    
+
     // Create overlay mount
     opts := fmt.Sprintf("lowerdir=%s,upperdir=%s,workdir=%s",
         strings.Join(lowerDirs[1:], ":"),
         lowerDirs[0],
         work)
-    
+
     if err := mount.Mount("overlay", merged, "overlay", opts); err != nil {
         return nil, err
     }
-    
+
     return containerfs.NewLocalContainerFS(merged), nil
 }
 ```
@@ -474,13 +474,13 @@ version: '3.8'
 services:
   app:
     image: myapp:latest
-    
+
     # Security options
     security_opt:
       - no-new-privileges:true
       - seccomp:./seccomp-profile.json
       - apparmor:docker-default
-    
+
     # Capabilities
     cap_drop:
       - ALL
@@ -489,7 +489,7 @@ services:
       - CHOWN
       - SETGID
       - SETUID
-    
+
     # Resource limits
     deploy:
       resources:
@@ -499,22 +499,22 @@ services:
         reservations:
           cpus: '0.5'
           memory: 512M
-    
+
     # Read-only root filesystem
     read_only: true
-    
+
     # Tmpfs for writable areas
     tmpfs:
       - /tmp:noexec,nosuid,size=100m
       - /var/cache:size=50m
-    
+
     # User namespace
     user: "1000:1000"
-    
+
     # Network isolation
     networks:
       - isolated
-    
+
     # Logging
     logging:
       driver: json-file
@@ -593,7 +593,7 @@ import (
     "fmt"
     "io"
     "time"
-    
+
     "github.com/docker/docker/api/types"
     "github.com/docker/docker/api/types/container"
     "github.com/docker/docker/api/types/mount"
@@ -616,7 +616,7 @@ func NewClient() (*Client, error) {
     if err != nil {
         return nil, fmt.Errorf("failed to create Docker client: %w", err)
     }
-    
+
     return &Client{cli: cli}, nil
 }
 
@@ -626,10 +626,10 @@ func (c *Client) Ping(ctx context.Context) error {
     if err != nil {
         return err
     }
-    
+
     fmt.Printf("Docker API Version: %s\n", pong.APIVersion)
     fmt.Printf("Docker Version: %s\n", pong.Version)
-    
+
     return nil
 }
 
@@ -648,7 +648,7 @@ import (
     "context"
     "fmt"
     "io"
-    
+
     "github.com/docker/docker/api/types"
     "github.com/docker/docker/api/types/container"
     "github.com/docker/docker/api/types/mount"
@@ -665,26 +665,26 @@ type ContainerConfig struct {
     Env         []string
     WorkingDir  string
     User        string
-    
+
     // Network
     NetworkMode string
     Hostname    string
     DNS         []string
-    
+
     // Resources
     CPUShares   int64
     CPULimit    float64
     MemoryLimit int64
-    
+
     // Security
     Privileged  bool
     CapAdd      []string
     CapDrop     []string
     ReadOnly    bool
-    
+
     // Volumes
     Mounts      []mount.Mount
-    
+
     // Ports
     PortBindings map[nat.Port][]nat.PortBinding
 }
@@ -697,10 +697,10 @@ func (c *Client) CreateAndStartContainer(ctx context.Context, cfg *ContainerConf
         return "", fmt.Errorf("failed to pull image: %w", err)
     }
     defer reader.Close()
-    
+
     // Copy pull output (optional)
     io.Copy(io.Discard, reader)
-    
+
     // 2. Create container config
     containerConfig := &container.Config{
         Image:        cfg.Image,
@@ -715,7 +715,7 @@ func (c *Client) CreateAndStartContainer(ctx context.Context, cfg *ContainerConf
             "created":    time.Now().Format(time.RFC3339),
         },
     }
-    
+
     // 3. Host config
     hostConfig := &container.HostConfig{
         NetworkMode:  container.NetworkMode(cfg.NetworkMode),
@@ -743,10 +743,10 @@ func (c *Client) CreateAndStartContainer(ctx context.Context, cfg *ContainerConf
             },
         },
     }
-    
+
     // 4. Network config
     networkConfig := &network.NetworkingConfig{}
-    
+
     // 5. Create container
     resp, err := c.cli.ContainerCreate(
         ctx,
@@ -759,13 +759,13 @@ func (c *Client) CreateAndStartContainer(ctx context.Context, cfg *ContainerConf
     if err != nil {
         return "", fmt.Errorf("failed to create container: %w", err)
     }
-    
+
     // 6. Start container
     if err := c.cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
         c.cli.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{Force: true})
         return "", fmt.Errorf("failed to start container: %w", err)
     }
-    
+
     return resp.ID, nil
 }
 
@@ -775,13 +775,13 @@ func (c *Client) StopContainer(ctx context.Context, containerID string, timeout 
         t := 30 * time.Second
         timeout = &t
     }
-    
+
     if err := c.cli.ContainerStop(ctx, containerID, container.StopOptions{
         Timeout: timeout,
     }); err != nil {
         return fmt.Errorf("failed to stop container: %w", err)
     }
-    
+
     return nil
 }
 
@@ -791,11 +791,11 @@ func (c *Client) RemoveContainer(ctx context.Context, containerID string, force,
         Force:         force,
         RemoveVolumes: removeVolumes,
     }
-    
+
     if err := c.cli.ContainerRemove(ctx, containerID, options); err != nil {
         return fmt.Errorf("failed to remove container: %w", err)
     }
-    
+
     return nil
 }
 
@@ -808,13 +808,13 @@ func (c *Client) StreamLogs(ctx context.Context, containerID string, follow bool
         Timestamps: true,
         Tail:       "100",
     }
-    
+
     reader, err := c.cli.ContainerLogs(ctx, containerID, options)
     if err != nil {
         return fmt.Errorf("failed to get logs: %w", err)
     }
     defer reader.Close()
-    
+
     _, err = stdcopy.StdCopy(stdout, stderr, reader)
     return err
 }
@@ -828,12 +828,12 @@ func (c *Client) ExecuteCommand(ctx context.Context, containerID string, cmd []s
         Cmd:          cmd,
         Tty:          false,
     }
-    
+
     execResp, err := c.cli.ContainerExecCreate(ctx, containerID, execConfig)
     if err != nil {
         return fmt.Errorf("failed to create exec: %w", err)
     }
-    
+
     attachResp, err := c.cli.ContainerExecAttach(ctx, execResp.ID, types.ExecStartCheck{
         Tty: false,
     })
@@ -841,7 +841,7 @@ func (c *Client) ExecuteCommand(ctx context.Context, containerID string, cmd []s
         return fmt.Errorf("failed to attach to exec: %w", err)
     }
     defer attachResp.Close()
-    
+
     // Copy output
     _, err = stdcopy.StdCopy(stdout, stderr, attachResp.Reader)
     return err
@@ -859,7 +859,7 @@ import (
     "encoding/json"
     "fmt"
     "io"
-    
+
     "github.com/docker/docker/api/types"
     "github.com/docker/docker/api/types/filters"
     "github.com/docker/docker/pkg/archive"
@@ -873,7 +873,7 @@ func (c *Client) BuildImage(ctx context.Context, dockerfilePath, tag string, bui
         return fmt.Errorf("failed to create build context: %w", err)
     }
     defer tar.Close()
-    
+
     // Build options
     opts := types.ImageBuildOptions{
         Dockerfile: "Dockerfile",
@@ -883,19 +883,19 @@ func (c *Client) BuildImage(ctx context.Context, dockerfilePath, tag string, bui
         PullParent: true,
         BuildArgs:  make(map[string]*string),
     }
-    
+
     for k, v := range buildArgs {
         value := v
         opts.BuildArgs[k] = &value
     }
-    
+
     // Build image
     resp, err := c.cli.ImageBuild(ctx, tar, opts)
     if err != nil {
         return fmt.Errorf("failed to build image: %w", err)
     }
     defer resp.Body.Close()
-    
+
     // Read build output
     scanner := bufio.NewScanner(resp.Body)
     for scanner.Scan() {
@@ -909,7 +909,7 @@ func (c *Client) BuildImage(ctx context.Context, dockerfilePath, tag string, bui
             }
         }
     }
-    
+
     return scanner.Err()
 }
 
@@ -919,14 +919,14 @@ func (c *Client) ListImages(ctx context.Context, filter string) ([]types.ImageSu
     if filter != "" {
         filterArgs.Add("reference", filter)
     }
-    
+
     images, err := c.cli.ImageList(ctx, types.ImageListOptions{
         Filters: filterArgs,
     })
     if err != nil {
         return nil, fmt.Errorf("failed to list images: %w", err)
     }
-    
+
     return images, nil
 }
 
@@ -939,7 +939,7 @@ func (c *Client) RemoveImage(ctx context.Context, imageID string, force bool) er
     if err != nil {
         return fmt.Errorf("failed to remove image: %w", err)
     }
-    
+
     return nil
 }
 
@@ -948,16 +948,16 @@ func (c *Client) PushImage(ctx context.Context, image, registryAuth string) erro
     pushOpts := types.ImagePushOptions{
         RegistryAuth: registryAuth,
     }
-    
+
     reader, err := c.cli.ImagePush(ctx, image, pushOpts)
     if err != nil {
         return fmt.Errorf("failed to push image: %w", err)
     }
     defer reader.Close()
-    
+
     // Read push output
     io.Copy(io.Discard, reader)
-    
+
     return nil
 }
 ```
@@ -970,7 +970,7 @@ package docker
 import (
     "context"
     "fmt"
-    
+
     "github.com/docker/docker/api/types/filters"
     "github.com/docker/docker/api/types/volume"
 )
@@ -986,7 +986,7 @@ func (c *Client) CreateVolume(ctx context.Context, name, driver string, opts map
     if err != nil {
         return nil, fmt.Errorf("failed to create volume: %w", err)
     }
-    
+
     return &vol, nil
 }
 
@@ -996,12 +996,12 @@ func (c *Client) ListVolumes(ctx context.Context, filterName string) (volume.Lis
     if filterName != "" {
         filterArgs.Add("name", filterName)
     }
-    
+
     resp, err := c.cli.VolumeList(ctx, filterArgs)
     if err != nil {
         return volume.ListResponse{}, fmt.Errorf("failed to list volumes: %w", err)
     }
-    
+
     return resp, nil
 }
 
@@ -1010,7 +1010,7 @@ func (c *Client) RemoveVolume(ctx context.Context, name string, force bool) erro
     if err := c.cli.VolumeRemove(ctx, name, force); err != nil {
         return fmt.Errorf("failed to remove volume: %w", err)
     }
-    
+
     return nil
 }
 
@@ -1020,7 +1020,7 @@ func (c *Client) PruneVolumes(ctx context.Context) (*volume.PruneReport, error) 
     if err != nil {
         return nil, fmt.Errorf("failed to prune volumes: %w", err)
     }
-    
+
     return &report, nil
 }
 ```
@@ -1060,21 +1060,21 @@ services:
         parallelism: 1
         delay: 10s
         failure_action: pause
-    
+
     # CPU and memory tuning
     cpu_count: 2
     cpu_percent: 80
     cpu_shares: 2048
     cpu_quota: 200000
     cpu_period: 100000
-    
+
     mem_limit: 2G
     memswap_limit: 2G
     mem_swappiness: 0
     mem_reservation: 512M
     oom_kill_disable: false
     oom_score_adj: -500
-    
+
     # Kernel parameters
     sysctls:
       - net.core.somaxconn=65535
@@ -1197,7 +1197,7 @@ ENTRYPOINT ["myapp"]
 ## 7. Comparison with Alternatives
 
 | Feature | Docker | containerd | Podman | CRI-O |
-|---------|--------|------------|--------|-------|
+| --------- | -------- | ------------ | -------- | ------- |
 | Daemon Required | Yes | Yes | No | Yes |
 | Rootless | Partial | Partial | Full | No |
 | Docker API | Yes | Partial | Compatible | No |
@@ -1229,31 +1229,31 @@ func (s *SecurityOptions) ToHostConfig() *container.HostConfig {
     hc := &container.HostConfig{
         SecurityOpt: []string{},
     }
-    
+
     if s.NoNewPrivileges {
         hc.SecurityOpt = append(hc.SecurityOpt, "no-new-privileges:true")
     }
-    
+
     if s.ReadOnlyRootFS {
         hc.ReadonlyRootfs = true
     }
-    
+
     if s.DropAllCaps {
         hc.CapDrop = []string{"ALL"}
     }
-    
+
     if len(s.AddCaps) > 0 {
         hc.CapAdd = s.AddCaps
     }
-    
+
     if s.SeccompProfile != "" {
         hc.SecurityOpt = append(hc.SecurityOpt, fmt.Sprintf("seccomp=%s", s.SeccompProfile))
     }
-    
+
     if s.AppArmorProfile != "" {
         hc.SecurityOpt = append(hc.SecurityOpt, fmt.Sprintf("apparmor=%s", s.AppArmorProfile))
     }
-    
+
     return hc
 }
 ```

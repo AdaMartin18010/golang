@@ -7,7 +7,7 @@ Argo CD is a declarative, GitOps continuous delivery tool for Kubernetes. It fol
 ### 1.1 Core Capabilities
 
 | Capability | Description | Implementation |
-|------------|-------------|----------------|
+| ------------ | ------------- | ---------------- |
 | GitOps Deployment | Declarative app deployment from Git | Git repository as source |
 | Multi-Cluster | Manage multiple K8s clusters | Cluster credentials |
 | Auto-Sync | Automatic sync on Git changes | Webhooks/Polling |
@@ -1287,7 +1287,7 @@ spec:
 ## 7. Comparison with Alternatives
 
 | Feature | ArgoCD | Flux | Spinnaker | Jenkins X |
-|---------|--------|------|-----------|-----------|
+| --------- | -------- | ------ | ----------- | ----------- |
 | GitOps Native | Yes | Yes | No | Yes |
 | UI | Excellent | CLI only | Good | Limited |
 | Multi-Cluster | Yes | Yes | Yes | Yes |

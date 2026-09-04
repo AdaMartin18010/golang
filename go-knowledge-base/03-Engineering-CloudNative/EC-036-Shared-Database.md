@@ -1,11 +1,14 @@
 # EC-036: Shared Database Pattern (共享数据库模式)
 
-> **维度**: Engineering-CloudNative  
-> **级别**: S (>15KB)  
-> **标签**: #shared-database #monolith #migration #intermediate  
-> **权威来源**:  
-> - [Shared Database Pattern](https://microservices.io/patterns/data/shared-database.html) - Chris Richardson  
-- [Monolith to Microservices](https://www.oreilly.com/library/view/monolith-to-microservices/9781492047834/) - Sam Newman  
+> **维度**: Engineering-CloudNative
+> **级别**: S (>15KB)
+> **标签**: #shared-database #monolith #migration #intermediate
+> **权威来源**:
+>
+> - [Shared Database Pattern](https://microservices.io/patterns/data/shared-database.html) - Chris Richardson
+>
+- [Monolith to Microservices](https://www.oreilly.com/library/view/monolith-to-microservices/9781492047834/) - Sam Newman
+>
 > - [Refactoring Databases](https://www.oreilly.com/library/view/refactoring-databases/0321293533/) - Ambler & Sadalage
 
 ---
@@ -17,6 +20,7 @@
 **问题陈述**: 在从单体应用向微服务迁移的过程中，或者在某些特定约束条件下，如何在保持数据一致性的同时支持多个服务访问同一数据库？
 
 **形式化描述**:
+
 ```
 给定: 服务集合 S = {S₁, S₂, ..., Sₙ}
 给定: 数据库 DB
@@ -28,6 +32,7 @@
 ```
 
 **适用场景**:
+
 - 单体到微服务的迁移过渡期
 - 强一致性要求且无法使用 Saga 的场景
 - 数据关联复杂，难以立即拆分
@@ -37,12 +42,14 @@
 
 **定义 1.1 (共享数据库模式)**
 多个服务共享同一个数据库，但通过以下机制隔离：
+
 1. Schema 分离：每个服务有自己的 Schema
 2. 视图隔离：通过数据库视图限制访问
 3. API 封装：服务通过 API 而非直接 SQL 访问数据
 4. 事务协调：使用分布式事务或协调机制
 
 **形式化表示**:
+
 ```
 Schema 分配:
   ∀Sᵢ ∈ S: owns_schema(Sᵢ, schemaᵢ)
@@ -134,19 +141,19 @@ const (
 type SharedDatabase interface {
     // QueryContext 查询（带 Schema 验证）
     QueryContext(ctx context.Context, service string, schema Schema, query string, args ...interface{}) (*sql.Rows, error)
-    
+
     // ExecContext 执行（带 Schema 验证）
     ExecContext(ctx context.Context, service string, schema Schema, query string, args ...interface{}) (sql.Result, error)
-    
+
     // BeginTx 开始事务（跨 Schema 事务）
     BeginTx(ctx context.Context, opts *sql.TxOptions) (*SharedTx, error)
-    
+
     // HealthCheck 健康检查
     HealthCheck(ctx context.Context) error
-    
+
     // Stats 统计信息
     Stats() sql.DBStats
-    
+
     // Close 关闭
     Close() error
 }
@@ -178,25 +185,25 @@ func NewSharedDatabase(connectionString string, policies []*AccessPolicy) (Share
     if err != nil {
         return nil, fmt.Errorf("failed to open database: %w", err)
     }
-    
+
     // 配置连接池
     db.SetMaxOpenConns(50)
     db.SetMaxIdleConns(10)
     db.SetConnMaxLifetime(5 * time.Minute)
-    
+
     // 验证连接
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
-    
+
     if err := db.PingContext(ctx); err != nil {
         return nil, fmt.Errorf("failed to ping database: %w", err)
     }
-    
+
     policyMap := make(map[string]*AccessPolicy)
     for _, p := range policies {
         policyMap[p.Service] = p
     }
-    
+
     return &sharedDatabaseImpl{
         db:       db,
         policies: policyMap,
@@ -209,14 +216,14 @@ func (s *sharedDatabaseImpl) QueryContext(ctx context.Context, service string, s
     if policy == nil {
         return nil, fmt.Errorf("no access policy for service: %s", service)
     }
-    
+
     if !s.canRead(policy, schema) {
         return nil, fmt.Errorf("service %s does not have read access to schema %s", service, schema)
     }
-    
+
     // 添加 Schema 前缀
     qualifiedQuery := s.qualifyQuery(query, schema)
-    
+
     return s.db.QueryContext(ctx, qualifiedQuery, args...)
 }
 
@@ -226,13 +233,13 @@ func (s *sharedDatabaseImpl) ExecContext(ctx context.Context, service string, sc
     if policy == nil {
         return nil, fmt.Errorf("no access policy for service: %s", service)
     }
-    
+
     if !s.canWrite(policy, schema) {
         return nil, fmt.Errorf("service %s does not have write access to schema %s", service, schema)
     }
-    
+
     qualifiedQuery := s.qualifyQuery(query, schema)
-    
+
     return s.db.ExecContext(ctx, qualifiedQuery, args...)
 }
 
@@ -242,7 +249,7 @@ func (s *sharedDatabaseImpl) BeginTx(ctx context.Context, opts *sql.TxOptions) (
     if err != nil {
         return nil, err
     }
-    
+
     return &SharedTx{tx: tx}, nil
 }
 
@@ -363,7 +370,7 @@ func (s *OrderService) CreateOrder(ctx context.Context, customerID string, items
     for _, item := range items {
         total += item.Price * float64(item.Quantity)
     }
-    
+
     order := &Order{
         ID:         uuid.New().String(),
         CustomerID: customerID,
@@ -372,19 +379,19 @@ func (s *OrderService) CreateOrder(ctx context.Context, customerID string, items
         Status:     "PENDING",
         CreatedAt:  time.Now(),
     }
-    
+
     query := `
         INSERT INTO orders (id, customer_id, items, total, status, created_at)
         VALUES ($1, $2, $3, $4, $5, $6)
     `
-    
+
     _, err := s.db.ExecContext(ctx, "order-service", s.schema, query,
         order.ID, order.CustomerID, order.Items, order.Total, order.Status, order.CreatedAt)
-    
+
     if err != nil {
         return nil, fmt.Errorf("failed to create order: %w", err)
     }
-    
+
     return order, nil
 }
 
@@ -395,23 +402,23 @@ func (s *OrderService) GetOrder(ctx context.Context, orderID string) (*Order, er
         FROM orders
         WHERE id = $1
     `
-    
+
     rows, err := s.db.QueryContext(ctx, "order-service", s.schema, query, orderID)
     if err != nil {
         return nil, err
     }
     defer rows.Close()
-    
+
     if !rows.Next() {
         return nil, fmt.Errorf("order not found: %s", orderID)
     }
-    
+
     order := &Order{}
     err = rows.Scan(&order.ID, &order.CustomerID, &order.Items, &order.Total, &order.Status, &order.CreatedAt)
     if err != nil {
         return nil, err
     }
-    
+
     return order, nil
 }
 
@@ -424,14 +431,14 @@ func (s *OrderService) GetCustomerOrdersWithPaymentStatus(ctx context.Context, c
         LEFT JOIN payments.payments p ON p.order_id = o.id
         WHERE o.customer_id = $1
     `
-    
+
     // 注意：这需要在访问策略中允许
     rows, err := s.db.QueryContext(ctx, "order-service", SchemaOrders, query, customerID)
     if err != nil {
         return nil, err
     }
     defer rows.Close()
-    
+
     var results []*OrderWithPayment
     for rows.Next() {
         r := &OrderWithPayment{}
@@ -440,7 +447,7 @@ func (s *OrderService) GetCustomerOrdersWithPaymentStatus(ctx context.Context, c
         }
         results = append(results, r)
     }
-    
+
     return results, rows.Err()
 }
 
@@ -555,16 +562,16 @@ func TestSharedDatabase_AccessControl(t *testing.T) {
             AllowedWrite: []Schema{SchemaPayments},
         },
     }
-    
+
     // 注意：这需要真实数据库连接
     // db, err := NewSharedDatabase("postgres://...", policies)
     // require.NoError(t, err)
-    
+
     // 测试读写权限
     t.Run("order_service_can_write_to_orders", func(t *testing.T) {
         // 验证 order-service 可以写入 orders schema
     })
-    
+
     t.Run("order_service_cannot_write_to_payments", func(t *testing.T) {
         // 验证 order-service 不能写入 payments schema
     })
@@ -678,7 +685,7 @@ func TestSharedDatabase_AccessControl(t *testing.T) {
 ### 5.2 风险与缓解策略
 
 | 风险 | 影响 | 缓解策略 |
-|------|------|----------|
+| ------ | ------ | ---------- |
 | Schema 变更影响多个服务 | 高 | 使用 Schema 版本控制，向后兼容变更 |
 | 性能问题难以隔离 | 高 | 监控每个服务的查询，使用资源限制 |
 | 数据库成为单点故障 | 高 | 数据库高可用配置，读写分离 |
@@ -722,5 +729,6 @@ func TestSharedDatabase_AccessControl(t *testing.T) {
 **质量评级**: S (>15KB, 完整形式化 + Go 实现 + 决策标准)
 
 **相关文档**:
+
 - [EC-035-Database-per-Service.md](./EC-035-Database-per-Service.md)
 - [EC-008-Saga-Pattern-Formal.md](./EC-008-Saga-Pattern-Formal.md)

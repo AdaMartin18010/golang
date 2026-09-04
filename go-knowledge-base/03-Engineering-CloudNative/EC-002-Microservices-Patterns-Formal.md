@@ -27,10 +27,10 @@
 ### 1.2 约束条件
 
 | 约束 | 形式化 | 说明 |
-|------|--------|------|
+| ------ | -------- | ------ |
 | **独立部署** | $\text{Deploy}(s_i) \perp \text{Deploy}(s_j), \forall i \neq j$ | 服务可独立发布 |
 | **数据隔离** | $\text{Data}(s_i) \cap \text{Data}(s_j) = \emptyset$ | 数据库独立 |
-| **松耦合** | $|\text{Dependencies}(s_i)| \leq k$ | 依赖数量有限 |
+| **松耦合** | $ | \text{Dependencies}(s_i) | \leq k$ | 依赖数量有限 |
 | **高内聚** | $\text{Cohesion}(s_i) \geq \theta$ | 功能相关性高 |
 | **容错性** | $P(\text{failure}(s_i) \to \text{failure}(s_j)) < \epsilon$ | 故障不传播 |
 
@@ -60,7 +60,7 @@ $$\text{Health}(s) = \begin{cases} \text{healthy} & \text{if } \forall check \in
 ### 2.2 通信模式对比
 
 | 特性 | Synchronous (HTTP/gRPC) | Asynchronous (Message Queue) |
-|------|------------------------|------------------------------|
+| ------ | ------------------------ | ------------------------------ |
 | **耦合度** | 紧耦合 (Tight) | 松耦合 (Loose) |
 | **延迟** | 实时 (Real-time) | 最终一致 (Eventual) |
 | **复杂度** | 低 | 高 |
@@ -588,7 +588,7 @@ func (c *ServiceClient) doRequest(ctx context.Context, method, path string, body
 ### 4.1 常见故障模式
 
 | 故障模式 | 症状 | 根因 | 缓解策略 |
-|---------|------|------|----------|
+| --------- | ------ | ------ | ---------- |
 | **级联故障** | 单服务宕机导致系统雪崩 | 同步调用链过长 | 熔断器 + 超时控制 |
 | **服务发现失效** | 流量发往已下线实例 | 健康检查延迟 | 心跳 + 快速失败 |
 | **配置不一致** | 环境行为差异 | 配置漂移 | Config Server + 版本控制 |
@@ -743,7 +743,7 @@ Discovery:
 ### 5.3 部署模式对比
 
 | 模式 | 架构 | 优点 | 缺点 | 适用场景 |
-|------|------|------|------|----------|
+| ------ | ------ | ------ | ------ | ---------- |
 | **蓝绿部署** | 两个相同环境并行 | 零停机、快速回滚 | 资源翻倍 | 关键业务 |
 | **金丝雀发布** | 逐步切流 | 风险控制、A/B测试 | 复杂度高 | 大规模用户 |
 | **滚动更新** | 逐个替换实例 | 资源节约 | 回滚慢 | 通用场景 |
@@ -756,7 +756,7 @@ Discovery:
 ### 6.1 通信模式决策矩阵
 
 | 场景 | 推荐模式 | 理由 |
-|------|----------|------|
+| ------ | ---------- | ------ |
 | 实时查询 | HTTP/gRPC | 低延迟、简单 |
 | 订单处理 | 消息队列 | 可靠性、削峰 |
 | 日志收集 | 异步批量 | 高吞吐 |
@@ -888,8 +888,8 @@ func TestServiceIntegration(t *testing.T) {
 
 1. [microservices-patterns](https://github.com/microservices-patterns) - Chris Richardson's examples.
 2 [go-kit/kit](https://github.com/go-kit/kit) - Go microservices toolkit.
-3. [asim/go-micro](https://github.com/asim/go-micro) - Go microservices framework.
-4. [grpc-ecosystem/grpc-gateway](https://github.com/grpc-ecosystem/grpc-gateway) - gRPC to REST.
+2. [asim/go-micro](https://github.com/asim/go-micro) - Go microservices framework.
+3. [grpc-ecosystem/grpc-gateway](https://github.com/grpc-ecosystem/grpc-gateway) - gRPC to REST.
 
 ### Conference Talks
 

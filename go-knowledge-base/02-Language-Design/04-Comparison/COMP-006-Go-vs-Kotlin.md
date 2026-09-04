@@ -670,7 +670,7 @@ func (o Optional[T]) OrDefault(defaultVal T) T {
 ## Performance Benchmarks
 
 | Benchmark | Kotlin (JVM) | Go | Ratio |
-|-----------|--------------|-----|-------|
+| ----------- | -------------- | ----- | ------- |
 | Startup Time | 2-5s | 50ms | Go 40-100x faster |
 | Memory (idle) | 100-200MB | 10-20MB | Go 5-10x less |
 | Hello World RPS | 80,000 | 180,000 | Go 2.25x faster |
@@ -685,7 +685,7 @@ func (o Optional[T]) OrDefault(defaultVal T) T {
 ### Choose Kotlin When
 
 | Criterion | Weight | Score | Rationale |
-|-----------|--------|-------|-----------|
+| ----------- | -------- | ------- | ----------- |
 | Android development | Critical | 10/10 | Native support |
 | JVM ecosystem needed | High | 10/10 | Full access |
 | Spring/Spring Boot | High | 10/10 | Excellent support |
@@ -696,7 +696,7 @@ func (o Optional[T]) OrDefault(defaultVal T) T {
 ### Choose Go When
 
 | Criterion | Weight | Score | Rationale |
-|-----------|--------|-------|-----------|
+| ----------- | -------- | ------- | ----------- |
 | Microservices | High | 10/10 | Fast startup, small memory |
 | Cloud-native | High | 10/10 | K8s, Docker in Go |
 | High throughput | High | 10/10 | Better performance |
@@ -728,7 +728,7 @@ func (o Optional[T]) OrDefault(defaultVal T) T {
 #### Step 2: Pattern Mapping
 
 | Kotlin | Go | Notes |
-|--------|-----|-------|
+| -------- | ----- | ------- |
 | `data class` | Regular `struct` | Add methods manually |
 | `sealed class` | Interface + types | More verbose |
 | `suspend fun` | Function + context | Different paradigm |
@@ -787,7 +787,7 @@ class UserServiceClient(host: String, port: Int) {
 ## Summary
 
 | Aspect | Kotlin | Go | Winner |
-|--------|--------|-----|--------|
+| -------- | -------- | ----- | -------- |
 | Android Development | Excellent | Poor | Kotlin |
 | Server Performance | Good | Excellent | Go |
 | Null Safety | Compile-time | Runtime check | Kotlin |

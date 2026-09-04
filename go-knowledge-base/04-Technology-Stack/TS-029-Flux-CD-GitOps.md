@@ -7,7 +7,7 @@ Flux CD is a set of continuous and progressive delivery solutions for Kubernetes
 ### 1.1 Core Capabilities
 
 | Capability | Description | Controller |
-|------------|-------------|------------|
+| ------------ | ------------- | ------------ |
 | Source Management | Git/Helm/OCI repository sync | source-controller |
 | Kustomize | Native Kustomize support | kustomize-controller |
 | Helm | Helm chart and release management | helm-controller |
@@ -1185,7 +1185,7 @@ spec:
 ## 7. Comparison with Alternatives
 
 | Feature | Flux CD | ArgoCD | Rancher Fleet | Jenkins X |
-|---------|---------|--------|---------------|-----------|
+| --------- | --------- | -------- | --------------- | ----------- |
 | GitOps Model | Pull-based | Pull-based | Pull-based | Pull-based |
 | UI | No | Yes | Yes | Limited |
 | Multi-Cluster | Yes | Yes | Yes | Yes |

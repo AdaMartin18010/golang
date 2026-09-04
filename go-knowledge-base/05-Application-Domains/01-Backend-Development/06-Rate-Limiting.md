@@ -11,7 +11,7 @@
 ### 1.1 Why Rate Limiting?
 
 | Purpose | Description |
-|---------|-------------|
+| --------- | ------------- |
 | Prevent abuse | Stop malicious or excessive requests |
 | Resource protection | Prevent server overload |
 | Fair usage | Ensure all users get fair access |
@@ -21,7 +21,7 @@
 ### 1.2 Rate Limiting Strategies
 
 | Strategy | Description | Best For |
-|----------|-------------|----------|
+| ---------- | ------------- | ---------- |
 | Fixed Window | Reset counter at intervals | Simple implementations |
 | Sliding Window | Smooth window transition | Fairer distribution |
 | Token Bucket | Tokens added at fixed rate | Bursty traffic |
@@ -578,7 +578,7 @@ Week 7-8: 性能优化
 ### 技术选型
 
 | 组件 | 技术 | 理由 |
-|------|------|------|
+| ------ | ------ | ------ |
 | API | gRPC | 性能 |
 | DB | PostgreSQL | 可靠 |
 | Cache | Redis | 速度 |

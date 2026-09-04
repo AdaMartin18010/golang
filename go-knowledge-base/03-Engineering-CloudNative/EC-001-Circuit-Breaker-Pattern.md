@@ -926,7 +926,7 @@ func (r *Registry) Stats() []BreakerStats {
 ### 5.1 Common Failure Scenarios
 
 | Scenario | Impact | Detection | Mitigation |
-|----------|--------|-----------|------------|
+| ---------- | -------- | ----------- | ------------ |
 | **Service Timeout** | Request hanging, resource exhaustion | P99 latency spike | Circuit opens on latency threshold |
 | **Service Unavailable** | All requests failing | 5xx errors | Circuit opens on error rate |
 | **Intermittent Failures** | Unpredictable behavior | Consecutive failure count | Circuit opens on consecutive failures |
@@ -1416,7 +1416,7 @@ func (sr *SecureRegistry) GetOrCreate(name string) (*CircuitBreaker, error) {
 ### 8.1 Configuration Guidelines
 
 | Parameter | Conservative | Moderate | Aggressive | Use Case |
-|-----------|-------------|----------|------------|----------|
+| ----------- | ------------- | ---------- | ------------ | ---------- |
 | MaxFailures | 10 | 5 | 3 | Higher for stable services |
 | Timeout | 60s | 30s | 10s | Lower for fast services |
 | MaxRequests | 1 | 3 | 5 | Lower for sensitive services |
@@ -1475,86 +1475,86 @@ Choose Circuit Breaker Configuration:
 package circuitbreaker_test
 
 import (
-	"context"
-	"errors"
-	"sync"
-	"testing"
-	"time"
-	
-	"github.com/example/circuitbreaker"
+ "context"
+ "errors"
+ "sync"
+ "testing"
+ "time"
+
+ "github.com/example/circuitbreaker"
 )
 
 // BenchmarkCircuitBreakerExecute measures basic execution overhead
 func BenchmarkCircuitBreakerExecute(b *testing.B) {
-	cb, _ := circuitbreaker.New("test", circuitbreaker.DefaultConfig(), nil)
-	ctx := context.Background()
-	
-	b.ResetTimer()
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			_ = cb.Execute(ctx, func() error {
-				return nil
-			})
-		}
-	})
+ cb, _ := circuitbreaker.New("test", circuitbreaker.DefaultConfig(), nil)
+ ctx := context.Background()
+
+ b.ResetTimer()
+ b.RunParallel(func(pb *testing.PB) {
+  for pb.Next() {
+   _ = cb.Execute(ctx, func() error {
+    return nil
+   })
+  }
+ })
 }
 
 // BenchmarkCircuitBreakerStateTransition measures state change performance
 func BenchmarkCircuitBreakerStateTransition(b *testing.B) {
-	config := circuitbreaker.Config{
-		MaxFailures: 5,
-		Timeout:     100 * time.Millisecond,
-		MaxRequests: 3,
-	}
-	cb, _ := circuitbreaker.New("test", config, nil)
-	ctx := context.Background()
-	
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		// Force state transitions
-		for j := 0; j < 10; j++ {
-			_ = cb.Execute(ctx, func() error {
-				return errors.New("fail")
-			})
-		}
-		time.Sleep(150 * time.Millisecond) // Allow recovery
-	}
+ config := circuitbreaker.Config{
+  MaxFailures: 5,
+  Timeout:     100 * time.Millisecond,
+  MaxRequests: 3,
+ }
+ cb, _ := circuitbreaker.New("test", config, nil)
+ ctx := context.Background()
+
+ b.ResetTimer()
+ for i := 0; i < b.N; i++ {
+  // Force state transitions
+  for j := 0; j < 10; j++ {
+   _ = cb.Execute(ctx, func() error {
+    return errors.New("fail")
+   })
+  }
+  time.Sleep(150 * time.Millisecond) // Allow recovery
+ }
 }
 
 // BenchmarkCircuitBreakerConcurrentAccess measures concurrent performance
 func BenchmarkCircuitBreakerConcurrentAccess(b *testing.B) {
-	cb, _ := circuitbreaker.New("test", circuitbreaker.DefaultConfig(), nil)
-	ctx := context.Background()
-	
-	b.ResetTimer()
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			_ = cb.Execute(ctx, func() error {
-				return nil
-			})
-		}
-	})
+ cb, _ := circuitbreaker.New("test", circuitbreaker.DefaultConfig(), nil)
+ ctx := context.Background()
+
+ b.ResetTimer()
+ b.RunParallel(func(pb *testing.PB) {
+  for pb.Next() {
+   _ = cb.Execute(ctx, func() error {
+    return nil
+   })
+  }
+ })
 }
 
 // BenchmarkCircuitBreakerWithMetrics measures overhead with metrics
 func BenchmarkCircuitBreakerWithMetrics(b *testing.B) {
-	meter := NewMockMeter()
-	cb, _ := circuitbreaker.New("test", circuitbreaker.DefaultConfig(), meter)
-	ctx := context.Background()
-	
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_ = cb.Execute(ctx, func() error {
-			return nil
-		})
-	}
+ meter := NewMockMeter()
+ cb, _ := circuitbreaker.New("test", circuitbreaker.DefaultConfig(), meter)
+ ctx := context.Background()
+
+ b.ResetTimer()
+ for i := 0; i < b.N; i++ {
+  _ = cb.Execute(ctx, func() error {
+   return nil
+  })
+ }
 }
 ```
 
 ### 10.2 Performance Comparison Table
 
 | Implementation | ns/op | allocs/op | memory/op | Concurrency Safe |
-|---------------|-------|-----------|-----------|------------------|
+| --------------- | ------- | ----------- | ----------- | ------------------ |
 | **Go Standard** | 285 ns | 2 | 64 B | Yes |
 | **With Metrics** | 420 ns | 4 | 128 B | Yes |
 | **With Tracing** | 680 ns | 6 | 256 B | Yes |
@@ -1566,7 +1566,7 @@ func BenchmarkCircuitBreakerWithMetrics(b *testing.B) {
 Based on production deployments (measured over 30 days):
 
 | Metric | P50 | P95 | P99 | Max |
-|--------|-----|-----|-----|-----|
+| -------- | ----- | ----- | ----- | ----- |
 | Circuit Check Latency | 150ns | 280ns | 450ns | 2μs |
 | State Transition Time | 1.2μs | 2.5μs | 5μs | 50μs |
 | Memory per Breaker | 2KB | 4KB | 8KB | 16KB |
@@ -1575,7 +1575,7 @@ Based on production deployments (measured over 30 days):
 ### 10.4 Optimization Recommendations
 
 | Priority | Optimization | Expected Gain | Implementation |
-|----------|-------------|---------------|----------------|
+| ---------- | ------------- | --------------- | ---------------- |
 | 🔴 High | Use atomic operations for counters | 40% latency reduction | Replace mutex with sync/atomic |
 | 🔴 High | Pre-allocate ring buffer | 30% allocation reduction | Fixed-size circular buffer |
 | 🟡 Medium | Batch metric updates | 25% CPU reduction | Flush every 100ms |
@@ -1593,7 +1593,7 @@ var HighThroughputConfig = circuitbreaker.Config{
     Interval:      10 * time.Second,
     ReadyToTrip: func(counts Counts) bool {
         // Use error rate instead of consecutive failures
-        return counts.Requests > 100 && 
+        return counts.Requests > 100 &&
                float64(counts.TotalFailures)/float64(counts.Requests) > 0.5
     },
 }

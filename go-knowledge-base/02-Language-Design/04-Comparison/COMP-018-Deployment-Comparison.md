@@ -45,13 +45,13 @@ Deployment strategies vary significantly across programming languages, affecting
     - [完整代码实现](#完整代码实现)
     - [配置示例](#配置示例)
 - [生产环境配置](#生产环境配置)
-    - [测试用例](#测试用例)
-    - [部署指南](#部署指南)
-    - [性能调优](#性能调优)
-    - [故障处理](#故障处理)
-    - [安全建议](#安全建议)
-    - [运维手册](#运维手册)
-    - [参考链接](#参考链接)
+  - [测试用例](#测试用例)
+  - [部署指南](#部署指南)
+  - [性能调优](#性能调优)
+  - [故障处理](#故障处理)
+  - [安全建议](#安全建议)
+  - [运维手册](#运维手册)
+  - [参考链接](#参考链接)
 
 ---
 
@@ -558,7 +558,7 @@ ENTRYPOINT ["/MyApp"]
 ## Serverless Comparison
 
 | Feature | Go | Python | Java | Node.js | Rust | C# |
-|---------|-----|--------|------|---------|------|-----|
+| --------- | ----- | -------- | ------ | --------- | ------ | ----- |
 | Cold Start | Excellent | Good | Poor | Good | Excellent | Moderate |
 | Package Size | Small | Medium | Large | Medium | Small | Medium |
 | Runtime | Native | Interpreter | JVM | V8 | Native | CLR |
@@ -571,7 +571,7 @@ ENTRYPOINT ["/MyApp"]
 ## Performance Characteristics
 
 | Metric | Go | Python | Java | Node.js | Rust | C# |
-|--------|-----|--------|------|---------|------|-----|
+| -------- | ----- | -------- | ------ | --------- | ------ | ----- |
 | Binary Size | 10-30MB | N/A | 50-200MB | N/A | 5-20MB | 50-150MB |
 | Startup Time | <100ms | 500ms-2s | 2-5s | 200-500ms | <50ms | 1-3s |
 | Memory (idle) | 10-20MB | 50-100MB | 100-200MB | 30-50MB | 5-15MB | 50-100MB |

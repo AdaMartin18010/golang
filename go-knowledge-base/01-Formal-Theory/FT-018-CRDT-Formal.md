@@ -904,7 +904,7 @@ func GenerateRandomTag() (Tag, error) {
 ## Comparison with Related Approaches
 
 | Property | CRDTs | Operational Transform | Consensus | MVCC |
-|----------|-------|----------------------|-----------|------|
+| ---------- | ------- | ---------------------- | ----------- | ------ |
 | **Coordination** | None | Central server | Required | Required |
 | **Availability** | Always available | Server-dependent | Limited | Limited |
 | **Convergence** | Guaranteed | Guaranteed | N/A | N/A |

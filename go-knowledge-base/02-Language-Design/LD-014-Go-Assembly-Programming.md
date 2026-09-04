@@ -40,7 +40,7 @@ $$\text{Destination} \leftarrow \text{Source}$$
 **定义 1.4 (AMD64 寄存器)**
 
 | 寄存器 | 用途 | Callee-saved |
-|--------|------|--------------|
+| -------- | ------ | -------------- |
 | RAX | 返回值 | No |
 | RBX | 通用 | Yes |
 | RCX | 第4参数 | No |
@@ -55,7 +55,7 @@ $$\text{Destination} \leftarrow \text{Source}$$
 **定义 1.5 (ARM64 寄存器)**
 
 | 寄存器 | 用途 |
-|--------|------|
+| -------- | ------ |
 | X0-X7 | 参数/返回值 |
 | X8 | 间接结果 |
 | X9-X15 | 临时 |
@@ -103,7 +103,7 @@ TEXT symbol(SB), flags, $framesize-argumentsize
 **定义 2.3 (Go 伪寄存器)**
 
 | 伪寄存器 | 含义 | 用途 |
-|----------|------|------|
+| ---------- | ------ | ------ |
 | SB | Static Base | 全局符号地址 |
 | FP | Frame Pointer | 函数参数/返回值 |
 | PC | Program Counter | 当前指令地址 |

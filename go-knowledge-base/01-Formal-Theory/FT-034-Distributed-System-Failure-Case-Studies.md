@@ -44,7 +44,7 @@ Root Cause Chain:
 ### 1.3 Timeline of Events
 
 | Time (UTC) | Event |
-|------------|-------|
+| ------------ | ------- |
 | 02:14:32 | Network maintenance begins |
 | 02:15:47 | First node timeout detected |
 | 02:16:03 | DC-A side initiates failover |
@@ -169,7 +169,7 @@ Failure Scenario:
 ### 2.3 Timeline of Events
 
 | Time (UTC) | Event |
-|------------|-------|
+| ------------ | ------- |
 | 14:23:10 | Leader Node A GC pause begins |
 | 14:23:15 | Followers timeout, election starts |
 | 14:23:16 | Node A GC completes, rejects vote requests |
@@ -302,7 +302,7 @@ Cascade Failure:
 ### 3.3 Timeline of Events
 
 | Time (UTC) | Event |
-|------------|-------|
+| ------------ | ------- |
 | 09:15:00 | Network blip begins |
 | 09:15:30 | Network recovers, 4 nodes marked DOWN |
 | 09:15:35 | Hinted handoff activated |
@@ -405,7 +405,7 @@ Failure Cascade:
 ### 4.3 Timeline of Events
 
 | Time (UTC) | Event |
-|------------|-------|
+| ------------ | ------- |
 | 16:45:00 | ZK Leader GC begins |
 | 16:45:35 | GC pause exceeds session timeout |
 | 16:45:36 | Mass session expiration (350 clients) |
@@ -513,7 +513,7 @@ Rebalance Storm:
 ### 5.3 Timeline of Events
 
 | Time (UTC) | Event |
-|------------|-------|
+| ------------ | ------- |
 | 11:00:00 | Deployment begins |
 | 11:00:05 | First batch of consumers restart |
 | 11:00:10 | First rebalance triggered |
@@ -601,7 +601,7 @@ Failure Chain:
 ### 6.3 Timeline of Events
 
 | Time (UTC) | Event |
-|------------|-------|
+| ------------ | ------- |
 | 30 days ago | Compaction job last successful |
 | 08:00:00 | etcd db size: 7.5GB |
 | 08:15:00 | NOSPACE alarm triggered |
@@ -685,7 +685,7 @@ Root Causes:
 ### 7.3 Timeline of Events
 
 | Time (UTC) | Event |
-|------------|-------|
+| ------------ | ------- |
 | 00:00:00 | Secondary disk performance degrades |
 | 02:00:00 | Replication lag: 2 hours |
 | 08:00:00 | User complaints about profile changes not saving |
@@ -779,7 +779,7 @@ Failure Scenario:
 ### 8.3 Timeline of Events
 
 | Time (UTC) | Event |
-|------------|-------|
+| ------------ | ------- |
 | 13:20:00 | Network partition occurs |
 | 13:25:00 | Configuration update in DC-A |
 | 13:30:00 | Routing rule change deployed |
@@ -888,7 +888,7 @@ Failure Sequence:
 ### 9.3 Timeline of Events
 
 | Time (UTC) | Event |
-|------------|-------|
+| ------------ | ------- |
 | 10:00:00 | Network partition detected |
 | 10:00:05 | Minority node paused |
 | 10:00:10 | Publishers fail over to majority |
@@ -995,7 +995,7 @@ Conflict Scenario:
 ### 10.3 Timeline of Events
 
 | Time (UTC) | Event |
-|------------|-------|
+| ------------ | ------- |
 | 15:00:00 | Order created: ORDER-12345 |
 | 15:05:00 | Concurrent updates in us-west-2 and eu-west-1 |
 | 15:05:01 | Both updates applied locally |
@@ -1108,7 +1108,7 @@ func (vc VectorClock) HappensBefore(other VectorClock) bool {
 ### Common Failure Patterns
 
 | Pattern | Frequency | Impact | Detectability |
-|---------|-----------|--------|---------------|
+| --------- | ----------- | -------- | --------------- |
 | Split-Brain | High | Critical | Medium |
 | Consensus Liveness | Medium | High | Low |
 | Hinted Handoff Overload | Medium | High | Medium |

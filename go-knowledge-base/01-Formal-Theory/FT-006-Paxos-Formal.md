@@ -253,7 +253,7 @@ $\square$
 ### 4.3 共识算法对比矩阵
 
 | 属性 | Paxos | Multi-Paxos | Raft | Fast Paxos | Flexible Paxos |
-|------|-------|-------------|------|------------|----------------|
+| ------ | ------- | ------------- | ------ | ------------ | ---------------- |
 | **提案号管理** | 客户端生成 | Leader 管理 | Leader 任期 | 客户端生成 | 可配置 |
 | **消息复杂度** | $O(n^2)$ | $O(n)$ | $O(n)$ | $O(n)$ | $O(n)$ |
 | **延迟** | 2 RTT | 1 RTT (steady) | 2 RTT | 1.5 RTT | 2 RTT |
@@ -752,7 +752,7 @@ func (p *Proposer) HandleMessage(msg Message) error {
 ### Academic Papers
 
 1. **Lamport, L.** (1998). The Part-Time Parliament. *ACM Transactions on Computer Systems*, 16(2), 133-169. DOI: [10.1145/279227.279229](https://doi.org/10.1145/279227.279229)
-2. **Lamport, L.** (2001). Paxos Made Simple. *ACM SIGACT News*, 32(4), 51-58. https://lamport.azurewebsites.net/pubs/paxos-simple.pdf
+2. **Lamport, L.** (2001). Paxos Made Simple. *ACM SIGACT News*, 32(4), 51-58. <https://lamport.azurewebsites.net/pubs/paxos-simple.pdf>
 3. **Chandra, T. D., et al.** (2007). Paxos Made Live: An Engineering Perspective. *ACM PODC*, 398-407. DOI: [10.1145/1281100.1281103](https://doi.org/10.1145/1281100.1281103)
 4. **Van Renesse, R., & Altinbuken, D.** (2015). Paxos Made Moderately Complex. *ACM Computing Surveys*, 47(3), 1-36. DOI: [10.1145/2673577](https://doi.org/10.1145/2673577)
 

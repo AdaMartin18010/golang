@@ -24,7 +24,7 @@ Let $R$ be a request to service $S_{production}$. Shadow traffic creates a repli
 **System Constraints:**
 
 | Constraint | Formal Definition | Impact |
-|------------|-------------------|--------|
+| ------------ | ------------------- | -------- |
 | **Isolation** | $response(S_{shadow}) \nRightarrow response(client)$ | Must not affect users |
 | **Fidelity** | $R' = R$ in all relevant aspects | Test must be realistic |
 | **Side Effect Prevention** | $\forall side\_effect(e): execute(R') \nRightarrow e$ | No duplicate effects |
@@ -52,7 +52,7 @@ $$\forall R: shadow(R, S_{new}) \Rightarrow observe(R') \land \neg affect(R')$$
 ### 2.1 Shadow Traffic Modes
 
 | Mode | Traffic % | Response | Use Case |
-|------|-----------|----------|----------|
+| ------ | ----------- | ---------- | ---------- |
 | **Sampled** | 1-10% | Ignored | Early validation |
 | **Full** | 100% | Ignored | Load testing |
 | **Comparison** | 100% | Compared | Regression testing |
@@ -394,7 +394,7 @@ func IsShadowContext(ctx context.Context) bool {
 ## 5. Failure Scenarios and Mitigations
 
 | Scenario | Impact | Detection | Mitigation |
-|----------|--------|-----------|------------|
+| ---------- | -------- | ----------- | ------------ |
 | **Shadow Overload** | Production slowdown | Latency increase | Rate limiting |
 | **Data Leak** | PII in shadow logs | Audit scan | Data masking |
 | **Side Effect Bug** | Duplicate writes | Anomaly detection | Strict mocking |

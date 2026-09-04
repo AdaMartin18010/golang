@@ -339,7 +339,7 @@ func exampleUsage() {
 ## 性能优化
 
 | 优化项 | 配置 | 说明 |
-|--------|------|------|
+| -------- | ------ | ------ |
 | 连接池 | 复用 ClientConn | 不要每次创建新连接 |
 | 批处理 | 流式 RPC | 减少网络往返 |
 | 压缩 | `grpc.UseCompressor("gzip")` | 大 payload 压缩 |
@@ -364,37 +364,37 @@ func exampleUsage() {
 package techstack_test
 
 import (
-	"context"
-	"testing"
-	"time"
+ "context"
+ "testing"
+ "time"
 )
 
 // BenchmarkBasicOperation measures baseline performance
 func BenchmarkBasicOperation(b *testing.B) {
-	ctx := context.Background()
-	
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_ = ctx
-		// Simulate operation
-	}
+ ctx := context.Background()
+
+ b.ResetTimer()
+ for i := 0; i < b.N; i++ {
+  _ = ctx
+  // Simulate operation
+ }
 }
 
 // BenchmarkConcurrentLoad tests concurrent operations
 func BenchmarkConcurrentLoad(b *testing.B) {
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			// Simulate concurrent operation
-			time.Sleep(1 * time.Microsecond)
-		}
-	})
+ b.RunParallel(func(pb *testing.PB) {
+  for pb.Next() {
+   // Simulate concurrent operation
+   time.Sleep(1 * time.Microsecond)
+  }
+ })
 }
 ```
 
 ### 10.2 Performance Characteristics
 
 | Operation | Latency | Throughput | Resource Usage |
-|-----------|---------|------------|----------------|
+| ----------- | --------- | ------------ | ---------------- |
 | **Simple** | 1ms | 1K RPS | Low |
 | **Complex** | 10ms | 100 RPS | Medium |
 | **Batch** | 100ms | 10K records | High |
@@ -402,7 +402,7 @@ func BenchmarkConcurrentLoad(b *testing.B) {
 ### 10.3 Production Metrics
 
 | Metric | Target | Alert | Critical |
-|--------|--------|-------|----------|
+| -------- | -------- | ------- | ---------- |
 | Latency p99 | < 100ms | > 200ms | > 500ms |
 | Error Rate | < 0.1% | > 0.5% | > 1% |
 | Throughput | > 1K | < 500 | < 100 |

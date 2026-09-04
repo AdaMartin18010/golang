@@ -141,7 +141,7 @@ type Reader struct {
 **Buffer Size Recommendations:**
 
 | Use Case | Buffer Size | Rationale |
-|----------|-------------|-----------|
+| ---------- | ------------- | ----------- |
 | Small files (<1MB) | 4KB | Default, memory efficient |
 | Large files | 64KB-256KB | Minimize syscalls |
 | Network I/O | 32KB-64KB | Match TCP window size |
@@ -245,7 +245,7 @@ copyBuffer(dst, src, buf) {
 **Performance Comparison:**
 
 | Method | 1MB File | 100MB File | 1GB File |
-|--------|----------|------------|----------|
+| -------- | ---------- | ------------ | ---------- |
 | Manual loop | 150ms | 15s | 150s |
 | io.Copy | 50ms | 5s | 50s |
 | sendfile (kernel) | 20ms | 2s | 20s |
@@ -434,7 +434,7 @@ func CreateSafeReader(r io.Reader, maxBytes int64) io.Reader {
 ## 7. Comparison with Alternatives
 
 | Approach | Pros | Cons | Use Case |
-|----------|------|------|----------|
+| ---------- | ------ | ------ | ---------- |
 | **Standard io** | Universal, composable, zero-copy | Basic functionality | Most I/O operations |
 | **bufio** | Buffered, efficient, scanner | Extra memory | File/network I/O |
 | **io/ioutil** | Convenience functions | Deprecated in Go 1.16 | Legacy code |

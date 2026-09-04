@@ -20,7 +20,7 @@ This document provides a comprehensive overview of the modern observability stac
 OpenTelemetry has transitioned from an emerging standard to the **de facto industry standard** for cloud-native observability:
 
 | Metric | 2023 | 2024 | 2025 | 2026 (Projected) |
-|--------|------|------|------|------------------|
+| -------- | ------ | ------ | ------ | ------------------ |
 | Enterprise Adoption | 15% | 28% | **48.5%** | 95% |
 | CNCF Project Status | Incubating | Incubating | **Graduated** | Graduated |
 | Active Contributors | 1,800+ | 2,500+ | **4,000+** | 5,000+ |
@@ -70,7 +70,7 @@ In late 2024, **Grafana Labs donated Beyla to the OpenTelemetry project**, marki
 **OBI/Beyla Language Support Matrix:**
 
 | Language | HTTP Metrics | HTTP Traces | gRPC Metrics | gRPC Traces | DB Traces | Requirements |
-|----------|-------------|-------------|--------------|-------------|-----------|--------------|
+| ---------- | ------------- | ------------- | -------------- | ------------- | ----------- | -------------- |
 | **Go** | ✅ Full | ✅ Full | ✅ Full | ✅ Full | ✅ Partial | Go 1.18+ |
 | **Java** | ✅ Full | ✅ Full | ✅ Full | ✅ Full | ✅ Full | JVM 11+ |
 | **Python** | ✅ Full | ✅ Partial | ✅ Partial | ⚠️ Limited | ❌ | Python 3.8+ |
@@ -257,7 +257,7 @@ func MongoDBAttributes(
 **Database Semantic Convention Attributes Reference:**
 
 | Attribute | Type | Description | Example |
-|-----------|------|-------------|---------|
+| ----------- | ------ | ------------- | --------- |
 | `db.system` | string | Database system identifier | `postgresql`, `mysql`, `redis` |
 | `db.connection_string` | string | Connection string (masked) | `Server=localhost;Database=mydb` |
 | `db.user` | string | Database username | `app_user` |
@@ -687,7 +687,7 @@ spec:
 **Verified eBPF Overhead Benchmarks (2025):**
 
 | Tool | CPU Overhead | Memory Overhead | Network Impact | Primary Use Case |
-|------|-------------|-----------------|----------------|------------------|
+| ------ | ------------- | ----------------- | ---------------- | ------------------ |
 | **Pixie** | 0.5-1.0% | 50MB/node | None | Full-stack observability |
 | **Cilium (w/ Hubble)** | 0.3-0.8% | 30MB/node | None | Network policy + flow visibility |
 | **Tetragon** | 0.2-0.5% | 20MB/node | None | Runtime security |
@@ -700,7 +700,7 @@ spec:
 With Cilium becoming the **default CNI for EKS 1.31+**, organizations have observed:
 
 | Metric | kube-proxy (iptables) | Cilium (eBPF) | Improvement |
-|--------|----------------------|---------------|-------------|
+| -------- | ---------------------- | --------------- | ------------- |
 | Network Throughput | Baseline | +30-40% | **30-40%** |
 | Service Latency (p99) | Baseline | -15-25% | **15-25% reduction** |
 | Connection Tracking | Conntrack table | eBPF map | **No exhaustion** |
@@ -897,7 +897,7 @@ func (rw *responseWriter) WriteHeader(code int) {
 ### 3.2 Jaeger v1 vs v2 Comparison
 
 | Feature | Jaeger v1 | Jaeger v2 (2024+) | Impact |
-|---------|-----------|-------------------|--------|
+| --------- | ----------- | ------------------- | -------- |
 | **Architecture** | 4 services | Single binary | **60% resource reduction** |
 | **Ingestion Protocol** | Jaeger/Zipkin | **OTLP Native** | Zero conversion overhead |
 | **Sampling** | Head-based only | **Head + Tail-based** | **90% better retention** |
@@ -1102,7 +1102,7 @@ GROUP BY parent_service, child_service, timestamp;
 **Migration Timeline:**
 
 | Phase | Timeline | Action |
-|-------|----------|--------|
+| ------- | ---------- | -------- |
 | **Evaluation** | Now - Q3 2025 | Test v2 in staging environments |
 | **Parallel Run** | Q4 2025 | Run v1 and v2 side-by-side |
 | **Cutover** | Q1 2026 | Migrate production to v2 |
@@ -1169,7 +1169,7 @@ echo "Migration complete!"
 OpenTelemetry adoption typically results in a **4-5x increase in telemetry volume** compared to legacy solutions:
 
 | Telemetry Type | Before OTel | After OTel | Growth Factor | Monthly Cost (Before) | Monthly Cost (After) |
-|----------------|-------------|------------|---------------|----------------------|----------------------|
+| ---------------- | ------------- | ------------ | --------------- | ---------------------- | ---------------------- |
 | **Trace Volume** | 10M spans/day | 50M spans/day | **5x** | $2,000 | $10,000 |
 | **Metric Cardinality** | 500K series | 2M series | **4x** | $1,500 | $6,000 |
 | **Log Volume** | 100 GB/day | 350 GB/day | **3.5x** | $1,000 | $3,500 |
@@ -1277,7 +1277,7 @@ processors:
 **Sampling Strategy Effectiveness:**
 
 | Policy | Target Coverage | Cost Reduction | Retention Quality |
-|--------|-----------------|----------------|-------------------|
+| -------- | ----------------- | ---------------- | ------------------- |
 | Head-based (10%) | 10% of all traces | 90% | Low (random) |
 | Tail-based (errors) | 100% of errors | 70% | High |
 | Tail-based (latency) | 100% of slow traces | 75% | High |
@@ -1414,7 +1414,7 @@ service:
 **Real-World Cost Reduction Achieved:**
 
 | Company | Before Optimization | After Optimization | Savings |
-|---------|--------------------|--------------------|---------|
+| --------- | -------------------- | -------------------- | --------- |
 | **SAP** | $50,000/month | $15,000/month | **70%** |
 | **Shopify** | $120,000/month | $36,000/month | **70%** |
 | **Datadog** (self-hosted) | $80,000/month | $32,000/month | **60%** |
@@ -1423,7 +1423,7 @@ service:
 **Key Optimization Techniques Applied:**
 
 | Technique | Implementation Effort | Cost Impact |
-|-----------|----------------------|-------------|
+| ----------- | ---------------------- | ------------- |
 | Tail-based sampling | Medium | **40-60%** reduction |
 | Metric cardinality control | Low | **30-50%** reduction |
 | Log filtering | Low | **20-40%** reduction |
@@ -1477,7 +1477,7 @@ Continuous profiling has experienced explosive growth, with the market expanding
 ### 5.2 Continuous Profiling Tools Comparison
 
 | Feature | Parca | Pyroscope | Datadog Profiler | AWS CodeGuru | Google Cloud Profiler |
-|---------|-------|-----------|------------------|--------------|----------------------|
+| --------- | ------- | ----------- | ------------------ | -------------- | ---------------------- |
 | **Open Source** | ✅ Yes | ✅ Yes | ❌ No | ❌ No | ❌ No |
 | **Cost** | Free | Free | $$$ | $$ | $$ |
 | **eBPF Support** | ✅ Yes | ✅ Yes | ⚠️ Limited | ❌ No | ⚠️ Limited |
@@ -1797,7 +1797,7 @@ func init() {
 ### 5.6 Continuous Profiling Best Practices
 
 | Practice | Implementation | Impact |
-|----------|---------------|--------|
+| ---------- | --------------- | -------- |
 | **Sampling Rate** | 100Hz for CPU, 5-10% for memory | Balance accuracy vs overhead |
 | **Retention** | 7-30 days hot, 1 year cold | Cost-effective long-term analysis |
 | **Tags/Labels** | service, version, region, environment | Effective filtering and comparison |
@@ -1808,7 +1808,7 @@ func init() {
 **Profile Overhead Benchmarks:**
 
 | Profile Type | Sampling Rate | CPU Overhead | Memory Overhead |
-|--------------|---------------|--------------|-----------------|
+| -------------- | --------------- | -------------- | ----------------- |
 | CPU | 100 Hz | 1-3% | Negligible |
 | Memory | Every 4KB | 0.5-1% | 5-10MB |
 | Goroutines | Continuous | 0.1% | 1-2MB |
@@ -1822,7 +1822,7 @@ func init() {
 ### 6.1 Key Takeaways
 
 | Area | 2025 Status | Recommendation |
-|------|-------------|----------------|
+| ------ | ------------- | ---------------- |
 | **OpenTelemetry** | 48.5% adoption, CNCF Graduated | Migrate from proprietary APM |
 | **eBPF** | <1% overhead, 30-40% network improvement | Deploy Cilium + OBI/Beyla |
 | **Jaeger** | v2 released, v1 deprecated Jan 2026 | Plan migration to v2 with ClickHouse |
@@ -1890,7 +1890,7 @@ func init() {
 ### 6.3 Implementation Roadmap
 
 | Quarter | Focus Area | Key Deliverables |
-|---------|------------|------------------|
+| --------- | ------------ | ------------------ |
 | **Q1 2025** | Assessment | Inventory current tools, identify gaps |
 | **Q2 2025** | Pilot | Deploy OTel SDK in staging, test Jaeger v2 |
 | **Q3 2025** | Foundation | Production OTel Collector, Cilium deployment |

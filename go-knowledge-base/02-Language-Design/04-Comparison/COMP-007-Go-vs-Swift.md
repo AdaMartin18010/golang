@@ -714,7 +714,7 @@ func main() {
 ## Performance Comparison
 
 | Metric | Swift | Go | Notes |
-|--------|-------|-----|-------|
+| -------- | ------- | ----- | ------- |
 | Compilation | Slow | Fast | Go 10x faster |
 | Binary Size | Small | Small | Similar |
 | Startup Time | Fast | Fast | Similar |
@@ -730,7 +730,7 @@ func main() {
 ### Choose Swift When
 
 | Criterion | Weight | Score | Rationale |
-|-----------|--------|-------|-----------|
+| ----------- | -------- | ------- | ----------- |
 | iOS/macOS development | Critical | 10/10 | Native support |
 | Apple ecosystem | Critical | 10/10 | Best integration |
 | UI development | High | 10/10 | SwiftUI, UIKit |
@@ -740,7 +740,7 @@ func main() {
 ### Choose Go When
 
 | Criterion | Weight | Score | Rationale |
-|-----------|--------|-------|-----------|
+| ----------- | -------- | ------- | ----------- |
 | Cross-platform backend | High | 10/10 | Native on all platforms |
 | Cloud infrastructure | High | 10/10 | K8s, Docker ecosystem |
 | Fast compilation | High | 10/10 | Sub-second builds |
@@ -756,7 +756,7 @@ func main() {
 Rare for backend services:
 
 | Swift Pattern | Go Equivalent |
-|---------------|---------------|
+| --------------- | --------------- |
 | `Optional<T>` | `*T` or `sql.Null*` |
 | `Result<T,E>` | `(T, error)` |
 | `async/await` | Goroutines |
@@ -773,7 +773,7 @@ Rare for backend services:
 ## Summary
 
 | Aspect | Swift | Go | Winner |
-|--------|-------|-----|--------|
+| -------- | ------- | ----- | -------- |
 | Apple Development | Excellent | None | Swift |
 | Server Development | Good | Excellent | Go |
 | Learning Curve | Moderate | Easy | Go |

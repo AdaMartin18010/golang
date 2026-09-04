@@ -70,7 +70,7 @@ type Context interface {
 ### 1.3 Context Types
 
 | Type | Purpose | Use Case |
-|------|---------|----------|
+| ------ | --------- | ---------- |
 | `context.Background()` | Root context | Main function, initialization |
 | `context.TODO()` | Placeholder | Temporary, when unsure |
 | `WithCancel(parent)` | Manual cancellation | User cancels operation |
@@ -190,7 +190,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 ### 3.2 What to Store in Context
 
 | ✅ Store | ❌ Don't Store |
-|---------|---------------|
+| --------- | --------------- |
 | Request ID / Trace ID | Database connections |
 | User ID / Session info | Large objects |
 | Authentication tokens | Business logic data |
@@ -286,7 +286,7 @@ func grpcCall(ctx context.Context, client pb.ServiceClient) (*pb.Response, error
 ### 5.1 Context Overhead
 
 | Operation | Approximate Cost |
-|-----------|-----------------|
+| ----------- | ----------------- |
 | context.Background() | ~0 (singleton) |
 | WithCancel() | ~50-100ns + allocation |
 | WithTimeout() | ~100-200ns + allocation |
@@ -383,7 +383,7 @@ func (s *Service) HandleRequest(ctx context.Context) error {
 ## 7. Comparison with Alternatives
 
 | Approach | Pros | Cons | When to Use |
-|----------|------|------|-------------|
+| ---------- | ------ | ------ | ------------- |
 | **Context** | Standard, composable, cancellation support | Can be misused for data | Go 1.7+, all new code |
 | **Channels** | Direct control, no magic | Verbose, manual propagation | Complex coordination |
 | **sync.WaitGroup** | Simple wait semantics | No cancellation | Wait for completion |

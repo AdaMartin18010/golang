@@ -43,7 +43,7 @@ Kubernetes v1.34, codenamed **"Of Wind & Will (O' WaW)"**, released on August 27
 ### 1.2 Feature Maturity Matrix
 
 | Feature | Stage | Feature Gate | Default | Since |
-|---------|-------|--------------|---------|-------|
+| --------- | ------- | -------------- | --------- | ------- |
 | Dynamic Resource Allocation (DRA) | Stable | N/A | Enabled | 1.30 → 1.34 |
 | Native Sidecar Containers | Stable | SidecarContainers | Enabled | 1.28 → 1.33 |
 | OCI Artifact Volumes | Beta | ImageVolume | Enabled | 1.33 → 1.34 |
@@ -227,7 +227,7 @@ spec:
 ### 2.4 DRA Benefits for GPU Workloads
 
 | Capability | Device Plugin | DRA (1.34 GA) |
-|------------|---------------|---------------|
+| ------------ | --------------- | --------------- |
 | **Partial GPU Allocation** | ❌ No | ✅ MIG, SR-IOV support |
 | **Device Initialization** | ❌ No | ✅ Pre-configure FPGAs, reset GPUs |
 | **Flexible Device Sharing** | ❌ Static | ✅ Consumable capacity (beta) |
@@ -1060,7 +1060,7 @@ Kubernetes 1.34 marks a maturity milestone with 23 features graduating to stable
 ### 7.1 Complete List of GA Features
 
 | # | Feature | KEP | SIG | Description |
-|---|---------|-----|-----|-------------|
+| --- | --------- | ----- | ----- | ------------- |
 | 1 | **DRA: Structured Parameters** | #4381 | Node | Dynamic Resource Allocation for GPUs/Accelerators |
 | 2 | **API Server Tracing** | #647 | API Machinery | OpenTelemetry tracing for API server |
 | 3 | **Consistent Reads from Cache** | #2340 | API Machinery | Eliminates stale reads, 40-60% faster list ops |

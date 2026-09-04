@@ -575,7 +575,7 @@ func doSigPreempt(gp *g, ctxt *sigctxt) {
 ### 6.1 调度开销
 
 | 操作 | 时间 | 说明 |
-|------|------|------|
+| ------ | ------ | ------ |
 | go 创建 | ~1.5μs | 分配 G + 放入队列 |
 | 上下文切换 | ~200ns | G 切换 |
 | 工作窃取 | ~100ns | 无竞争时 |
@@ -675,7 +675,7 @@ P: 默认等于 CPU 核心数
 ### 7.3 线程模型对比
 
 | 特性 | 1:1 线程 (Java) | M:N 协程 (Go) | 绿色线程 (Erlang) |
-|------|----------------|---------------|-------------------|
+| ------ | ---------------- | --------------- | ------------------- |
 | 上下文切换 | ~1μs | ~200ns | ~100ns |
 | 内存开销 | ~1MB | ~2KB | ~1KB |
 | 调度策略 | 内核决定 | 工作窃取 | 轮询 |
@@ -857,7 +857,7 @@ func main() {
 
 ### Academic Papers
 
-1. **Dmitry Vyukov.** (2012). Go Scheduler Design. *Go Design Documents*. https://go.dev/s/design/scheduler
+1. **Dmitry Vyukov.** (2012). Go Scheduler Design. *Go Design Documents*. <https://go.dev/s/design/scheduler>
 2. **Austin Clements.** (2015). Request Oriented Concurrency. *Go Proposal*.
 3. **Lauer, H. C., & Needham, R. M.** (1979). On the Duality of Operating System Structures. *ACM SIGOPS*, 13(2), 3-19. DOI: [10.1145/850657.850658](https://doi.org/10.1145/850657.850658)
 4. **Engelschall, R. S.** (2000). Portable Multithreading: The Signal Stack Trick for User-Space Thread Creation. *USENIX*.

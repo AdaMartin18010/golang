@@ -1,9 +1,10 @@
 # FT-025: Leader Election - Formal Theory and Analysis
 
-> **Dimension**: Formal Theory  
-> **Level**: S (>15KB)  
-> **Tags**: #leader-election #bully-algorithm #ring-algorithm #chandra-toueg #distributed-systems  
+> **Dimension**: Formal Theory
+> **Level**: S (>15KB)
+> **Tags**: #leader-election #bully-algorithm #ring-algorithm #chandra-toueg #distributed-systems
 > **Authoritative Sources**:
+>
 > - Garcia-Molina, H. (1982). "Elections in a Distributed Computing System". IEEE TC
 > - Chang, E., & Roberts, R. (1979). "An Improved Algorithm for Decentralized Extrema-Finding". IPL
 > - Chandra, T. D., & Toueg, S. (1996). "Unreliable Failure Detectors for Reliable Distributed Systems". JACM
@@ -51,7 +52,7 @@ where message delays $\delta \in (0, \infty)$ have no upper bound.
 **Failure Models**:
 
 | Model | Notation | Description |
-|-------|----------|-------------|
+| ------- | ---------- | ------------- |
 | Crash-Stop | $F_{crash}$ | Process halts permanently |
 | Crash-Recovery | $F_{rec}$ | Process crashes but may recover |
 | Byzantine | $F_{byz}$ | Process arbitrary/malicious |
@@ -62,6 +63,7 @@ where message delays $\delta \in (0, \infty)$ have no upper bound.
 *Proof Sketch*: By FLP impossibility result, consensus (which leader election is a form of) is impossible in asynchronous systems with crash failures. ∎
 
 **Circumvention**: Leader election algorithms use:
+
 1. Timeouts (partial synchrony assumption)
 2. Randomization
 3. Failure detectors
@@ -85,13 +87,14 @@ where message delays $\delta \in (0, \infty)$ have no upper bound.
 **State Variables**:
 
 | Variable | Type | Description |
-|----------|------|-------------|
+| ---------- | ------ | ------------- |
 | $id$ | $\mathbb{N}$ | Unique process identifier |
 | $status$ | $\{P, N, L\}$ | Participant, Non-participant, Leader |
 | $leader$ | $\mathbb{N} \cup \{\bot\}$ | Current leader ID |
 | $timeout$ | $\mathbb{R}^+$ | Election timeout duration |
 
 **Message Types**:
+
 - $\text{ELECTION}(id)$: Announce candidacy
 - $\text{OK}(id)$: Acknowledge election message
 - $\text{COORDINATOR}(id)$: Declare leadership
@@ -135,7 +138,7 @@ Procedure StartElection():
   status ← P
   leader ← ⊥
   higher ← {q ∈ Π : id_q > id_p}
-  
+
   if higher = ∅:
     // Highest ID, become leader
     leader ← id_p
@@ -152,6 +155,7 @@ Procedure StartElection():
 **Theorem 2.1 (Bully Safety)**: At most one process declares itself leader at any time.
 
 *Proof*:
+
 - Let $p$ be the process with maximum ID: $\forall q \in \Pi: id_q \leq id_p$
 - When $p$ starts election, $\text{higher} = \emptyset$
 - Therefore, $p$ immediately declares itself leader
@@ -164,6 +168,7 @@ Procedure StartElection():
 **Theorem 2.2 (Bully Liveness)**: If the highest-ID process is correct, it will eventually be elected leader.
 
 *Proof*:
+
 - Case 1: Highest-ID process $p$ initiates election
   - $\text{higher} = \emptyset$, immediately declares leadership
 - Case 2: Lower-ID process $q$ initiates election
@@ -175,6 +180,7 @@ Procedure StartElection():
 **Theorem 2.3 (Bully Message Complexity)**: The Bully algorithm uses $O(n^2)$ messages in the worst case.
 
 *Proof*:
+
 - Worst case: Processes initiate election in reverse ID order
 - Process $i$ sends $n-i$ election messages
 - Total: $\sum_{i=1}^{n-1} (n-i) = \sum_{j=1}^{n-1} j = \frac{(n-1)n}{2} = O(n^2)$ ∎
@@ -190,13 +196,14 @@ Procedure StartElection():
 **State Variables**:
 
 | Variable | Type | Description |
-|----------|------|-------------|
+| ---------- | ------ | ------------- |
 | $id$ | $\mathbb{N}$ | Process identifier |
 | $next$ | $\Pi$ | Next process in ring |
 | $active$ | $\{T, F\}$ | Currently participating |
 | $leader$ | $\mathbb{N}$ | Elected leader |
 
 **Message Types**:
+
 - $\text{ELECTION}(ids)$: Circulating list of candidate IDs
 - $\text{ELECTED}(id)$: Announce winner
 
@@ -243,6 +250,7 @@ On ReceiveElected(leader_id, sender):
 **Theorem 3.1 (Ring Safety)**: Exactly one leader is elected.
 
 *Proof*:
+
 - The election message circulates with the set of active candidates
 - When a process receives its own election message, it knows it has highest ID
 - Only that process can declare itself leader
@@ -251,6 +259,7 @@ On ReceiveElected(leader_id, sender):
 **Theorem 3.2 (Ring Message Complexity)**: The Chang-Roberts algorithm uses at most $2n$ messages.
 
 *Proof*:
+
 - ELECTION message circulates at most $n$ times
 - ELECTED message circulates exactly $n$ times
 - Total: $\leq 2n$ messages ∎
@@ -258,6 +267,7 @@ On ReceiveElected(leader_id, sender):
 **Theorem 3.3 (Ring Time Complexity)**: Election completes in $O(n)$ time.
 
 *Proof*:
+
 - Message must traverse at most $n$ hops to complete circuit
 - Each hop takes finite time (synchronous assumption) ∎
 
@@ -334,7 +344,7 @@ Every CheckInterval:
   for each p in Π:
     if Now() - last_msg[p] > delay:
       suspects[p] = true
-  
+
   // Check if current leader is suspected
   if suspects[trust]:
     // Find new leader
@@ -353,6 +363,7 @@ On ReceiveNewLeader(new_trust):
 **Theorem 4.1 (Chandra-Toueg Safety)**: If the failure detector satisfies strong completeness and eventual weak accuracy, the algorithm guarantees that eventually all correct processes agree on the same leader.
 
 *Proof*:
+
 1. **Strong completeness**: All faulty processes eventually suspected
 2. **Eventual weak accuracy**: Eventually, some correct process is never suspected
 3. Let $L$ be the highest-ID correct process that is never suspected
@@ -538,12 +549,12 @@ Termination ==
 package leaderelection
 
 import (
-	"context"
-	"fmt"
-	"sort"
-	"sync"
-	"sync/atomic"
-	"time"
+ "context"
+ "fmt"
+ "sort"
+ "sync"
+ "sync/atomic"
+ "time"
 )
 
 // ============================================
@@ -552,46 +563,46 @@ import (
 
 // Node represents a participant in leader election
 type Node struct {
-	ID       int
-	Address  string
-	Priority int // Higher = more likely to become leader
+ ID       int
+ Address  string
+ Priority int // Higher = more likely to become leader
 }
 
 // LeaderElection defines the interface for leader election algorithms
 type LeaderElection interface {
-	Start(ctx context.Context) error
-	Stop() error
-	IsLeader() bool
-	GetLeader() *Node
-	AddNode(node *Node) error
-	RemoveNode(id int) error
+ Start(ctx context.Context) error
+ Stop() error
+ IsLeader() bool
+ GetLeader() *Node
+ AddNode(node *Node) error
+ RemoveNode(id int) error
 }
 
 // Network provides communication primitives
 type Network interface {
-	Send(to int, msg Message) error
-	Broadcast(msg Message) error
-	Receive(timeout time.Duration) (Message, error)
+ Send(to int, msg Message) error
+ Broadcast(msg Message) error
+ Receive(timeout time.Duration) (Message, error)
 }
 
 // Message types for leader election
 type MessageType int
 
 const (
-	MsgElection MessageType = iota
-	MsgOK
-	MsgCoordinator
-	MsgHeartbeat
-	MsgHeartbeatAck
-	MsgNewLeader
+ MsgElection MessageType = iota
+ MsgOK
+ MsgCoordinator
+ MsgHeartbeat
+ MsgHeartbeatAck
+ MsgNewLeader
 )
 
 type Message struct {
-	Type      MessageType
-	From      int
-	To        int
-	Timestamp time.Time
-	Data      []byte
+ Type      MessageType
+ From      int
+ To        int
+ Timestamp time.Time
+ Data      []byte
 }
 
 // ============================================
@@ -600,295 +611,295 @@ type Message struct {
 
 // Bully implements the Bully leader election algorithm
 type Bully struct {
-	self     *Node
-	nodes    map[int]*Node
-	network  Network
-	
-	mu          sync.RWMutex
-	isLeader    bool
-	leader      *Node
-	status      ElectionStatus
-	timer       *time.Timer
-	timeout     time.Duration
-	
-	electionCh  chan struct{}
-	stopCh      chan struct{}
-	wg          sync.WaitGroup
+ self     *Node
+ nodes    map[int]*Node
+ network  Network
+
+ mu          sync.RWMutex
+ isLeader    bool
+ leader      *Node
+ status      ElectionStatus
+ timer       *time.Timer
+ timeout     time.Duration
+
+ electionCh  chan struct{}
+ stopCh      chan struct{}
+ wg          sync.WaitGroup
 }
 
 type ElectionStatus int
 
 const (
-	StatusParticipant ElectionStatus = iota
-	StatusNonParticipant
-	StatusLeader
+ StatusParticipant ElectionStatus = iota
+ StatusNonParticipant
+ StatusLeader
 )
 
 // NewBully creates a new Bully election instance
 func NewBully(self *Node, network Network, timeout time.Duration) *Bully {
-	return &Bully{
-		self:       self,
-		nodes:      make(map[int]*Node),
-		network:    network,
-		timeout:    timeout,
-		electionCh: make(chan struct{}, 1),
-		stopCh:     make(chan struct{}),
-		status:     StatusParticipant,
-	}
+ return &Bully{
+  self:       self,
+  nodes:      make(map[int]*Node),
+  network:    network,
+  timeout:    timeout,
+  electionCh: make(chan struct{}, 1),
+  stopCh:     make(chan struct{}),
+  status:     StatusParticipant,
+ }
 }
 
 // AddNode adds a peer node
 func (b *Bully) AddNode(node *Node) error {
-	b.mu.Lock()
-	defer b.mu.Unlock()
-	b.nodes[node.ID] = node
-	return nil
+ b.mu.Lock()
+ defer b.mu.Unlock()
+ b.nodes[node.ID] = node
+ return nil
 }
 
 // RemoveNode removes a peer node
 func (b *Bully) RemoveNode(id int) error {
-	b.mu.Lock()
-	defer b.mu.Unlock()
-	delete(b.nodes, id)
-	
-	// If leader was removed, start new election
-	if b.leader != nil && b.leader.ID == id {
-		b.startElection()
-	}
-	return nil
+ b.mu.Lock()
+ defer b.mu.Unlock()
+ delete(b.nodes, id)
+
+ // If leader was removed, start new election
+ if b.leader != nil && b.leader.ID == id {
+  b.startElection()
+ }
+ return nil
 }
 
 // Start begins the leader election process
 func (b *Bully) Start(ctx context.Context) error {
-	b.wg.Add(2)
-	go b.heartbeatLoop()
-	go b.messageHandler()
-	
-	// Start initial election
-	b.startElection()
-	
-	return nil
+ b.wg.Add(2)
+ go b.heartbeatLoop()
+ go b.messageHandler()
+
+ // Start initial election
+ b.startElection()
+
+ return nil
 }
 
 // Stop terminates the election process
 func (b *Bully) Stop() error {
-	close(b.stopCh)
-	b.wg.Wait()
-	return nil
+ close(b.stopCh)
+ b.wg.Wait()
+ return nil
 }
 
 // IsLeader returns true if this node is the current leader
 func (b *Bully) IsLeader() bool {
-	b.mu.RLock()
-	defer b.mu.RUnlock()
-	return b.isLeader
+ b.mu.RLock()
+ defer b.mu.RUnlock()
+ return b.isLeader
 }
 
 // GetLeader returns the current leader node
 func (b *Bully) GetLeader() *Node {
-	b.mu.RLock()
-	defer b.mu.RUnlock()
-	return b.leader
+ b.mu.RLock()
+ defer b.mu.RUnlock()
+ return b.leader
 }
 
 func (b *Bully) startElection() {
-	select {
-	case b.electionCh <- struct{}{}:
-	default:
-	}
+ select {
+ case b.electionCh <- struct{}{}:
+ default:
+ }
 }
 
 func (b *Bully) runElection() {
-	b.mu.Lock()
-	b.status = StatusParticipant
-	b.isLeader = false
-	b.leader = nil
-	
-	// Find higher ID nodes
-	higherNodes := make([]*Node, 0)
-	for _, node := range b.nodes {
-		if node.ID > b.self.ID {
-			higherNodes = append(higherNodes, node)
-		}
-	}
-	b.mu.Unlock()
-	
-	if len(higherNodes) == 0 {
-		// No higher nodes, become leader
-		b.becomeLeader()
-		return
-	}
-	
-	// Send election messages to higher nodes
-	for _, node := range higherNodes {
-		msg := Message{
-			Type: MsgElection,
-			From: b.self.ID,
-			To:   node.ID,
-		}
-		b.network.Send(node.ID, msg)
-	}
-	
-	// Wait for OK responses
-	timeout := time.NewTimer(b.timeout)
-	defer timeout.Stop()
-	
-	okReceived := make(map[int]bool)
-	
-	for {
-		select {
-		case <-timeout.C:
-			// No OK received, we are the leader
-			if len(okReceived) == 0 {
-				b.becomeLeader()
-			}
-			return
-		default:
-			msg, err := b.network.Receive(100 * time.Millisecond)
-			if err != nil {
-				continue
-			}
-			
-			if msg.Type == MsgOK && msg.To == b.self.ID {
-				okReceived[msg.From] = true
-				b.mu.Lock()
-				b.status = StatusNonParticipant
-				b.mu.Unlock()
-				
-				// Wait for coordinator message
-				b.waitForCoordinator()
-				return
-			}
-		}
-	}
+ b.mu.Lock()
+ b.status = StatusParticipant
+ b.isLeader = false
+ b.leader = nil
+
+ // Find higher ID nodes
+ higherNodes := make([]*Node, 0)
+ for _, node := range b.nodes {
+  if node.ID > b.self.ID {
+   higherNodes = append(higherNodes, node)
+  }
+ }
+ b.mu.Unlock()
+
+ if len(higherNodes) == 0 {
+  // No higher nodes, become leader
+  b.becomeLeader()
+  return
+ }
+
+ // Send election messages to higher nodes
+ for _, node := range higherNodes {
+  msg := Message{
+   Type: MsgElection,
+   From: b.self.ID,
+   To:   node.ID,
+  }
+  b.network.Send(node.ID, msg)
+ }
+
+ // Wait for OK responses
+ timeout := time.NewTimer(b.timeout)
+ defer timeout.Stop()
+
+ okReceived := make(map[int]bool)
+
+ for {
+  select {
+  case <-timeout.C:
+   // No OK received, we are the leader
+   if len(okReceived) == 0 {
+    b.becomeLeader()
+   }
+   return
+  default:
+   msg, err := b.network.Receive(100 * time.Millisecond)
+   if err != nil {
+    continue
+   }
+
+   if msg.Type == MsgOK && msg.To == b.self.ID {
+    okReceived[msg.From] = true
+    b.mu.Lock()
+    b.status = StatusNonParticipant
+    b.mu.Unlock()
+
+    // Wait for coordinator message
+    b.waitForCoordinator()
+    return
+   }
+  }
+ }
 }
 
 func (b *Bully) becomeLeader() {
-	b.mu.Lock()
-	b.isLeader = true
-	b.leader = b.self
-	b.status = StatusLeader
-	b.mu.Unlock()
-	
-	fmt.Printf("Node %d became leader\n", b.self.ID)
-	
-	// Send coordinator message to all lower nodes
-	b.mu.RLock()
-	defer b.mu.RUnlock()
-	
-	for _, node := range b.nodes {
-		if node.ID < b.self.ID {
-			msg := Message{
-				Type: MsgCoordinator,
-				From: b.self.ID,
-				To:   node.ID,
-			}
-			b.network.Send(node.ID, msg)
-		}
-	}
+ b.mu.Lock()
+ b.isLeader = true
+ b.leader = b.self
+ b.status = StatusLeader
+ b.mu.Unlock()
+
+ fmt.Printf("Node %d became leader\n", b.self.ID)
+
+ // Send coordinator message to all lower nodes
+ b.mu.RLock()
+ defer b.mu.RUnlock()
+
+ for _, node := range b.nodes {
+  if node.ID < b.self.ID {
+   msg := Message{
+    Type: MsgCoordinator,
+    From: b.self.ID,
+    To:   node.ID,
+   }
+   b.network.Send(node.ID, msg)
+  }
+ }
 }
 
 func (b *Bully) waitForCoordinator() {
-	timeout := time.NewTimer(b.timeout * 2)
-	defer timeout.Stop()
-	
-	for {
-		select {
-		case <-timeout.C:
-			// Timeout, start new election
-			b.startElection()
-			return
-		default:
-			msg, err := b.network.Receive(100 * time.Millisecond)
-			if err != nil {
-				continue
-			}
-			
-			if msg.Type == MsgCoordinator {
-				b.mu.Lock()
-				if node, ok := b.nodes[msg.From]; ok {
-					b.leader = node
-				}
-				b.mu.Unlock()
-				return
-			}
-		}
-	}
+ timeout := time.NewTimer(b.timeout * 2)
+ defer timeout.Stop()
+
+ for {
+  select {
+  case <-timeout.C:
+   // Timeout, start new election
+   b.startElection()
+   return
+  default:
+   msg, err := b.network.Receive(100 * time.Millisecond)
+   if err != nil {
+    continue
+   }
+
+   if msg.Type == MsgCoordinator {
+    b.mu.Lock()
+    if node, ok := b.nodes[msg.From]; ok {
+     b.leader = node
+    }
+    b.mu.Unlock()
+    return
+   }
+  }
+ }
 }
 
 func (b *Bully) heartbeatLoop() {
-	defer b.wg.Done()
-	
-	ticker := time.NewTicker(b.timeout / 2)
-	defer ticker.Stop()
-	
-	for {
-		select {
-		case <-b.stopCh:
-			return
-		case <-ticker.C:
-			if b.IsLeader() {
-				// Leader sends heartbeats
-				msg := Message{
-					Type: MsgHeartbeat,
-					From: b.self.ID,
-				}
-				b.network.Broadcast(msg)
-			}
-		case <-b.electionCh:
-			b.runElection()
-		}
-	}
+ defer b.wg.Done()
+
+ ticker := time.NewTicker(b.timeout / 2)
+ defer ticker.Stop()
+
+ for {
+  select {
+  case <-b.stopCh:
+   return
+  case <-ticker.C:
+   if b.IsLeader() {
+    // Leader sends heartbeats
+    msg := Message{
+     Type: MsgHeartbeat,
+     From: b.self.ID,
+    }
+    b.network.Broadcast(msg)
+   }
+  case <-b.electionCh:
+   b.runElection()
+  }
+ }
 }
 
 func (b *Bully) messageHandler() {
-	defer b.wg.Done()
-	
-	for {
-		select {
-		case <-b.stopCh:
-			return
-		default:
-			msg, err := b.network.Receive(100 * time.Millisecond)
-			if err != nil {
-				continue
-			}
-			
-			switch msg.Type {
-			case MsgElection:
-				// Reply OK if we have higher ID
-				if b.self.ID > msg.From {
-					reply := Message{
-						Type: MsgOK,
-						From: b.self.ID,
-						To:   msg.From,
-					}
-					b.network.Send(msg.From, reply)
-					
-					// Start our own election
-					b.startElection()
-				}
-				
-			case MsgCoordinator:
-				b.mu.Lock()
-				if node, ok := b.nodes[msg.From]; ok {
-					b.leader = node
-					b.isLeader = false
-					b.status = StatusNonParticipant
-				}
-				b.mu.Unlock()
-				
-			case MsgHeartbeat:
-				// Reply with heartbeat ack
-				reply := Message{
-					Type: MsgHeartbeatAck,
-					From: b.self.ID,
-					To:   msg.From,
-				}
-				b.network.Send(msg.From, reply)
-			}
-		}
-	}
+ defer b.wg.Done()
+
+ for {
+  select {
+  case <-b.stopCh:
+   return
+  default:
+   msg, err := b.network.Receive(100 * time.Millisecond)
+   if err != nil {
+    continue
+   }
+
+   switch msg.Type {
+   case MsgElection:
+    // Reply OK if we have higher ID
+    if b.self.ID > msg.From {
+     reply := Message{
+      Type: MsgOK,
+      From: b.self.ID,
+      To:   msg.From,
+     }
+     b.network.Send(msg.From, reply)
+
+     // Start our own election
+     b.startElection()
+    }
+
+   case MsgCoordinator:
+    b.mu.Lock()
+    if node, ok := b.nodes[msg.From]; ok {
+     b.leader = node
+     b.isLeader = false
+     b.status = StatusNonParticipant
+    }
+    b.mu.Unlock()
+
+   case MsgHeartbeat:
+    // Reply with heartbeat ack
+    reply := Message{
+     Type: MsgHeartbeatAck,
+     From: b.self.ID,
+     To:   msg.From,
+    }
+    b.network.Send(msg.From, reply)
+   }
+  }
+ }
 }
 
 // ============================================
@@ -897,234 +908,234 @@ func (b *Bully) messageHandler() {
 
 // Ring implements the Chang-Roberts ring algorithm
 type Ring struct {
-	self     *Node
-	nodes    []*Node  // Sorted by ID, forms the ring
-	position int      // Position in the ring
-	network  Network
-	
-	mu         sync.RWMutex
-	leader     *Node
-	active     bool
-	elected    bool
-	
-	stopCh     chan struct{}
-	wg         sync.WaitGroup
+ self     *Node
+ nodes    []*Node  // Sorted by ID, forms the ring
+ position int      // Position in the ring
+ network  Network
+
+ mu         sync.RWMutex
+ leader     *Node
+ active     bool
+ elected    bool
+
+ stopCh     chan struct{}
+ wg         sync.WaitGroup
 }
 
 // NewRing creates a new Ring election instance
 func NewRing(self *Node, network Network) *Ring {
-	return &Ring{
-		self:    self,
-		nodes:   []*Node{self},
-		network: network,
-		stopCh:  make(chan struct{}),
-	}
+ return &Ring{
+  self:    self,
+  nodes:   []*Node{self},
+  network: network,
+  stopCh:  make(chan struct{}),
+ }
 }
 
 // AddNode adds a peer node
 func (r *Ring) AddNode(node *Node) error {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	
-	r.nodes = append(r.nodes, node)
-	sort.Slice(r.nodes, func(i, j int) bool {
-		return r.nodes[i].ID < r.nodes[j].ID
-	})
-	
-	// Update position
-	for i, n := range r.nodes {
-		if n.ID == r.self.ID {
-			r.position = i
-			break
-		}
-	}
-	
-	return nil
+ r.mu.Lock()
+ defer r.mu.Unlock()
+
+ r.nodes = append(r.nodes, node)
+ sort.Slice(r.nodes, func(i, j int) bool {
+  return r.nodes[i].ID < r.nodes[j].ID
+ })
+
+ // Update position
+ for i, n := range r.nodes {
+  if n.ID == r.self.ID {
+   r.position = i
+   break
+  }
+ }
+
+ return nil
 }
 
 // RemoveNode removes a peer node
 func (r *Ring) RemoveNode(id int) error {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	
-	newNodes := make([]*Node, 0, len(r.nodes)-1)
-	for _, n := range r.nodes {
-		if n.ID != id {
-			newNodes = append(newNodes, n)
-		}
-	}
-	r.nodes = newNodes
-	
-	// Update position
-	for i, n := range r.nodes {
-		if n.ID == r.self.ID {
-			r.position = i
-			break
-		}
-	}
-	
-	return nil
+ r.mu.Lock()
+ defer r.mu.Unlock()
+
+ newNodes := make([]*Node, 0, len(r.nodes)-1)
+ for _, n := range r.nodes {
+  if n.ID != id {
+   newNodes = append(newNodes, n)
+  }
+ }
+ r.nodes = newNodes
+
+ // Update position
+ for i, n := range r.nodes {
+  if n.ID == r.self.ID {
+   r.position = i
+   break
+  }
+ }
+
+ return nil
 }
 
 // Start begins the leader election
 func (r *Ring) Start(ctx context.Context) error {
-	r.wg.Add(1)
-	go r.messageHandler()
-	
-	// Start election
-	r.startElection()
-	
-	return nil
+ r.wg.Add(1)
+ go r.messageHandler()
+
+ // Start election
+ r.startElection()
+
+ return nil
 }
 
 // Stop terminates the election
 func (r *Ring) Stop() error {
-	close(r.stopCh)
-	r.wg.Wait()
-	return nil
+ close(r.stopCh)
+ r.wg.Wait()
+ return nil
 }
 
 // IsLeader returns true if this node is the leader
 func (r *Ring) IsLeader() bool {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-	return r.leader != nil && r.leader.ID == r.self.ID
+ r.mu.RLock()
+ defer r.mu.RUnlock()
+ return r.leader != nil && r.leader.ID == r.self.ID
 }
 
 // GetLeader returns the current leader
 func (r *Ring) GetLeader() *Node {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-	return r.leader
+ r.mu.RLock()
+ defer r.mu.RUnlock()
+ return r.leader
 }
 
 func (r *Ring) nextNode() *Node {
-	nextPos := (r.position + 1) % len(r.nodes)
-	return r.nodes[nextPos]
+ nextPos := (r.position + 1) % len(r.nodes)
+ return r.nodes[nextPos]
 }
 
 func (r *Ring) startElection() {
-	r.mu.Lock()
-	r.active = true
-	r.elected = false
-	r.leader = nil
-	r.mu.Unlock()
-	
-	// Send election message with our ID
-	candidates := []int{r.self.ID}
-	next := r.nextNode()
-	
-	msg := Message{
-		Type: MsgElection,
-		From: r.self.ID,
-		To:   next.ID,
-		Data: serializeIDs(candidates),
-	}
-	r.network.Send(next.ID, msg)
+ r.mu.Lock()
+ r.active = true
+ r.elected = false
+ r.leader = nil
+ r.mu.Unlock()
+
+ // Send election message with our ID
+ candidates := []int{r.self.ID}
+ next := r.nextNode()
+
+ msg := Message{
+  Type: MsgElection,
+  From: r.self.ID,
+  To:   next.ID,
+  Data: serializeIDs(candidates),
+ }
+ r.network.Send(next.ID, msg)
 }
 
 func (r *Ring) messageHandler() {
-	defer r.wg.Done()
-	
-	for {
-		select {
-		case <-r.stopCh:
-			return
-		default:
-			msg, err := r.network.Receive(100 * time.Millisecond)
-			if err != nil {
-				continue
-			}
-			
-			switch msg.Type {
-			case MsgElection:
-				r.handleElection(msg)
-			case MsgCoordinator:
-				r.handleCoordinator(msg)
-			}
-		}
-	}
+ defer r.wg.Done()
+
+ for {
+  select {
+  case <-r.stopCh:
+   return
+  default:
+   msg, err := r.network.Receive(100 * time.Millisecond)
+   if err != nil {
+    continue
+   }
+
+   switch msg.Type {
+   case MsgElection:
+    r.handleElection(msg)
+   case MsgCoordinator:
+    r.handleCoordinator(msg)
+   }
+  }
+ }
 }
 
 func (r *Ring) handleElection(msg Message) {
-	candidates := deserializeIDs(msg.Data)
-	
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	
-	// Check if we received our own message
-	for _, id := range candidates {
-		if id == r.self.ID {
-			// We are the leader (highest ID among active)
-			r.leader = r.self
-			r.elected = true
-			r.active = false
-			
-			// Send elected message
-			next := r.nextNode()
-			electedMsg := Message{
-				Type: MsgCoordinator,
-				From: r.self.ID,
-				To:   next.ID,
-				Data: serializeIDs([]int{r.self.ID}),
-			}
-			go r.network.Send(next.ID, electedMsg)
-			return
-		}
-	}
-	
-	// Check if we are higher than all candidates
-	maxCandidate := maxID(candidates)
-	if r.self.ID > maxCandidate {
-		// Restart election with just ourselves
-		candidates = []int{r.self.ID}
-	}
-	
-	// Add ourselves and forward
-	candidates = append(candidates, r.self.ID)
-	next := r.nextNode()
-	
-	forwardMsg := Message{
-		Type: MsgElection,
-		From: r.self.ID,
-		To:   next.ID,
-		Data: serializeIDs(candidates),
-	}
-	r.active = true
-	go r.network.Send(next.ID, forwardMsg)
+ candidates := deserializeIDs(msg.Data)
+
+ r.mu.Lock()
+ defer r.mu.Unlock()
+
+ // Check if we received our own message
+ for _, id := range candidates {
+  if id == r.self.ID {
+   // We are the leader (highest ID among active)
+   r.leader = r.self
+   r.elected = true
+   r.active = false
+
+   // Send elected message
+   next := r.nextNode()
+   electedMsg := Message{
+    Type: MsgCoordinator,
+    From: r.self.ID,
+    To:   next.ID,
+    Data: serializeIDs([]int{r.self.ID}),
+   }
+   go r.network.Send(next.ID, electedMsg)
+   return
+  }
+ }
+
+ // Check if we are higher than all candidates
+ maxCandidate := maxID(candidates)
+ if r.self.ID > maxCandidate {
+  // Restart election with just ourselves
+  candidates = []int{r.self.ID}
+ }
+
+ // Add ourselves and forward
+ candidates = append(candidates, r.self.ID)
+ next := r.nextNode()
+
+ forwardMsg := Message{
+  Type: MsgElection,
+  From: r.self.ID,
+  To:   next.ID,
+  Data: serializeIDs(candidates),
+ }
+ r.active = true
+ go r.network.Send(next.ID, forwardMsg)
 }
 
 func (r *Ring) handleCoordinator(msg Message) {
-	ids := deserializeIDs(msg.Data)
-	if len(ids) == 0 {
-		return
-	}
-	
-	leaderID := ids[0]
-	
-	r.mu.Lock()
-	for _, n := range r.nodes {
-		if n.ID == leaderID {
-			r.leader = n
-			r.elected = true
-			r.active = false
-			break
-		}
-	}
-	shouldForward := leaderID != r.self.ID
-	r.mu.Unlock()
-	
-	// Forward to next if not back to leader
-	if shouldForward {
-		next := r.nextNode()
-		forwardMsg := Message{
-			Type: MsgCoordinator,
-			From: r.self.ID,
-			To:   next.ID,
-			Data: msg.Data,
-		}
-		go r.network.Send(next.ID, forwardMsg)
-	}
+ ids := deserializeIDs(msg.Data)
+ if len(ids) == 0 {
+  return
+ }
+
+ leaderID := ids[0]
+
+ r.mu.Lock()
+ for _, n := range r.nodes {
+  if n.ID == leaderID {
+   r.leader = n
+   r.elected = true
+   r.active = false
+   break
+  }
+ }
+ shouldForward := leaderID != r.self.ID
+ r.mu.Unlock()
+
+ // Forward to next if not back to leader
+ if shouldForward {
+  next := r.nextNode()
+  forwardMsg := Message{
+   Type: MsgCoordinator,
+   From: r.self.ID,
+   To:   next.ID,
+   Data: msg.Data,
+  }
+  go r.network.Send(next.ID, forwardMsg)
+ }
 }
 
 // ============================================
@@ -1133,275 +1144,275 @@ func (r *Ring) handleCoordinator(msg Message) {
 
 // ChandraToueg implements failure detector-based leader election
 type ChandraToueg struct {
-	self      *Node
-	nodes     map[int]*Node
-	network   Network
-	
-	mu           sync.RWMutex
-	trust        *Node        // Currently trusted leader
-	suspects     map[int]bool // Suspicion status
-	lastHeard    map[int]time.Time
-	
-	heartbeatInterval time.Duration
-	suspectDelay      time.Duration
-	
-	stopCh       chan struct{}
-	wg           sync.WaitGroup
+ self      *Node
+ nodes     map[int]*Node
+ network   Network
+
+ mu           sync.RWMutex
+ trust        *Node        // Currently trusted leader
+ suspects     map[int]bool // Suspicion status
+ lastHeard    map[int]time.Time
+
+ heartbeatInterval time.Duration
+ suspectDelay      time.Duration
+
+ stopCh       chan struct{}
+ wg           sync.WaitGroup
 }
 
 // NewChandraToueg creates a new Chandra-Toueg election instance
 func NewChandraToueg(self *Node, network Network, heartbeatInterval, suspectDelay time.Duration) *ChandraToueg {
-	return &ChandraToueg{
-		self:              self,
-		nodes:             make(map[int]*Node),
-		network:           network,
-		suspects:          make(map[int]bool),
-		lastHeard:         make(map[int]time.Time),
-		heartbeatInterval: heartbeatInterval,
-		suspectDelay:      suspectDelay,
-		stopCh:            make(chan struct{}),
-	}
+ return &ChandraToueg{
+  self:              self,
+  nodes:             make(map[int]*Node),
+  network:           network,
+  suspects:          make(map[int]bool),
+  lastHeard:         make(map[int]time.Time),
+  heartbeatInterval: heartbeatInterval,
+  suspectDelay:      suspectDelay,
+  stopCh:            make(chan struct{}),
+ }
 }
 
 // AddNode adds a peer node
 func (ct *ChandraToueg) AddNode(node *Node) error {
-	ct.mu.Lock()
-	defer ct.mu.Unlock()
-	ct.nodes[node.ID] = node
-	ct.lastHeard[node.ID] = time.Now()
-	
-	// Initialize trust to highest ID
-	if ct.trust == nil || node.ID > ct.trust.ID {
-		ct.trust = node
-	}
-	return nil
+ ct.mu.Lock()
+ defer ct.mu.Unlock()
+ ct.nodes[node.ID] = node
+ ct.lastHeard[node.ID] = time.Now()
+
+ // Initialize trust to highest ID
+ if ct.trust == nil || node.ID > ct.trust.ID {
+  ct.trust = node
+ }
+ return nil
 }
 
 // RemoveNode removes a peer node
 func (ct *ChandraToueg) RemoveNode(id int) error {
-	ct.mu.Lock()
-	defer ct.mu.Unlock()
-	delete(ct.nodes, id)
-	delete(ct.suspects, id)
-	delete(ct.lastHeard, id)
-	return nil
+ ct.mu.Lock()
+ defer ct.mu.Unlock()
+ delete(ct.nodes, id)
+ delete(ct.suspects, id)
+ delete(ct.lastHeard, id)
+ return nil
 }
 
 // Start begins the failure detection and leader election
 func (ct *ChandraToueg) Start(ctx context.Context) error {
-	ct.wg.Add(3)
-	go ct.heartbeatSender()
-	go ct.suspectChecker()
-	go ct.messageHandler()
-	return nil
+ ct.wg.Add(3)
+ go ct.heartbeatSender()
+ go ct.suspectChecker()
+ go ct.messageHandler()
+ return nil
 }
 
 // Stop terminates the election
 func (ct *ChandraToueg) Stop() error {
-	close(ct.stopCh)
-	ct.wg.Wait()
-	return nil
+ close(ct.stopCh)
+ ct.wg.Wait()
+ return nil
 }
 
 // IsLeader returns true if this node is the leader
 func (ct *ChandraToueg) IsLeader() bool {
-	ct.mu.RLock()
-	defer ct.mu.RUnlock()
-	return ct.trust != nil && ct.trust.ID == ct.self.ID
+ ct.mu.RLock()
+ defer ct.mu.RUnlock()
+ return ct.trust != nil && ct.trust.ID == ct.self.ID
 }
 
 // GetLeader returns the current leader
 func (ct *ChandraToueg) GetLeader() *Node {
-	ct.mu.RLock()
-	defer ct.mu.RUnlock()
-	return ct.trust
+ ct.mu.RLock()
+ defer ct.mu.RUnlock()
+ return ct.trust
 }
 
 func (ct *ChandraToueg) heartbeatSender() {
-	defer ct.wg.Done()
-	
-	ticker := time.NewTicker(ct.heartbeatInterval)
-	defer ticker.Stop()
-	
-	for {
-		select {
-		case <-ct.stopCh:
-			return
-		case <-ticker.C:
-			msg := Message{
-				Type: MsgHeartbeat,
-				From: ct.self.ID,
-			}
-			ct.network.Broadcast(msg)
-		}
-	}
+ defer ct.wg.Done()
+
+ ticker := time.NewTicker(ct.heartbeatInterval)
+ defer ticker.Stop()
+
+ for {
+  select {
+  case <-ct.stopCh:
+   return
+  case <-ticker.C:
+   msg := Message{
+    Type: MsgHeartbeat,
+    From: ct.self.ID,
+   }
+   ct.network.Broadcast(msg)
+  }
+ }
 }
 
 func (ct *ChandraToueg) suspectChecker() {
-	defer ct.wg.Done()
-	
-	ticker := time.NewTicker(ct.heartbeatInterval / 2)
-	defer ticker.Stop()
-	
-	for {
-		select {
-		case <-ct.stopCh:
-			return
-		case <-ticker.C:
-			ct.checkSuspicions()
-		}
-	}
+ defer ct.wg.Done()
+
+ ticker := time.NewTicker(ct.heartbeatInterval / 2)
+ defer ticker.Stop()
+
+ for {
+  select {
+  case <-ct.stopCh:
+   return
+  case <-ticker.C:
+   ct.checkSuspicions()
+  }
+ }
 }
 
 func (ct *ChandraToueg) checkSuspicions() {
-	ct.mu.Lock()
-	defer ct.mu.Unlock()
-	
-	now := time.Now()
-	trustChanged := false
-	
-	for id := range ct.nodes {
-		last, ok := ct.lastHeard[id]
-		if !ok {
-			last = now
-		}
-		
-		if now.Sub(last) > ct.suspectDelay {
-			ct.suspects[id] = true
-			
-			// If we suspect the current leader, find new one
-			if ct.trust != nil && ct.trust.ID == id {
-				trustChanged = true
-			}
-		} else {
-			ct.suspects[id] = false
-		}
-	}
-	
-	if trustChanged {
-		// Find highest non-suspected node
-		var maxID int
-		var newTrust *Node
-		
-		// Check self
-		if !ct.suspects[ct.self.ID] {
-			newTrust = ct.self
-			maxID = ct.self.ID
-		}
-		
-		// Check others
-		for id, node := range ct.nodes {
-			if !ct.suspects[id] && id > maxID {
-				maxID = id
-				newTrust = node
-			}
-		}
-		
-		if newTrust != nil && (ct.trust == nil || newTrust.ID != ct.trust.ID) {
-			ct.trust = newTrust
-			
-			// Announce new leader
-			if ct.trust.ID == ct.self.ID {
-				msg := Message{
-					Type: MsgNewLeader,
-					From: ct.self.ID,
-					Data: serializeIDs([]int{ct.self.ID}),
-				}
-				ct.network.Broadcast(msg)
-			}
-		}
-	}
+ ct.mu.Lock()
+ defer ct.mu.Unlock()
+
+ now := time.Now()
+ trustChanged := false
+
+ for id := range ct.nodes {
+  last, ok := ct.lastHeard[id]
+  if !ok {
+   last = now
+  }
+
+  if now.Sub(last) > ct.suspectDelay {
+   ct.suspects[id] = true
+
+   // If we suspect the current leader, find new one
+   if ct.trust != nil && ct.trust.ID == id {
+    trustChanged = true
+   }
+  } else {
+   ct.suspects[id] = false
+  }
+ }
+
+ if trustChanged {
+  // Find highest non-suspected node
+  var maxID int
+  var newTrust *Node
+
+  // Check self
+  if !ct.suspects[ct.self.ID] {
+   newTrust = ct.self
+   maxID = ct.self.ID
+  }
+
+  // Check others
+  for id, node := range ct.nodes {
+   if !ct.suspects[id] && id > maxID {
+    maxID = id
+    newTrust = node
+   }
+  }
+
+  if newTrust != nil && (ct.trust == nil || newTrust.ID != ct.trust.ID) {
+   ct.trust = newTrust
+
+   // Announce new leader
+   if ct.trust.ID == ct.self.ID {
+    msg := Message{
+     Type: MsgNewLeader,
+     From: ct.self.ID,
+     Data: serializeIDs([]int{ct.self.ID}),
+    }
+    ct.network.Broadcast(msg)
+   }
+  }
+ }
 }
 
 func (ct *ChandraToueg) messageHandler() {
-	defer ct.wg.Done()
-	
-	for {
-		select {
-		case <-ct.stopCh:
-			return
-		default:
-			msg, err := ct.network.Receive(100 * time.Millisecond)
-			if err != nil {
-				continue
-			}
-			
-			switch msg.Type {
-			case MsgHeartbeat:
-				ct.mu.Lock()
-				ct.lastHeard[msg.From] = time.Now()
-				ct.suspects[msg.From] = false
-				ct.mu.Unlock()
-				
-				// Send heartbeat ack
-				reply := Message{
-					Type: MsgHeartbeatAck,
-					From: ct.self.ID,
-					To:   msg.From,
-				}
-				ct.network.Send(msg.From, reply)
-				
-			case MsgHeartbeatAck:
-				ct.mu.Lock()
-				ct.lastHeard[msg.From] = time.Now()
-				ct.suspects[msg.From] = false
-				ct.mu.Unlock()
-				
-			case MsgNewLeader:
-				ids := deserializeIDs(msg.Data)
-				if len(ids) > 0 {
-					ct.mu.Lock()
-					if node, ok := ct.nodes[ids[0]]; ok {
-						// Only accept if we don't suspect this node
-						if !ct.suspects[node.ID] {
-							ct.trust = node
-						}
-					}
-					ct.mu.Unlock()
-				}
-			}
-		}
-	}
+ defer ct.wg.Done()
+
+ for {
+  select {
+  case <-ct.stopCh:
+   return
+  default:
+   msg, err := ct.network.Receive(100 * time.Millisecond)
+   if err != nil {
+    continue
+   }
+
+   switch msg.Type {
+   case MsgHeartbeat:
+    ct.mu.Lock()
+    ct.lastHeard[msg.From] = time.Now()
+    ct.suspects[msg.From] = false
+    ct.mu.Unlock()
+
+    // Send heartbeat ack
+    reply := Message{
+     Type: MsgHeartbeatAck,
+     From: ct.self.ID,
+     To:   msg.From,
+    }
+    ct.network.Send(msg.From, reply)
+
+   case MsgHeartbeatAck:
+    ct.mu.Lock()
+    ct.lastHeard[msg.From] = time.Now()
+    ct.suspects[msg.From] = false
+    ct.mu.Unlock()
+
+   case MsgNewLeader:
+    ids := deserializeIDs(msg.Data)
+    if len(ids) > 0 {
+     ct.mu.Lock()
+     if node, ok := ct.nodes[ids[0]]; ok {
+      // Only accept if we don't suspect this node
+      if !ct.suspects[node.ID] {
+       ct.trust = node
+      }
+     }
+     ct.mu.Unlock()
+    }
+   }
+  }
+ }
 }
 
 // Helper functions
 
 func serializeIDs(ids []int) []byte {
-	// Simple serialization
-	data := make([]byte, len(ids)*4)
-	for i, id := range ids {
-		data[i*4] = byte(id >> 24)
-		data[i*4+1] = byte(id >> 16)
-		data[i*4+2] = byte(id >> 8)
-		data[i*4+3] = byte(id)
-	}
-	return data
+ // Simple serialization
+ data := make([]byte, len(ids)*4)
+ for i, id := range ids {
+  data[i*4] = byte(id >> 24)
+  data[i*4+1] = byte(id >> 16)
+  data[i*4+2] = byte(id >> 8)
+  data[i*4+3] = byte(id)
+ }
+ return data
 }
 
 func deserializeIDs(data []byte) []int {
-	if len(data)%4 != 0 {
-		return nil
-	}
-	
-	ids := make([]int, len(data)/4)
-	for i := 0; i < len(ids); i++ {
-		ids[i] = int(data[i*4])<<24 | int(data[i*4+1])<<16 | 
-				 int(data[i*4+2])<<8 | int(data[i*4+3])
-	}
-	return ids
+ if len(data)%4 != 0 {
+  return nil
+ }
+
+ ids := make([]int, len(data)/4)
+ for i := 0; i < len(ids); i++ {
+  ids[i] = int(data[i*4])<<24 | int(data[i*4+1])<<16 |
+     int(data[i*4+2])<<8 | int(data[i*4+3])
+ }
+ return ids
 }
 
 func maxID(ids []int) int {
-	if len(ids) == 0 {
-		return 0
-	}
-	max := ids[0]
-	for _, id := range ids[1:] {
-		if id > max {
-			max = id
-		}
-	}
-	return max
+ if len(ids) == 0 {
+  return 0
+ }
+ max := ids[0]
+ for _, id := range ids[1:] {
+  if id > max {
+   max = id
+  }
+ }
+ return max
 }
 
 // ============================================
@@ -1412,46 +1423,46 @@ func maxID(ids []int) int {
 type AlgorithmType string
 
 const (
-	AlgorithmBully         AlgorithmType = "bully"
-	AlgorithmRing          AlgorithmType = "ring"
-	AlgorithmChandraToueg  AlgorithmType = "chandra-toueg"
+ AlgorithmBully         AlgorithmType = "bully"
+ AlgorithmRing          AlgorithmType = "ring"
+ AlgorithmChandraToueg  AlgorithmType = "chandra-toueg"
 )
 
 // Config holds leader election configuration
 type Config struct {
-	Algorithm         AlgorithmType
-	HeartbeatInterval time.Duration
-	SuspectDelay      time.Duration
-	Timeout           time.Duration
+ Algorithm         AlgorithmType
+ HeartbeatInterval time.Duration
+ SuspectDelay      time.Duration
+ Timeout           time.Duration
 }
 
 // Create creates a leader election instance
 func Create(self *Node, network Network, config Config) (LeaderElection, error) {
-	switch config.Algorithm {
-	case AlgorithmBully:
-		timeout := config.Timeout
-		if timeout == 0 {
-			timeout = 5 * time.Second
-		}
-		return NewBully(self, network, timeout), nil
-		
-	case AlgorithmRing:
-		return NewRing(self, network), nil
-		
-	case AlgorithmChandraToueg:
-		heartbeat := config.HeartbeatInterval
-		if heartbeat == 0 {
-			heartbeat = 1 * time.Second
-		}
-		suspect := config.SuspectDelay
-		if suspect == 0 {
-			suspect = 3 * time.Second
-		}
-		return NewChandraToueg(self, network, heartbeat, suspect), nil
-		
-	default:
-		return nil, fmt.Errorf("unknown algorithm: %s", config.Algorithm)
-	}
+ switch config.Algorithm {
+ case AlgorithmBully:
+  timeout := config.Timeout
+  if timeout == 0 {
+   timeout = 5 * time.Second
+  }
+  return NewBully(self, network, timeout), nil
+
+ case AlgorithmRing:
+  return NewRing(self, network), nil
+
+ case AlgorithmChandraToueg:
+  heartbeat := config.HeartbeatInterval
+  if heartbeat == 0 {
+   heartbeat = 1 * time.Second
+  }
+  suspect := config.SuspectDelay
+  if suspect == 0 {
+   suspect = 3 * time.Second
+  }
+  return NewChandraToueg(self, network, heartbeat, suspect), nil
+
+ default:
+  return nil, fmt.Errorf("unknown algorithm: %s", config.Algorithm)
+ }
 }
 ```
 
@@ -1605,7 +1616,7 @@ func Create(self *Node, network Network, config Config) (LeaderElection, error) 
 ## 8. Comparison with Related Approaches
 
 | Algorithm | Topology | Messages | Time | Fault Tolerance | Complexity |
-|-----------|----------|----------|------|-----------------|------------|
+| ----------- | ---------- | ---------- | ------ | ----------------- | ------------ |
 | **Bully** | Complete | $O(n^2)$ | $O(timeout)$ | Crash-stop | Medium |
 | **Ring** | Ring | $O(n)$ | $O(n)$ | Crash-stop | Low |
 | **Chandra-Toueg** | Complete | $O(n)$ | $O(heartbeat)$ | Crash-stop | High |

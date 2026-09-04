@@ -992,7 +992,7 @@ func (s *PACELCStore) queueDeferredWrite(key string, value []byte, nodes []strin
 ## System Comparison Matrix
 
 | System | P Scenario | E Scenario | Replica Factor | Conflict Resolution |
-|--------|-----------|-----------|----------------|---------------------|
+| -------- | ----------- | ----------- | ---------------- | --------------------- |
 | **Dynamo** | PA (hinted handoff) | EL (async replication) | Configurable | Vector clocks + application merge |
 | **Cassandra** | Configurable | Configurable | Configurable | Last-write-wins or custom |
 | **Voldemort** | PA | EL | Fixed | Vector clocks |

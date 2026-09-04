@@ -1,9 +1,9 @@
 # TS-034-WebAssembly-WASI-2025
 
-> **Dimension**: 04-Technology-Stack  
-> **Status**: S-Level Academic  
-> **Created**: 2026-04-03  
-> **Version**: WASI 0.3, Wasm Components  
+> **Dimension**: 04-Technology-Stack
+> **Status**: S-Level Academic
+> **Created**: 2026-04-03
+> **Version**: WASI 0.3, Wasm Components
 > **Size**: >20KB
 
 ---
@@ -62,7 +62,7 @@ tinygo build -target=wasi -o module.wasm main.go
 ## 4. Wasm Runtimes
 
 | Runtime | Performance | Features |
-|---------|-------------|----------|
+| --------- | ------------- | ---------- |
 | Wasmtime | High | WASI 0.3 |
 | Wasmer | High | Universal |
 | WasmEdge | Very High | AI extensions |

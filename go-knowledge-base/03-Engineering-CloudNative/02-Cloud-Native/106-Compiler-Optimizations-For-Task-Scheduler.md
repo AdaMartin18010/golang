@@ -22,6 +22,71 @@
   - [PGO (Profile-Guided Optimization)](#pgo-profile-guided-optimization)
   - [运行时优化](#运行时优化)
   - [性能对比](#性能对比)
+  - [深度分析](#深度分析)
+    - [形式化定义](#形式化定义)
+    - [实现细节](#实现细节)
+    - [最佳实践](#最佳实践)
+    - [决策矩阵](#决策矩阵)
+  - [**完成日期**: 2026-04-02](#完成日期-2026-04-02)
+  - [工程实践](#工程实践)
+    - [设计模式应用](#设计模式应用)
+    - [Kubernetes 集成](#kubernetes-集成)
+    - [可观测性](#可观测性)
+    - [安全加固](#安全加固)
+    - [测试策略](#测试策略)
+  - [**完成日期**: 2026-04-02](#完成日期-2026-04-02-1)
+  - [扩展分析](#扩展分析)
+    - [理论基础](#理论基础)
+    - [实现细节](#实现细节-1)
+    - [最佳实践](#最佳实践-1)
+    - [性能优化](#性能优化)
+    - [常见问题](#常见问题)
+    - [相关资源](#相关资源)
+  - [**完成日期**: 2026-04-02](#完成日期-2026-04-02-2)
+  - [深度技术解析](#深度技术解析)
+    - [核心概念](#核心概念)
+    - [架构设计](#架构设计)
+    - [实现代码](#实现代码)
+    - [性能特征](#性能特征)
+    - [最佳实践](#最佳实践-2)
+    - [故障排查](#故障排查)
+    - [相关技术](#相关技术)
+    - [学习资源](#学习资源)
+    - [社区支持](#社区支持)
+  - [高级主题](#高级主题)
+    - [分布式一致性](#分布式一致性)
+    - [微服务架构](#微服务架构)
+    - [云原生设计](#云原生设计)
+  - [**完成日期**: 2026-04-02](#完成日期-2026-04-02-3)
+  - [深度技术解析](#深度技术解析-1)
+    - [核心概念](#核心概念-1)
+    - [架构设计](#架构设计-1)
+    - [实现代码](#实现代码-1)
+    - [性能特征](#性能特征-1)
+    - [最佳实践](#最佳实践-3)
+    - [故障排查](#故障排查-1)
+    - [相关技术](#相关技术-1)
+    - [学习资源](#学习资源-1)
+    - [社区支持](#社区支持-1)
+  - [高级主题](#高级主题-1)
+    - [分布式一致性](#分布式一致性-1)
+    - [微服务架构](#微服务架构-1)
+    - [云原生设计](#云原生设计-1)
+  - [**完成日期**: 2026-04-02](#完成日期-2026-04-02-4)
+  - [综合技术指南](#综合技术指南)
+    - [1. 理论基础](#1-理论基础)
+    - [2. 架构设计](#2-架构设计)
+    - [3. 实现代码](#3-实现代码)
+    - [4. 配置示例](#4-配置示例)
+- [config.yaml](#configyaml)
+  - [5. 测试代码](#5-测试代码)
+  - [6. 部署配置](#6-部署配置)
+- [Dockerfile](#dockerfile)
+- [docker-compose.yml](#docker-composeyml)
+  - [7. 监控指标](#7-监控指标)
+  - [8. 故障排查指南](#8-故障排查指南)
+  - [9. 最佳实践总结](#9-最佳实践总结)
+  - [10. 扩展阅读](#10-扩展阅读)
 
 ## 编译器优化技术
 
@@ -357,7 +422,7 @@ func init() {
 ## 性能对比
 
 | 优化技术 | 延迟改善 | 吞吐量提升 | 复杂度 |
-|---------|---------|-----------|--------|
+| --------- | --------- | ----------- | -------- |
 | 逃逸分析 | -15% | +10% | 低 |
 | 函数内联 | -20% | +15% | 低 |
 | 无锁队列 | -40% | +50% | 高 |
@@ -392,7 +457,7 @@ func init() {
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -451,7 +516,7 @@ spec:
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -493,7 +558,7 @@ A: 使用连接池、限流、熔断等模式。
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -609,7 +674,7 @@ CAP 定理和 BASE 理论的实际应用。
 
 ---
 
-**质量评级**: S (全面扩展)  
+**质量评级**: S (全面扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -725,7 +790,7 @@ CAP 定理和 BASE 理论的实际应用。
 
 ---
 
-**质量评级**: S (全面扩展)  
+**质量评级**: S (全面扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -860,21 +925,21 @@ func NewService(cfg Config) *DefaultService {
 func (s *DefaultService) Process(ctx context.Context, req Request) (Response, error) {
     ctx, cancel := context.WithTimeout(ctx, s.config.Timeout)
     defer cancel()
-    
+
     // 检查缓存
     if cached, ok := s.cache.Get(req.ID); ok {
         return Response{ID: req.ID, Result: cached}, nil
     }
-    
+
     // 处理逻辑
     result, err := s.doProcess(ctx, req)
     if err != nil {
         return Response{ID: req.ID, Error: err}, err
     }
-    
+
     // 更新缓存
     s.cache.Set(req.ID, result, 5*time.Minute)
-    
+
     return Response{ID: req.ID, Result: result}, nil
 }
 
@@ -896,7 +961,9 @@ func (s *DefaultService) Health() HealthStatus {
 ### 4. 配置示例
 
 `yaml
+
 # config.yaml
+
 server:
   host: 0.0.0.0
   port: 8080
@@ -936,13 +1003,13 @@ import (
     "context"
     "testing"
     "time"
-    
+
     "github.com/stretchr/testify/assert"
 )
 
 func TestService_Process(t *testing.T) {
-    svc := NewService(Config{Timeout: 5 * time.Second})
-    
+    svc := NewService(Config{Timeout: 5* time.Second})
+
     tests := []struct {
         name    string
         req     Request
@@ -957,12 +1024,12 @@ func TestService_Process(t *testing.T) {
             wantErr: false,
         },
     }
-    
+
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
             ctx := context.Background()
             resp, err := svc.Process(ctx, tt.req)
-            
+
             if tt.wantErr {
                 assert.Error(t, err)
             } else {
@@ -974,10 +1041,10 @@ func TestService_Process(t *testing.T) {
 }
 
 func BenchmarkService_Process(b *testing.B) {
-    svc := NewService(Config{Timeout: 5 * time.Second})
+    svc := NewService(Config{Timeout: 5* time.Second})
     req := Request{ID: "bench", Data: "data"}
     ctx := context.Background()
-    
+
     b.ResetTimer()
     for i := 0; i < b.N; i++ {
         svc.Process(ctx, req)
@@ -988,7 +1055,9 @@ func BenchmarkService_Process(b *testing.B) {
 ### 6. 部署配置
 
 `dockerfile
+
 # Dockerfile
+
 FROM golang:1.26.2-alpine AS builder
 
 WORKDIR /app
@@ -1010,7 +1079,9 @@ CMD ["./main"]
 `
 
 `yaml
+
 # docker-compose.yml
+
 version: '3.8'
 
 services:
@@ -1071,7 +1142,7 @@ volumes:
 ### 7. 监控指标
 
 | 指标名称 | 类型 | 描述 | 告警阈值 |
-|----------|------|------|----------|
+| ---------- | ------ | ------ | ---------- |
 | request_duration | Histogram | 请求处理时间 | p99 > 100ms |
 | request_total | Counter | 总请求数 | - |
 | error_total | Counter | 错误总数 | rate > 1% |
@@ -1082,17 +1153,18 @@ volumes:
 
 `
 问题诊断流程:
+
 1. 检查日志
    kubectl logs -f pod-name
-   
+
 2. 检查指标
-   curl http://localhost:9090/metrics
-   
+   curl <http://localhost:9090/metrics>
+
 3. 检查健康状态
-   curl http://localhost:8080/health
-   
+   curl <http://localhost:8080/health>
+
 4. 分析性能
-   go tool pprof http://localhost:9090/debug/pprof/profile
+   go tool pprof <http://localhost:9090/debug/pprof/profile>
 `
 
 ### 9. 最佳实践总结
@@ -1113,6 +1185,6 @@ volumes:
 
 ---
 
-**质量评级**: S (完整扩展)  
-**文档大小**: 经过本次扩展已达到 S 级标准  
+**质量评级**: S (完整扩展)
+**文档大小**: 经过本次扩展已达到 S 级标准
 **完成日期**: 2026-04-02

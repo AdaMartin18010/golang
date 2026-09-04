@@ -5,7 +5,7 @@
 ## 文档列表
 
 | 文档 | 内容 |
-|------|------|
+| ------ | ------ |
 | [01-Kubernetes-Operators.md](01-Kubernetes-Operators.md) | K8s Operators |
 | [02-Terraform-Providers.md](02-Terraform-Providers.md) | Terraform Providers |
 | [03-Docker-Lib.md](03-Docker-Lib.md) | Docker SDK |
@@ -140,7 +140,7 @@ Week 7-8: 性能优化
 ### 技术选型
 
 | 组件 | 技术 | 理由 |
-|------|------|------|
+| ------ | ------ | ------ |
 | API | gRPC | 性能 |
 | DB | PostgreSQL | 可靠 |
 | Cache | Redis | 速度 |
@@ -787,7 +787,7 @@ volumes:
 ### 7. 监控指标
 
 | 指标名称 | 类型 | 描述 | 告警阈值 |
-|----------|------|------|----------|
+| ---------- | ------ | ------ | ---------- |
 | request_duration | Histogram | 请求处理时间 | p99 > 100ms |
 | request_total | Counter | 总请求数 | - |
 | error_total | Counter | 错误总数 | rate > 1% |

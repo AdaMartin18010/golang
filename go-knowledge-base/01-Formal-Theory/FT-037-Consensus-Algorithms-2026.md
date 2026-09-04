@@ -1,10 +1,10 @@
 # FT-037-Consensus-Algorithms-2026
 
-> **Dimension**: 01-Formal-Theory  
-> **Status**: S-Level  
-> **Created**: 2026-04-03  
-> **Version**: 2026 (Raft, Paxos, PBFT, HotStuff, Snow)  
-> **Size**: >20KB 
+> **Dimension**: 01-Formal-Theory
+> **Status**: S-Level
+> **Created**: 2026-04-03
+> **Version**: 2026 (Raft, Paxos, PBFT, HotStuff, Snow)
+> **Size**: >20KB
 
 ---
 
@@ -15,6 +15,7 @@
 **FLP不可能性结果**: 在异步系统中，即使只有一个故障进程，也不存在确定性共识算法。
 
 **共识属性**:
+
 ```
 设系统有n个进程，最多f个故障
 
@@ -52,6 +53,7 @@ CAP Theorem:
 Raft是一种易于理解的共识算法，用于管理复制日志。
 
 **状态机**:
+
 ```
 Follower ──► Candidate ──► Leader
    ▲          │              │
@@ -62,7 +64,7 @@ Follower ──► Candidate ──► Leader
 ### 2.2 角色定义
 
 | 角色 | 职责 |
-|------|------|
+| ------ | ------ |
 | Leader | 处理所有客户端请求，复制日志 |
 | Follower | 被动响应，复制Leader日志 |
 | Candidate | 选举期间的临时状态 |
@@ -77,11 +79,11 @@ type RaftNode struct {
     log         []LogEntry
     commitIndex int
     lastApplied int
-    
+
     // Leader状态
     nextIndex   map[int]int
     matchIndex  map[int]int
-    
+
     state       NodeState
     electionTimer *time.Timer
 }
@@ -91,7 +93,7 @@ func (n *RaftNode) startElection() {
     n.currentTerm++
     n.votedFor = n.id
     votes := 1
-    
+
     // 向所有节点请求投票
     for peer := range n.peers {
         go func(peer int) {
@@ -101,7 +103,7 @@ func (n *RaftNode) startElection() {
                 LastLogIndex: len(n.log) - 1,
                 LastLogTerm:  n.log[len(n.log)-1].Term,
             }
-            
+
             var reply RequestVoteReply
             if n.sendRequestVote(peer, &args, &reply) {
                 n.handleVoteReply(&reply, &votes)
@@ -113,12 +115,12 @@ func (n *RaftNode) startElection() {
 func (n *RaftNode) handleVoteReply(reply *RequestVoteReply, votes *int) {
     n.mu.Lock()
     defer n.mu.Unlock()
-    
+
     if reply.Term > n.currentTerm {
         n.becomeFollower(reply.Term)
         return
     }
-    
+
     if reply.VoteGranted && n.state == Candidate {
         *votes++
         if *votes > len(n.peers)/2 {
@@ -134,7 +136,7 @@ func (n *RaftNode) handleVoteReply(reply *RequestVoteReply, votes *int) {
 func (n *RaftNode) appendEntries(entries []LogEntry) bool {
     n.mu.Lock()
     defer n.mu.Unlock()
-    
+
     // 找到日志匹配点
     for i, entry := range entries {
         if n.log[n.nextIndex[n.id]+i].Term != entry.Term {
@@ -143,10 +145,10 @@ func (n *RaftNode) appendEntries(entries []LogEntry) bool {
             break
         }
     }
-    
+
     // 追加新条目
     n.log = append(n.log, entries...)
-    
+
     return true
 }
 
@@ -162,7 +164,7 @@ func (n *RaftNode) replicateLog() {
                 Entries:      entries,
                 LeaderCommit: n.commitIndex,
             }
-            
+
             var reply AppendEntriesReply
             if n.sendAppendEntries(peer, &args, &reply) {
                 n.handleAppendReply(peer, &reply)
@@ -175,6 +177,7 @@ func (n *RaftNode) replicateLog() {
 ### 2.5 安全性证明
 
 **选举安全**: 每个任期最多一个Leader
+
 ```
 证明:
 1. 节点只投票给任期 >= 当前任期的候选人
@@ -184,6 +187,7 @@ func (n *RaftNode) replicateLog() {
 ```
 
 **日志匹配**: 如果两个日志条目有相同索引和任期，则它们存储相同命令
+
 ```
 证明:
 1. Leader只在其当前任期追加条目
@@ -199,18 +203,20 @@ func (n *RaftNode) replicateLog() {
 ### 3.1 基本Paxos
 
 **角色**:
+
 - Proposer: 提出值
 - Acceptor: 接受或拒绝提议
 - Learner: 学习已决定的值
 
 **两阶段协议**:
+
 ```
 Phase 1 (Prepare):
   Proposer ──Prepare(n)──► Acceptor
   Acceptor ──Promise(n, v)◄── (如果n > 已承诺的最高编号)
 
 Phase 2 (Accept):
-  Proposer ──Accept(n, v)──► Acceptor  
+  Proposer ──Accept(n, v)──► Acceptor
   Acceptor ──Accepted(n, v)◄── (如果n == 已承诺的编号)
 ```
 
@@ -239,11 +245,11 @@ type PaxosNode struct {
 func (n *PaxosNode) Prepare(seqNum int) (interface{}, bool) {
     n.mu.Lock()
     defer n.mu.Unlock()
-    
+
     if seqNum <= n.highestPromised {
         return nil, false
     }
-    
+
     n.highestPromised = seqNum
     return n.acceptedValue, true
 }
@@ -251,11 +257,11 @@ func (n *PaxosNode) Prepare(seqNum int) (interface{}, bool) {
 func (n *PaxosNode) Accept(seqNum int, value interface{}) bool {
     n.mu.Lock()
     defer n.mu.Unlock()
-    
+
     if seqNum < n.highestPromised {
         return false
     }
-    
+
     n.acceptedSeq = seqNum
     n.acceptedValue = value
     return true
@@ -305,6 +311,7 @@ Request → Pre-Prepare → Prepare → Commit → Reply
 Facebook Diem(Libra)使用的共识算法。
 
 **特点**:
+
 - 线性通信复杂度
 - 视图变更简单高效
 - 响应式(事件驱动而非超时驱动)
@@ -340,6 +347,7 @@ QC (Quorum Certificate): 2f+1个投票
 新型概率性共识协议，用于Avalanche区块链。
 
 **特点**:
+
 - 亚秒级最终性
 - 高吞吐 (>4500 TPS)
 - 轻量级
@@ -374,7 +382,7 @@ QC (Quorum Certificate): 2f+1个投票
 ### 7.1 特性对比
 
 | 算法 | 容错类型 | 节点数 | 消息复杂度 | 延迟 | 使用案例 |
-|------|---------|--------|-----------|------|---------|
+| ------ | --------- | -------- | ----------- | ------ | --------- |
 | Paxos | 崩溃故障 | 2f+1 | O(n²) | 2RTT | Chubby |
 | Raft | 崩溃故障 | 2f+1 | O(n) | 1RTT | etcd, TiKV |
 | PBFT | 拜占庭 | 3f+1 | O(n²) | 3RTT | Hyperledger |

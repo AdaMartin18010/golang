@@ -45,7 +45,7 @@ $$\alpha ::= x(y) \mid \bar{x}\langle y \rangle \mid \tau$$
 Go 的 channel 可编码为多名称 π-演算：
 
 | Go 构造 | π-演算编码 |
-|---------|-----------|
+| --------- | ----------- |
 | `ch := make(chan T)` | $(\nu ch)P$ |
 | `ch <- v` | $\overline{ch}\langle v \rangle.P$ |
 | `v := <-ch` | $ch(x).[x=v]P$ |

@@ -822,7 +822,7 @@ public class DatabaseFixture : IDisposable
 ## Feature Comparison
 
 | Feature | Go | Rust | Jest | JUnit 5 | pytest | xUnit |
-|---------|-----|------|------|---------|--------|-------|
+| --------- | ----- | ------ | ------ | --------- | -------- | ------- |
 | Built-in | Yes | Yes | No | No | No | No |
 | Table-driven | Native | With rstest | it.each | @ParameterizedTest | @pytest.mark.parametrize | [Theory] |
 | Mocking | Interfaces | mockall | jest.mock | Mockito | unittest.mock | Moq |

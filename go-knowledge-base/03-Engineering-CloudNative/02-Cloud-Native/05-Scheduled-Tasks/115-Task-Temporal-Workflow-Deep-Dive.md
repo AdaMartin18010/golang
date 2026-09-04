@@ -441,7 +441,7 @@ func (e *taskExecutor) executeWorkflowTask(task *WorkflowTask) {
 ## 关键设计决策
 
 | 特性 | 实现 | 优势 |
-|------|------|------|
+| ------ | ------ | ------ |
 | 持久化执行 | History + Mutable State | 容错、可审计、可重放 |
 | 确定性重放 | 捕获非确定性操作 | 状态恢复一致性 |
 | 异步完成 | 命令模式 | 高吞吐、低延迟 |
@@ -476,7 +476,7 @@ func (e *taskExecutor) executeWorkflowTask(task *WorkflowTask) {
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
 ---
 
@@ -535,5 +535,5 @@ spec:
 
 ---
 
-**质量评级**: S (扩展)  
+**质量评级**: S (扩展)
 **完成日期**: 2026-04-02
