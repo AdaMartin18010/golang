@@ -174,3 +174,19 @@
 3. 98 篇页内 H1 编号 ≠ 文件名编号（§4b 重编号残留，P0 行动项，`scripts/tmp/id_consistency_check.py` 可复扫）。
 4. GC × cgo 交叉边界专页缺失；examples/go.sum 缺 grpc/nats/chi 校验条目；CI 5 项缺口（月审 §7）。
 5. `.kimi` 可选扩展集（表征空间/思维表征/决策树/效应系统 4 页）已 Go 化但默认未启用。
+
+
+## 5i. 遗留项收口批结果（2026-09-05，Q0→Q3）
+
+P6 验收后随即执行月审 §8 行动项收口（用户已确认：并行推进、CI 只修死引用）：
+
+- **Q0 编号一致性**：98 篇 H1 修复 + 3 处正文自指（EC-155 目录锚点、AD-035 目录锚点 + Document ID），`id_consistency_check.py` MISMATCH=0。
+- **Q1a examples/go.sum**：go.sum 26→60 行补齐 + go.mod 增根模块 require + jwt/v5 indirect；grpc/messaging/security `GOWORK=off go build` 与 vet 通过（tidy 方案因大范围改写 go.mod 被否，用最小改动替代）。
+- **Q1b GC × cgo 权威页**：新建 `LD-053-Go-CGO-GC-Interaction-Boundary.md`（19KB S 级，六件套全配，8 个 go 块实测含 cgo shim）；已登记 complete-map/by-date/by-topic/complete-index。**实测发现**：Go 1.27 中 `GODEBUG=cgocheck=2` 已失效（运行时 fatal），严格检查须用构建期 `GOEXPERIMENT=cgocheck2`。
+- **Q2a 豁免收敛**：merge BAD 24→0（14 组补示意定义转 OK=33；10 组第三方依赖归 skip_dep=45；3 块 x/crypto 加 `<!-- goblock-exempt -->` 机器可识别标注，管道三脚本同步升级支持 exempt 类别）。
+- **Q2b FT-009 stub**：两个重复 stub 归位 canonical（Quorum→FT-017、SMR→FT-032），FT-017/032 补反向链接；`check_bidir.py` 103/103 全双向（顺带修复 TS-047 缺前置链）。
+- **Q3 CI（限定范围）**：docs-deploy.yml 3 处死引用修复（注意：用户 IDE 中途 commit 5ed3b676 已将其带入 HEAD）；docs-check.yml 移除 markdown-link-check `|| true`（先修 5 文件 15 条真死链 + aliveStatusCodes 补 202）；其余 3 项缺口只记录未动。
+
+**回归终态**：死链 0 · 六件套 30/30 · 编号 MISMATCH=0 · 双向链接 103/103 · stub 纯净度 56/56 · merge BAD=0。
+
+**剩余移交项**（详见月审 §8 更新表）：CI 覆盖矩阵/质量门挂载（P1）、docs-deploy 其余 8 个模块卡死引用、check-unfixed-links.ps1 重写、AD-038 block 6 格式损坏、FT-009 ID 复用治理（3 文件共号）、test_go_blocks 14 个 RUN-BAD、`.kimi` 扩展集启用决策（待用户）。
