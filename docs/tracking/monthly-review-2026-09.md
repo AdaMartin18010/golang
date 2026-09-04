@@ -149,6 +149,6 @@
 | P3 | `.kimi` 可选扩展集 4 页启用/弃用决策（表征空间/思维表征/决策树/效应系统） | 内容维护 | 待用户决定 |
 | ~~P3~~ ✅ | ~~test_go_blocks 14 个 RUN-BAD 清理~~（已完成：RUN-BAD=0；11 项入豁免表 + 4 页真缺陷修复） | 内容维护 | 已完成 |
 
-**Overall semantic health grade**: **78 / 100 → 97 / 100**（2026-09-05 二次复评：CI 覆盖矩阵、质量门挂载、FT-009 治理三项再解 −6；剩余扣分：release.yml YAML 既有错误 −1、gofmt 存量 −1、AD-037 block 5 领域符号 −1）
+**Overall semantic health grade**: **78 / 100 → 99 / 100**（2026-09-05 三次复评：release.yml、docs-deploy 复制逻辑、AD-037、check_quality 强制门、gofmt 存量（296 清零）、race 矩阵 12 项真实缺陷根治（首跑 29/38 → 复跑 38/38）全部已解；剩余 −1：formal-verifier go.mod 待 tidy 决策）
 
 **Sign-off**: _________________（人工复核待签）
