@@ -4,6 +4,8 @@
 
 权威参考：[Go 1.27 Release Notes](https://go.dev/doc/go1.27)
 
+概念权威页：泛型方法 → [`LD-037`](../../go-knowledge-base/02-Language-Design/LD-037-Go-1.27-Generic-Methods.md)；版本演进 → [`03-Evolution/07`](../../go-knowledge-base/02-Language-Design/03-Evolution/07-Go126-to-Go127.md)
+
 ## 运行
 
 ```bash
@@ -40,4 +42,4 @@ go test ./...   # 运行测试（含 synctest 气泡演示）
 - 行为变化：HTTP/1 Response.Body 关闭自动 drain、HTTP/2 RFC 9218 客户端优先级默认尊重、`flate` 输出字节可能变化、Unicode 15 → 17
 - 平台：macOS 最低 13 Ventura；`asynctimerchan` GODEBUG 永久移除
 
-详见 [docs/01-Go-1.27-Comprehensive-Knowledge-System-2026.md](../../docs/01-Go-1.27-Comprehensive-Knowledge-System-2026.md)。
+详见 [docs/01-Go-1.27-Comprehensive-Knowledge-System-2026.md](../../docs/go127-comprehensive-guide/01-Go-1.27-Comprehensive-Knowledge-System-2026.md)。

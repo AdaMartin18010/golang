@@ -33,8 +33,8 @@
 
 | 文档 | 说明 | 优先级 |
 |------|------|--------|
-| [00-Go-1.26-Comprehensive-Knowledge-Overview-2026.md](00-Go-1.26-Comprehensive-Knowledge-Overview-2026.md) | 知识总览 | ⭐⭐⭐⭐ |
-| [go126-package-management.md](go126-package-management.md) | 包管理 | ⭐⭐⭐ |
+| [00-Go-1.26-Comprehensive-Knowledge-Overview-2026.md](go126-comprehensive-guide/00-Go-1.26-Comprehensive-Knowledge-Overview-2026.md) | 知识总览 | ⭐⭐⭐⭐ |
+| [go126-package-management.md](go126-comprehensive-guide/go126-package-management.md) | 包管理 | ⭐⭐⭐ |
 
 ### 🚀 操作文档 (4篇)
 
@@ -68,8 +68,6 @@
 ```
 docs/
 ├── README.md                                    # 本文档
-├── 00-Go-1.26-Comprehensive-Knowledge-Overview-2026.md          # 知识总览
-├── go126-package-management.md                  # 包管理
 ├── architecture/                                # 架构文档
 │   ├── clean-architecture.md                   # 整洁架构
 │   ├── clean-architecture-2026-best-practices.md
@@ -77,11 +75,15 @@ docs/
 │       ├── observability/
 │       └── data/
 ├── go126-comprehensive-guide/                  # Go 1.26核心
+│   ├── 00-Go-1.26-Comprehensive-Knowledge-Overview-2026.md   # 知识总览
+│   ├── go126-package-management.md             # 包管理
 │   ├── 01-language-features.md
 │   ├── 03-type-system.md
 │   ├── 05-csp-formal-model.md
 │   ├── 09-concurrency-patterns.md
 │   └── 26-memory-management.md
+├── go127-comprehensive-guide/                  # Go 1.27核心
+│   └── 01-Go-1.27-Comprehensive-Knowledge-System-2026.md
 ├── api/                                         # API 文档
 ├── deployment/                                  # 部署指南
 └── development/                                 # 开发指南

@@ -8,7 +8,7 @@
 > | 预测 | 结论 |
 > | ------ | ------ |
 > | 泛型方法（85%，1.27-1.28） | ✅ **命中**——1.27 正式落地，预测语法与实际一致（proposal #77273），见 [Go-1.27-Release.md](./Go-1.27-Release.md) §1.1 与 [LD-037](../../../go-knowledge-base/02-Language-Design/LD-037-Go-1.27-Generic-Methods.md) |
-> | json/v2 GA | ✅ **命中**——1.27 GA，且 v1 改由 v2 实现，见 [go127-json-v2-migration.md](../../../docs/go127-json-v2-migration.md) |
+> | json/v2 GA | ✅ **命中**——1.27 GA，且 v1 改由 v2 实现，见 [go127-json-v2-migration.md](../../../docs/development/go127-json-v2-migration.md) |
 > | goroutineleak 转正 | ✅ **命中**——1.27 GA（/debug/pprof/goroutineleak） |
 > | container-aware GOMAXPROCS | ✅ **命中**——1.27 默认开启 |
 > | Green Tea GC 1.27 finalize | ❌ **未命中**——1.27 仍为 GOEXPERIMENT=greenteagc 实验，nogreenteagc 开关仍在（LD-036 已修正） |

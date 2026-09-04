@@ -1107,7 +1107,6 @@ package sbom
 import (
     "debug/buildinfo"
     "fmt"
-    "os"
     "time"
 )
 

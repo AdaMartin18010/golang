@@ -298,5 +298,5 @@ go build ./...
 
 - [Go 1.26 Release Notes](https://go.dev/doc/go1.26)
 - [Go Modules Reference](https://go.dev/ref/mod)
-- [项目 CHANGELOG](../CHANGELOG.md)
+- [项目 CHANGELOG](../../CHANGELOG.md)
 - 项目 Go 1.26 升级报告

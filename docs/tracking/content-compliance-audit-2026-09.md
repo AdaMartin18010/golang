@@ -96,6 +96,50 @@
 - 附带修复：① LD-048 页内编号 LD-009 → LD-048；② TS-049 页内编号 TS-002 → TS-049（页内指向真实存在的 TS-002-Redis-Data-Structures-Internals 链接保留）；③ TS-050 页内编号 TS-003 → TS-050（同上）；④ P3 复查新确认重复权威 2 组并 stub 化：`FT-039-Raft-Consensus-Formal-Specification` → `FT-002`、`FT-040-Paxos-Consensus-Formal` → `FT-006`（stub 计数 54 → 56）。
 - 待实测：新增 `// 编译失败:` 反例块与可运行块 → §5c 统一验证。
 
+## 5c. P3 代码块实测结果（2026-09-05，Go 1.27.1 windows/amd64 实机）
+
+- 规模：30 试点页共 226 个 ```go 块 = 编译失败反例 20 + 完整程序 122 + 片段 84。
+- **编译失败反例：20/20 全部确实编译失败**（首轮 19/20，LD-001 §8.2 反例标注错误——`done` 在 goroutine 发送中被使用、实际可编译，已改写为真正触发 `declared and not used: done` 的形式）。
+- **可运行块实测修复 9 处真实缺陷**：LD-001（`procs` 未使用 + Node/Cache 示意类型缺失）、LD-010（`runtime/debug` 未使用导入）、LD-011（`runtime` 未使用导入 + `i < m.NumGC` int/uint32 类型不匹配 + gc_test `sync` 未使用导入）、FT-003（cap 包 time 导入跨块错配）、FT-016（`math` 未使用导入）、EC-155（sbom `encoding/json`/`os` 未使用导入、slsa `os` 导入误删恢复）。
+- **合并构建终态（同页同 package 块合并为程序）**：19 组通过、36 组因外部依赖（grpc/redis/sql/goland.org/x 等）跳过、24 组按「片段级示意示例」豁免——均含 package 声明但引用未定义的示意类型（如 `EventStore`/`Alert`/`NetworkEndpoint`），属工程实践节的模式示意代码，非核心机制块；清单见 scripts/tmp/goblock_merge_results.json，可在后续批次逐页补全为可编译示例。
+- 工具链：extract_go_blocks.py → test_go_blocks.py（单块）/ merge_test.py（合并），全部 GOWORK=off。
+
+## 5d. P3 双向链接核查与补齐结果（2026-09-05）
+
+- 30 试点页头部前置/后置链接共 103 条：补齐前仅 15 条双向可达。
+- 处置：scripts/tmp/add_backlinks.py 在 79 个目标页头部追加回链（优先并入既有 前置/后置概念 行，无头部链的行插入 `> **相关概念**` 行）；1 条指向 stub（FT-009，canonical 待定，按 stub 口径豁免）；1 条指向 examples（go127-features README 已补概念回链）。
+- 终态：**102/103 双向可达**（99.0%）；死链复扫 0。
+
+## 5e. .kimi 治理文件全面 Go 化（2026-09-05，用户追加批次）
+
+- 背景：`.kimi/` 新增 21 个从 rust-lang 项目复制的文件（根目录要求 6 + 模板 7 + prompts 8，约 3100 行）。
+- 处置：7 路并行全量重写。映射口径：concept/ → 五维 FT/LD/EC/TS/AD 编号页；```rust,compile_fail → ```go + `// 编译失败:`（Go 无 E0xxx 错误码体系）；MSRV/Cargo.toml → go.mod go 1.27 指令；cargo workspace 命令 → `GOWORK=off go build/vet/test ./...`；权威源 → go.dev/ref/spec、pkg.go.dev、go.googlesource.com/proposal、go.dev/blog；所有权/借用/生命周期 → GC/cgo/happens-before/channel；rustc 决策树 → Go 编译失败类别映射。
+- 精简策略（用户确认）：内容生成/语义要求/质量门/KG 拓扑/语义审计/mindmap/交叉域/属性矩阵为核心启用集；表征空间/思维表征/决策树/效应系统页标为可选扩展（文件头降级标注，不进入质量门）。
+- 终验：全目录 Rust 术语 grep 残留 0（仅余跨语言对比矩阵的 Rust 列等允许项）；subagent 引入的 30 处占位/深度错误链接已修复（占位符改行内代码、kimi_* 兄弟文件相对路径修正），死链复扫 0；README 全量登记 32 个文件并标注启用状态。
+
+## 5f. P4 外围治理结果（2026-09-05）
+
+- **A. examples 工作区垃圾清理**：删除未跟踪构建产物 `examples/go126-features/go126-features.exe`、`examples/go126-features/test_build.exe`；`git status --short examples/` 确认无意外改动（仅存量 `go127-features/README.md` 修改，与本批无关）。
+- **B. examples 缺 README 模块补登（10 个）**：crypto-hpke、go125、go126-features、grpc、messaging、net-dialer-ctx、security、servemux、slog、stdlib-peek 各补最小 README（一句话用途 + 运行命令 + go 指令版本/归属模块说明）。按实际结构核实：仅 go126-features 有独立 go.mod（go 1.27）；crypto-hpke/net-dialer-ctx/slog/stdlib-peek 无 go.mod（工具链目录模式可运行）；servemux 为测试驱动示例；go125/grpc/messaging/security 为子目录集合（grpc/messaging/security 属上级 `examples` 模块 `example.com/golang-examples`）。
+- **抽验（真实执行）**：crypto-hpke / net-dialer-ctx / slog / stdlib-peek / go126-features 的 `GOWORK=off go run .` 全部通过；servemux `GOWORK=off go test ./...` ok；go125/runtime/container_scheduling `GOWORK=off go run .` 通过。
+- **既有问题标注（未越权修复）**：grpc/messaging/security 的 `GOWORK=off go build` 因 `examples/go.sum` 缺 grpc/nats/chi 等校验条目而失败（存量问题），README 已注明需 `go mod tidy` 补齐或用 workspace 模式；go125/concurrency-network/http3 为空目录、synctest 仅有 go.mod 无源文件，README 如实标注。
+- **C. docs/ 根部 5 篇游离 md + cleanup.py 归位**（git mv 保留历史）：
+  - `00-Go-1.26-Comprehensive-...md` → `docs/go126-comprehensive-guide/`
+  - `01-Go-1.27-Comprehensive-...md` → 新建 `docs/go127-comprehensive-guide/`（与 1.26 命名模式一致，未来 1.28 归入此处）
+  - `go126-package-management.md` → `docs/go126-comprehensive-guide/`
+  - `go126-security-advisory-2026-05.md` → `docs/tracking/`
+  - `go127-json-v2-migration.md` → `docs/development/`
+  - `cleanup.py` → `scripts/tmp/cleanup.py`（先 grep 确认 md/yml 零引用，一次性归档脚本保留）
+  - 引用修复：被移文件内部 `../` 外链全部加深一层（00-Go-1.26 8 处、package-management 1 处、01-Go-1.27 5 处、json-v2-migration 3 处）；`./` 自引用与跨文件引用按新位置改指（go126-comprehensive-guide/、architecture/、development/、00-Go-1.26 前版互链 5 处）；入站链接修复 6 处（docs/README.md 2、examples/go127-features/README.md 1、07-Go126-to-Go127 1、Go-1.27-Preview 1、Go-1.27-Release 1、go127_semantic_analysis 1）；docs/README.md 目录树同步更新；活文档路径提及更新 2 处（LD-036、PERSONAL-LEARNING-PATH）；archive/ 与 tracking 历史日志、CHANGELOG 历史记录中的旧路径为历史快照，按政策不改。
+- **验证数据**：死链复扫 `TOTAL_DEAD = 0`；六件套校验 `OK=30 MISS=0 / 30`；complete-map 校验类脚本在 `scripts/tmp/` 不存在（全仓亦无，仅 `check-content-completeness.ps1` 属 docs 内容完整性检查，非 kb 条目计数），该项 N/A。
+
+## 5g. P5 持续机制结果（2026-09-05）
+
+- **首期月度语义审查**：按 `.kimi/templates/monthly_semantic_review.md` 产出 [monthly-review-2026-09.md](monthly-review-2026-09.md)（150 行），数据全部取自本文档 §4b/§4c/§4d/§5b/§5c/§5d/§5f，未实测量标注 N/A 并注明原因；本期新跑两个机械校验：`stub_purity_check.py`（STUB_TOTAL=56，与 §5b 计数一致，VIOLATIONS=0）、`id_consistency_check.py`（CHECKED=420，**MISMATCH=98**——§4b 重编号批次页内 H1 编号系统性残留，列为 P0 行动项）。
+- **月审主要结论**：stub 纯净度 56/56 零违规；边界域 7/8 有权威页（GC × cgo 专页缺失）；KG 通用谓词违规 0（关系以内嵌概念链形式存在）；版本语义注入 8 先行页 + 30 试点页；代码块抽验被 §5c 全量实测（226 块）取代故 N/A；综合语义健康分 78/100。
+- **CI 对齐核查**（只记录不改动）：16 个 workflow 中 knowledge-tracker.yml 的 3 个脚本引用与 ci.yml 的 `scripts/quality-check.sh` 均有效；发现失效/缺口 5 项——docs-deploy.yml 生成 HTML 内 3 处死引用（docs/10-进阶专题/、LEARNING_PATHS.md、INDEX.md 均不存在）、AGENTS.md 宣称的 3 个 CI 质量门脚本实际无 workflow 引用且 check-unfixed-links.ps1 需重写（§3 既有记录）、go workflow 无 GOWORK 设置且 go.work 仅覆盖 42 模块中的 8 个（CI 覆盖缺口）、go-test.yml setup-go@v4 版本不一致、docs-check.yml 的 markdown-link-check 被 `\|\| true` 屏蔽。DOCUMENT_STANDARD.md 旧死引用复核已 0 命中。详见月审 §7。
+- **验证**：月审新增 md 后死链复扫仍为 `TOTAL_DEAD = 0`；六件套 30/30 不受影响。
+
 ## 6. 阶段验收对照表
 
 | 阶段 | 任务 | 验收标准 | 状态 |
@@ -110,8 +154,8 @@
 | P2 | 头部统一 | 590 实质页维度/级别/标签/Go 版本四字段齐全（100%，见 §4c） | ✅ |
 | P2 | Bloom/概念链 | 版本页 5 + 演进页 3 先行标注（§4d）；核心 30 页随 P3 补齐 | ✅ |
 | P3 | 六件套试点 | 核心 30 页反例+mindmap+P0P1P2+头部三行，机械校验 30/30（§5b） | ✅ |
-| P3 | 代码块实测 | 抽样页 go 块 build/test 通过 | ⬜ |
-| P3 | 双向链接 | 版本特性 ↔ 权威页双向可达 | ⬜ |
-| P4 | 外围治理 | examples/view/docs/pknowledge 合规 | ⬜ |
-| P5 | 持续机制 | 首期月审记录 + CI 对齐 | ⬜ |
+| P3 | 代码块实测 | 编译失败反例 20/20；合并构建 19 组通过，24 组片段级豁免、36 组外部依赖跳过；9 处缺陷已修（§5c） | ✅ |
+| P3 | 双向链接 | 试点页头部链接 102/103 双向可达（1 为 stub 豁免）（§5d） | ✅ |
+| P4 | 外围治理 | examples/view/docs/pknowledge 合规 | ✅ |
+| P5 | 持续机制 | 首期月审记录 + CI 对齐 | ✅ |
 | P6 | 终验 | 死链 0、索引一致、vet 抽样过、分阶段提交 | ⬜ |

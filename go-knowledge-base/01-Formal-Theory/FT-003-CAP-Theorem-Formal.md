@@ -544,6 +544,7 @@ import (
     "context"
     "errors"
     "sync"
+    "time"
 )
 
 // SystemType 定义系统在 CAP 中的选择
@@ -805,9 +806,6 @@ func (s *CAPStore) Read(ctx context.Context, key string, level ConsistencyLevel)
 ```go
 package cap
 
-import (
-    "time"
-)
 
 // ConflictResolver 定义冲突解决策略
 type ConflictResolver interface {

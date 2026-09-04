@@ -1,7 +1,7 @@
 # Go 1.27 语义分析
 
 **Go版本**: Go 1.27 / 1.27.1 | **日期**: 2026-09-04
-**关联**: [Go-1.27-Release.md](../formal/Go/Go-1.27-Release.md) §2/§4、[go127-json-v2-migration](../../docs/go127-json-v2-migration.md)
+**关联**: [Go-1.27-Release.md](../formal/Go/Go-1.27-Release.md) §2/§4、[go127-json-v2-migration](../../docs/development/go127-json-v2-migration.md)
 
 ---
 

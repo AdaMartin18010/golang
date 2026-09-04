@@ -3,7 +3,7 @@
 **Go版本**: Go 1.27 / 1.27.1
 **日期**: 2026-08
 **权威来源**: [go.dev/doc/go1.27](https://go.dev/doc/go1.27)、`go doc encoding/json/v2`（本机 go1.27.1 验证）
-**姊妹篇**: [Go-1.27-Release.md](../view/formal/Go/Go-1.27-Release.md) §4
+**姊妹篇**: [Go-1.27-Release.md](../../view/formal/Go/Go-1.27-Release.md) §4
 
 ---
 
@@ -90,10 +90,10 @@ json.Marshal(v, jsontext.WithIndent("  "))                   // 缩进
 
 ## 5. 最小可运行示例
 
-见 [examples/go127-features](../examples/go127-features) 的 `demonstrateJSONv2`（main.go）与 `TestJSONv2Options`（synctest_test.go），覆盖 Marshal/Unmarshal、重复 key 拒绝与放宽、RejectUnknownMembers。
+见 [examples/go127-features](../../examples/go127-features) 的 `demonstrateJSONv2`（main.go）与 `TestJSONv2Options`（synctest_test.go），覆盖 Marshal/Unmarshal、重复 key 拒绝与放宽、RejectUnknownMembers。
 
 ## 6. 参考
 
 - [encoding/json/v2 包文档](https://pkg.go.dev/encoding/json/v2)（`go doc encoding/json/v2`）
 - Go 1.27.1 milestone：#81083、#81012
-- [Go-1.27-Release.md](../view/formal/Go/Go-1.27-Release.md) §4.3
+- [Go-1.27-Release.md](../../view/formal/Go/Go-1.27-Release.md) §4.3
