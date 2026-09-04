@@ -10,6 +10,9 @@
 > - [Designing Data-Intensive Applications](https://dataintensive.net/) - Martin Kleppmann
 
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L3
+> **前置概念**: [TS-029 Distributed Storage Systems](TS-029-Distributed-Storage-Systems.md) · **后置概念**: [TS-038 MongoDB 8 Features](TS-038-MongoDB-8-Features.md)
+> **定理链**: 访问模式 + 数据关系 → 内嵌 / 引用 / 分片模式决策 → 单文档原子读写路径 / Invariant: 文档是原子性与 16MB 大小的边界
 ---
 
 ## 1. MongoDB Storage Architecture
@@ -1286,13 +1289,89 @@ operationProfiling:
 
 ---
 
+## 反命题与边界
+
+### 反模式 1: 无界增长的数组内嵌
+
+```javascript
+// 反模式：事件日志无限追加进单个文档
+db.sensors.updateOne(
+  { _id: "sensor-42" },
+  { $push: { readings: { t: ISODate(), v: 21.5 } } }   // readings 只增不减
+)
+```
+
+原因：BSON 文档硬上限 16MB（`BSONObjTooLarge` 错误），无界 `$push` 必然在写入量增长后触发写入失败，且大文档每次修改都要整体重写，放大写放大（document move）。
+正解：用 bucketing 模式按时间分桶（如每天一个文档），或把无限增长的数据拆到独立 collection 用引用关联。
+
+### 反模式 2: 用大文档模拟宽表，一次读全量字段
+
+```javascript
+// 反模式：订单文档内嵌完整商品快照 + 审计日志 + 物流轨迹
+{
+  _id: "order-1",
+  items: [ /* 100 个商品 */ ],
+  audit_log: [ /* 数千条审计记录 */ ],
+  logistics: [ /* 全程轨迹 */ ]
+}
+```
+
+原因：内嵌是"一起读"才成立的设计；当部分数据（审计、轨迹）从不随主查询读取时，它们拖慢每次文档加载、占用工作集内存，并加剧 16MB 风险。
+正解：按访问频率切分，热数据内嵌（items），冷数据拆 collection 引用（audit_log）。
+
+### 反模式 3: 用多文档事务替代合理的模式设计
+
+```javascript
+// 反模式：为了"像关系库一样"，把本应内嵌的聚合放到多文档事务里维护
+const session = db.getMongo().startSession();
+session.startTransaction();
+session.getDatabase("shop").orders.insertOne({ ... });
+session.getDatabase("shop").order_items.insertOne({ ... });   // 一对多被拆成多文档
+session.commitTransaction();
+```
+
+原因：多文档事务基于 WiredTiger 快照与两阶段提交，吞吐远低于单文档原子写；多文档事务的意义是迁移期的过渡手段，而非默认建模方式。
+正解：能内嵌的聚合一律单文档原子写；确需跨文档一致性（账户余额转移）时才使用事务，且文档保持在同分片以降低代价。
+
+## 思维导图 (Mermaid Mindmap)
+
+```mermaid
+mindmap
+  root((MongoDB Data Modeling))
+    存储引擎
+      WiredTiger
+      BSON 文档格式
+      副本集与 Oplog
+    模式设计
+      内嵌 vs 引用
+      无界数组反模式
+      Bucketing 分桶
+    扩展性
+      分片键选择
+      热点与块均衡
+    Go 集成
+      mongo-driver
+      模式验证与索引
+```
+
+---
+
 ## 6. References
 
-1. **Chodorow, K.** (2013). MongoDB: The Definitive Guide, 2nd Edition. O'Reilly Media.
-2. **Banker, K., Bakkum, P., et al.** (2016). MongoDB in Action, 2nd Edition. Manning Publications.
-3. **MongoDB Documentation** (2024). docs.mongodb.com
-4. **Kleppmann, M.** (2017). Designing Data-Intensive Applications. O'Reilly Media.
-5. **MongoDB University** (2024). M320: Data Modeling Course.
+### P0 官方（MongoDB 官方文档与课程）
+
+1. **MongoDB Documentation** (2024). [MongoDB Docs](https://docs.mongodb.com/) - MongoDB Inc.
+2. **MongoDB University** (2024). M320: Data Modeling Course.
+
+### P1 学术（论文）
+
+3. **Bugiotti, F., Cabibbo, L., Atzeni, P., & Torlone, R.** (2014). Database Design for NoSQL Systems. *ER 2014, LNCS 8824*, 223-231. <https://doi.org/10.1007/978-3-319-12206-9_18>
+
+### P2 生态（著作与社区资料）
+
+4. **Chodorow, K.** (2013). MongoDB: The Definitive Guide, 2nd Edition. O'Reilly Media.
+5. **Banker, K., Bakkum, P., et al.** (2016). MongoDB in Action, 2nd Edition. Manning Publications.
+6. **Kleppmann, M.** (2017). Designing Data-Intensive Applications. O'Reilly Media.
 
 ---
 

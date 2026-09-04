@@ -11,6 +11,9 @@
 > - [Google Cloud Blog: Multi-Container Patterns](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-organizing-containers-with-pods)
 
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L3
+> **前置概念**: [EC-068: Container Best Practices](./EC-068-Container-Best-Practices.md) · [EC-157: Sidecar Pattern](./EC-157-Sidecar-Pattern.md) · **后置概念**: [EC-076: Kubernetes 1.34 New Features](./EC-076-Kubernetes-134-New-Features.md) · [EC-155: Kubernetes Security in Production](./EC-155-Kubernetes-Security-Production.md)
+> **定理链**: Pod Spec (initContainers + containers) → Ordered Startup Orchestration → Main Container Starts After Dependencies Ready / Invariant: 依赖就绪先行 (dependencies ready before the app starts; sidecars never block Job completion)
 ---
 
 ## 1. Introduction to Multi-Container Pods
@@ -1782,13 +1785,132 @@ When migrating from traditional sidecars to native sidecars (1.33+):
 
 ---
 
-## 9. References
+## 9. Counter-Examples and Boundaries (Anti-Patterns)
+
+### 9.1 Anti-Pattern: Native Sidecar Without `restartPolicy: Always`
+
+```yaml
+# ANTI-PATTERN: an init container that should be a native sidecar, but
+# explicitly sets restartPolicy: Never.
+#
+# What happens deterministically: Kubernetes admission REJECTS the pod —
+# API validation only allows restartPolicy to be set on an init container
+# when the value is "Always" (explicit "Never"/"OnFailure" is a validation
+# error, since regular init containers already default to Never semantics).
+spec:
+  initContainers:
+    - name: envoy-proxy
+      image: envoyproxy/envoy:v1.32.0
+      restartPolicy: Never       # 编译失败等价物: rejected by API validation
+  containers:
+    - name: app
+      image: myapp:1.0.0
+
+# Dangerous variant (accepted by the API server, fails semantically):
+spec_bad:
+  initContainers:
+    - name: envoy-proxy
+      image: envoyproxy/envoy:v1.32.0
+      # MISSING restartPolicy: Always — treated as a run-to-completion init
+      # container. envoy runs, never exits, so the main container never
+      # starts and the pod is stuck in Init:0/1 forever.
+  containers:
+    - name: app
+      image: myapp:1.0.0
+
+# Anti-pattern variant (semantic failure, accepted by the API server):
+spec_bad2:
+  initContainers:
+    - name: migration
+      image: migrate-tool:1.0.0
+      restartPolicy: Always
+      command: ["./migrate-and-then-serve-metrics"]  # WRONG role
+  # Putting a run-to-completion workload in a restarting native sidecar means:
+  # the migration runs again on every restart, the sidecar never becomes
+  # "ready" in the init sense, and Job completion semantics break (the sidecar
+  # keeps running after the main container exits, blocking Job termination
+  # unless terminated by the kubelet).
+```
+
+**Boundary**: The discriminator is **lifetime intent**, not container content. Run-to-completion setup (migrations, cert fetch, config render) → init container with default restart policy. Continuous companion (proxy, logger, config agent) → native sidecar (`restartPolicy: Always`). Misclassifying in either direction fails deterministically at admission time or as a permanently pending pod.
+
+### 9.2 Anti-Pattern: Init Container Referencing a Volume the Main Container Never Mounts
+
+```yaml
+# ANTI-PATTERN: init container writes to a volume that nothing reads.
+#
+# Deterministic failure mode: the data initialization is silently wasted —
+# the main container starts with an empty unshared volume, and the app
+# crashes or misbehaves on missing data. kubectl reports the pod as Ready.
+spec:
+  initContainers:
+    - name: seed-data
+      image: data-seeder:1.0.0
+      volumeMounts:
+        - name: seed-output
+          mountPath: /seed
+  containers:
+    - name: app
+      image: myapp:1.0.0
+      volumeMounts:
+        - name: app-data
+          mountPath: /data   # DIFFERENT volume: /seed content is orphaned
+  volumes:
+    - name: seed-output
+      emptyDir: {}
+    - name: app-data
+      emptyDir: {}
+```
+
+**Boundary**: Kubernetes does not validate dataflow between volumes — it schedules and reports Ready regardless. Only a shared `volume` + matching `volumeMounts` in both the producer (init) and consumer (app) containers creates the intended handoff; this must be enforced by review or policy (OPA/Kyverno), not assumed from a green pod status.
+
+---
+
+## 10. Knowledge Map
+
+```mermaid
+mindmap
+  root((Multi-Container Patterns))
+    Native Sidecar
+      restartPolicy Always
+      Startup Probe Gating
+      K8s 1.33 plus Stable
+    Init Containers
+      Network Initialization
+      Data Migration
+      Certificate Setup
+      Config Rendering
+    Ambassador
+      PgBouncer
+      Twemproxy
+      Kafka Protocol Proxy
+    Adapter
+      REST to gRPC
+      Metrics Format Conversion
+      Log Normalization
+    Configuration Helper
+      ConfigMap Hot Reload
+      Vault Agent
+      GitOps Config
+```
+
+---
+
+## 11. References
+
+### P0 - Official (官方)
 
 1. [Kubernetes Sidecar Containers](https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/) - Official Documentation
 2. [KEP-753: Sidecar Containers](https://github.com/kubernetes/enhancements/tree/master/keps/sig-node/753-sidecar-containers) - Enhancement Proposal
-3. [Multi-Container Patterns](https://kubernetes.io/docs/concepts/workloads/pods/#how-pods-manage-multiple-containers) - Kubernetes Docs
-4. [CNCF Cloud Native Patterns](https://www.cncf.io/phippy/) - Illustrated Guide
-5. [Google Cloud: Organizing Containers](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-organizing-containers-with-pods) - Best Practices
+
+### P1 - Academic (学术)
+
+1. [Borg, Omega, and Kubernetes: Lessons Learned from Three Container-Management Systems over a Decade (ACM Queue, Vol. 14 Issue 1)](https://queue.acm.org/detail.cfm?id=2898444) - Origin of pod-level co-scheduled helper containers
+
+### P2 - Ecosystem (生态)
+
+1. [CNCF Cloud Native Patterns (Phippy)](https://www.cncf.io/phippy/) - Illustrated Guide
+2. [Google Cloud: Organizing Containers](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-organizing-containers-with-pods) - Best Practices
 
 ---
 

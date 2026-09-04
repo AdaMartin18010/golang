@@ -14,6 +14,9 @@
 > - [AVX-512 Memory Operations and Consistency](https://dl.acm.org/doi/10.1145/3307650.3322228) - IEEE Micro (2019)
 
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L4
+> **前置概念**: [LD-002: Go 并发原语 CSP 形式化](LD-002-Go-Concurrency-CSP-Formal.md) · [LD-003: Go 垃圾回收形式化](LD-003-Go-Garbage-Collector-Formal.md) · **后置概念**: [LD-004: GMP 调度器](LD-004-Go-Runtime-GMP-Deep-Dive.md) · [LD-042: Channel 形式化](LD-042-Go-Channels-Formal.md)
+> **定理链**: Input(内存读写事件 + 同步操作) → Operation(happens-before 最小传递闭包) → Output(数据竞争判定 / 可见性保证) / Invariant: 无 happens-before 排序的冲突访问即为数据竞争
 ---
 
 ## 1. 形式化基础
@@ -700,7 +703,91 @@ func TuneGCParallelism() {
 
 ---
 
-## 8. 关系网络
+## 8. 反命题与边界
+
+### 8.1 编译失败反例：atomic 操作的类型约束
+
+```go
+package main
+
+import "sync/atomic"
+
+func main() {
+	var count int // 共享计数器，想替代 mutex 做无锁计数
+	// 编译失败: atomic.AddInt64 的第一个参数类型必须是 *int64，而 &count 的类型是 *int
+	atomic.AddInt64(&count, 1)
+}
+```
+
+**错误信息**（确定性编译期错误）：
+
+```
+cannot use &count (value of type *int) as *int64 value in argument to atomic.AddInt64
+```
+
+**解释**：`sync/atomic` 的所有函数都精确要求 `*int32`、`*int64`、`*uint32`、`*uintptr` 等具体指针类型，不接受"宽度相同的其他整数类型"。这不是过度保守：atomic 的 happens-before 保证（§5.3 同步原语对比矩阵中的"顺序一致"列）依赖操作数的确切宽度与对齐，混用类型会让内存序保证失去意义。正确做法是显式声明 `var count int64`。
+
+### 8.2 编译失败反例：goroutine 通信中的未使用变量
+
+```go
+package main
+
+func main() {
+	done := make(chan bool)
+	go func() {
+		// do work
+		done <- true
+	}()
+	// 编译失败: done 已声明但未被使用 —— 缺少接收方
+}
+```
+
+**错误信息**：
+
+```
+declared and not used: done
+```
+
+**解释**：Go 的"声明必须使用"规则同样适用于 channel 变量。这个编译错误恰好挡下了一个真实的内存模型隐患：若 `main` 不接收 `done`，工作 goroutine 的 `done <- true` 将永远阻塞（goroutine 泄漏），且该 goroutine 中的任何写操作对 `main` 都没有 happens-before 关系。修复方式不是丢弃变量，而是补上 `<-done` 接收。
+
+### 8.3 边界命题
+
+- **命题**："channel 保证 happens-before" —— 边界：只对**配对的同一次** send/receive 成立。buffered channel 的第 $k$ 次 send 仅 happens-before 第 $k$ 次 receive，乱序接收不获得任何可见性保证。
+- **命题**："加了 mutex 就无数据竞争" —— 边界：仅当**所有**共享访问路径都持有同一把锁。漏掉任一路径（如只锁写不锁读），数据竞争依然存在。
+- **命题**："通过通信共享内存" —— 反命题：把 map、slice 等引用类型的指针放进 channel，发送后**发送方继续读写**同一底层结构，等价于共享内存，channel 不为结构内部的访问提供 happens-before。
+- **命题**："race detector 通过即无竞争" —— 边界：`-race` 只检测**实际执行到**的交错；未覆盖的调度路径上的竞争不会被报告，测试覆盖率仍然重要。
+
+---
+
+## 9. Mermaid Mindmap
+
+```mermaid
+mindmap
+  root((Go 内存模型))
+    Happens-Before 关系
+      程序序 HB1
+      同步序 HB2
+      偏序与传递性
+    同步原语
+      Channel 通信
+      Mutex/RWMutex
+      WaitGroup/Once
+      Atomic
+    数据竞争
+      冲突访问定义
+      向量时钟检测
+      Race Detector
+    Green Tea GC (1.26)
+      AVX-512 页级扫描
+      写屏障不变式
+    形式化规约
+      TLA+ 模型
+      CSP 代数
+```
+
+---
+
+## 10. 关系网络
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -739,34 +826,34 @@ func TuneGCParallelism() {
 
 ---
 
-## 9. 参考文献
+## 11. 参考文献
 
-### 经典文献
+### P0 官方
 
-1. **Lamport, L. (1978)**. Time, Clocks, and the Ordering of Events in a Distributed System. *CACM*.
-2. **Hoare, C.A.R. (1978)**. Communicating Sequential Processes. *CACM*.
+1. **Go Authors (2025)**. [The Go Memory Model](https://go.dev/ref/mem). *Official Documentation*.
+2. **Go Authors (2026)**. [Green Tea GC: Accelerating Go Garbage Collection with SIMD](https://go.dev/s/greenteagc). *Go Design Doc*.
+3. **Go Blog (2013)**. [Introducing the Go Race Detector](https://go.dev/blog/race-detector). *The Go Blog*.
+
+### P1 学术
+
+1. **Lamport, L. (1978)**. [Time, Clocks, and the Ordering of Events in a Distributed System](https://dl.acm.org/doi/10.1145/56752.56753). *CACM*.
+2. **Hoare, C.A.R. (1978)**. [Communicating Sequential Processes](https://dl.acm.org/doi/10.1145/359576.359585). *CACM*.
 3. **Lamport, L. (1979)**. How to Make a Multiprocessor Computer That Correctly Executes Multiprocess Programs. *IEEE TC*.
+4. **Dolan, S., et al. (2022)**. [A Formalization of the Go Memory Model](https://www.cl.cam.ac.uk/~pes20/go/). *EuroGo*.
+5. **Owens, S. (2010)**. Reasoning about the Implementation of Concurrency Abstractions on x86-TSO. *ECOOP*.
+6. **Batty, M., et al. (2011)**. Mathematizing C++ Concurrency. *POPL*.
+7. **Abel, A., & Reineke, J. (2019)**. uops.info: Characterizing Latency, Throughput, and Port Usage of Instructions on Intel Microarchitectures. *ASPLOS*.
+8. **Hofmann, J., et al. (2019)**. Analytical Cache Modeling and Tilesize Optimization for Tensor Contraction. *SC*.
+9. [The happens-before Relation: A Swiss Army Knife for the Working Semantics Researcher](https://plv.mpi-sws.org/hb/) - MPI-SWS.
 
-### Go 相关
+### P2 生态
 
-1. **Go Authors (2025)**. The Go Memory Model. *Official Documentation*.
-2. **Dolan, S., et al. (2022)**. A Formalization of the Go Memory Model. *EuroGo*.
-3. **Go Authors (2026)**. Green Tea GC: Accelerating Go Garbage Collection with SIMD. *Go Design Doc*.
-
-### SIMD 与微架构
-
-1. **Intel (2023)**. Intel AVX-512 Instructions and Their Use in Server Applications. *Intel Whitepaper*.
-2. **Abel, A., & Reineke, J. (2019)**. uops.info: Characterizing Latency, Throughput, and Port Usage of Instructions on Intel Microarchitectures. *ASPLOS*.
-3. **Hofmann, J., et al. (2019)**. Analytical Cache Modeling and Tilesize Optimization for Tensor Contraction. *SC*.
-
-### 形式化方法
-
-1. **Owens, S. (2010)**. Reasoning about the Implementation of Concurrency Abstractions on x86-TSO. *ECOOP*.
-2. **Batty, M., et al. (2011)**. Mathematizing C++ Concurrency. *POPL*.
+1. **Cox, R.** [Hardware Memory Models](https://research.swtch.com/hwmm). *research.swtch.com* —— x86-TSO 内存序的通俗形式化推导，与 §4.4 微架构内存序直接对应。
+2. **Intel (2023)**. Intel AVX-512 Instructions and Their Use in Server Applications. *Intel Whitepaper*.
 
 ---
 
-## 10. 记忆锚点与检查清单
+## 12. 记忆锚点与检查清单
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐

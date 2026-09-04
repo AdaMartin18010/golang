@@ -12,6 +12,9 @@
 > - [Vive la Différence: Paxos vs Raft](https://www.cl.cam.ac.uk/~ms705/pub/papers/2015-paxosraft.pdf) - Cambridge, 2015
 
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L4
+> **前置概念**: [FT-001 分布式系统基础](FT-001-Distributed-Systems-Foundation-Formal.md) · [FT-009 Quorum 共识理论](FT-009-Quorum-Consensus-Theory.md) · **后置概念**: [FT-006 Paxos 形式化](FT-006-Paxos-Formal.md) · [FT-003 CAP 定理](FT-003-CAP-Theorem-Formal.md)
+> **定理链**: 多数派投票 ∩ 任期单调递增 → Leader 唯一性 + 日志匹配性质 → 状态机安全 / Invariant: 已提交条目永不被覆盖
 ---
 
 ## 1. 形式化问题定义
@@ -834,9 +837,77 @@ ReceiveSnapshotChunk(j, m) ==
 
 ---
 
+## 反命题与边界
+
+**反命题 1: "Raft 在异步网络中保证终止"**
+错误。由 FLP 不可能结果（见 [FT-015](FT-015-FLP-Impossibility-Formal.md)），完全异步网络中确定性算法无法同时保证安全与终止。Raft 依赖随机选举超时打破僵局，只提供概率性终止。若将超时固定为常数，对称节点会反复同时发起选举、选票均分，活锁将持续。
+
+```go
+// 反模式: 固定且相同的选举超时导致选举活锁
+// 三个节点使用完全相同的超时值，每次超时同时转为候选者，
+// 没有任何候选者能获得多数派，系统永远无法选出 Leader。
+func (n *Node) resetElectionTimeout() {
+    // ❌ 错误: 所有节点相同的固定值，破坏了随机性前提
+    n.electionTimeout = 150 * time.Millisecond
+}
+```
+
+**反命题 2: "Leader 本地写入即已提交"**
+错误。提交 (commit) 定义为条目复制到多数派并由 Leader 推进 commitIndex；本地 append 的条目仍是未提交状态，Leader 宕机后可能被后续 Leader 覆盖。把本地写入当作已提交返回客户端，违反状态机安全定理（定理 4.3）。
+
+```go
+// 反模式: 把本地 append 当作已提交并立即响应客户端
+func (r *Raft) Propose(cmd Command) error {
+    r.log = append(r.log, cmd) // 仅本地写入，未复制到多数派
+    // ❌ 错误: 未等待多数派复制与 commitIndex 推进就返回成功
+    return nil
+}
+```
+
+**边界条件**:
+
+- 集群可用下限：至少需 ⌊n/2⌋+1 个节点存活；3 节点集群挂 2 个即整体不可用。
+- 成员变更：一次性切换配置可能产生两个各自独立的多数派（各自选出一个 Leader），必须使用两阶段 Joint Consensus。
+- 只读请求：Leader 未经与多数派确认（ReadIndex / Lease）直接服务读请求，可能读到旧数据（stale read）。
+- 日志匹配性质依赖 AppendEntries 的一致性检查（prevLogIndex/prevLogTerm）；任何绕过该检查直接注入日志的实现都会破坏归纳不变式。
+
+---
+
+## Mermaid 思维导图
+
+```mermaid
+mindmap
+  root((Raft 共识))
+    安全性 Safety
+      选举安全 每任期至多一个 Leader
+      日志匹配 同索引同任期则前缀一致
+      状态机安全 已提交条目不被覆盖
+    活性 Liveness
+      随机选举超时
+      多数派可达即可推进
+    日志复制
+      AppendEntries 与心跳
+      nextIndex 回溯修复
+      提交需多数派确认
+    成员变更
+      Joint Consensus 两阶段
+    生产优化
+      快照与日志压缩
+      流水线复制
+      纠删码 Rafture
+```
+
+---
+
 ## 9. 参考文献与扩展阅读
 
-### 核心论文
+### P0 官方 (Go 官方文档)
+
+1. [go.etcd.io/raft/v3 — Go API 文档](https://pkg.go.dev/go.etcd.io/raft/v3) - pkg.go.dev 上 etcd Raft 库的类型与接口定义（Node、Storage、Ready 等核心抽象）
+
+### P1 学术 (Academic)
+
+#### 核心论文
 
 1. **Ongaro, D., & Ousterhout, J. (2014)**. In Search of an Understandable Consensus Algorithm. *USENIX ATC*.
    - Raft 原始论文，获得 USENIX ATC 2014 最佳论文奖
@@ -847,7 +918,7 @@ ReceiveSnapshotChunk(j, m) ==
 3. **Fischer, M. J., Lynch, N. A., & Paterson, M. S. (1985)**. Impossibility of Distributed Consensus with One Faulty Process. *JACM*.
    - FLP 不可能结果
 
-### 形式化验证
+#### 形式化验证
 
 1. **Ongaro, D. (2014)**. Consensus: Bridging Theory and Practice. *PhD Thesis, Stanford*.
    - Raft 完整形式化规约
@@ -855,9 +926,9 @@ ReceiveSnapshotChunk(j, m) ==
 2. **Wilcox, J. R., et al. (2015)**. Verdi: A Framework for Implementing and Formally Verifying Distributed Systems. *PLDI*.
    - Coq 验证的 Raft 实现
 
-### 最新研究 (2024-2026)
+#### 最新研究 (2024-2026)
 
-#### 纠删码与存储优化
+##### 纠删码与存储优化
 
 1. **Kerur, R., et al. (2026)**. Rafture: Erasure-coded Raft with Post-Dissemination Pruning. *arXiv:2603.24761*.
    - 首个支持传播后剪枝的纠删码共识协议，实现 50% 存储 reduction
@@ -887,7 +958,7 @@ ReceiveSnapshotChunk(j, m) ==
 3. **Wang, S., et al. (2026)**. Satellite Network-Optimized Dynamic Scoped Hierarchical Raft for Blockchain Consensus. *Space: Science & Technology*.
    - 分层共识在卫星网络中的应用，吞吐提升 65%
 
-#### 生产系统优化
+##### 生产系统优化
 
 1. **SIG-etcd (2025)**. Announcing etcd v3.6.0. *etcd.io Blog*.
    - 50% 内存 reduction，10% 平均吞吐提升
@@ -895,13 +966,20 @@ ReceiveSnapshotChunk(j, m) ==
 2. **Tennage, F., et al. (2025)**. RACS-SADL: Separating Data Plane from Control Plane in Consensus. *USENIX NSDI*.
     - 将命令传播与核心共识逻辑分离的优化方案
 
-#### 综合综述
+##### 综合综述
 
 1. **Howard, H., et al. (2024)**. Raft Refloated: Do We Have Consensus? *ACM SIGOPS Operating Systems Review*.
     - Raft 在现代硬件上的性能再评估
 
 2. **Pires, R., et al. (2025)**. Can 1000 Nodes Agree? Scalability of Consensus Protocols. *USENIX NSDI*.
     - 大规模共识协议的可扩展性研究
+
+### P2 生态 (Ecosystem)
+
+1. [hashicorp/raft](https://github.com/hashicorp/raft) - 广泛复用的 Go Raft 库（Consul 底层）
+2. [ongardie/raft-tla](https://github.com/ongardie/raft-tla) - Raft 的 TLA+ 官方规约（TLC 可模型检验）
+3. [etcd-io/etcd](https://github.com/etcd-io/etcd) - 生产级 Raft 实现（Go），含 raftexample 参考实现
+4. [etcd.io Blog](https://etcd.io/blog/) - etcd 官方博客（v3.6 性能优化、v3.7 路线图发布渠道）
 
 ---
 

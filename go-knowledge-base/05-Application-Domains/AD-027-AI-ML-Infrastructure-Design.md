@@ -12,6 +12,9 @@
 > **级别**: S (127 KB)
 > **标签**: #ad
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L3
+> **前置概念**: [AD-026: Application Architecture Failure Case Studies](AD-026-Application-Architecture-Failure-Case-Studies.md) · **后置概念**: [AD-028: AI Agent Architectures 2026](AD-028-AI-Agent-Architectures-2026.md)
+> **定理链**: Model + Request → Scheduling & Caching Optimization → Throughput / Latency / Cost / Invariant: deterministic inference under GPU memory constraints
 ## Table of Contents
 
 - [AD-027: AI/ML Infrastructure Design](#ad-027-aiml-infrastructure-design)
@@ -2418,27 +2421,98 @@ func main() {
 
 ---
 
+## Counter-Examples and Boundaries
+
+### Anti-Pattern: Connection-per-Request Vector Search
+
+Creating a new gRPC connection and Qdrant client for every search request forces a TCP + HTTP/2 handshake on the hot path and churns goroutines under load:
+
+```go
+// ANTI-PATTERN: a new connection per request — do NOT do this
+func SearchBad(ctx context.Context, vec []float32) error {
+	conn, _ := grpc.Dial("qdrant:6334",
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	defer conn.Close() // the "pool" is torn down immediately
+	client := qdrant.NewQdrantClient(conn)
+	_, err := client.Search(ctx, &qdrant.SearchPoints{ /* ... */ })
+	return err // every call pays ~5-20ms handshake; QPS collapses under concurrency
+}
+```
+
+Correct approach: build one `QdrantClient` at startup (as in §3.4) with health checks, connection pooling, and bounded message sizes, and share it safely across goroutines.
+
+### Anti-Pattern: Unbatched Point-by-Point Upserts
+
+```go
+// ANTI-PATTERN: one network round-trip per point
+for _, p := range points {
+	client.Upsert(ctx, &qdrant.UpsertPoints{Points: []*qdrant.PointStruct{p}})
+	// 1M vectors = 1M round-trips; at 2ms each this is ~33 minutes of pure RTT
+}
+```
+
+Correct approach: batch upserts (see `UpsertVectors` in §3.4), amortizing the round-trip over 100+ points per request.
+
+### Operational Boundaries
+
+- `--gpu-memory-utilization` above ~0.95 leaves no headroom for CUDA graph capture and activation spikes, causing deterministic OOM at load; keep 0.85-0.90.
+- Semantic-cache similarity thresholds below ~0.95 start returning near-miss context; a cache hit is only safe when the retrieved prompt is semantically equivalent to what the model would have seen.
+- MIG profiles are static: a 1g.10gb profile cannot host a model whose weights + KV cache exceed 10GB; changing profiles requires a pod restart.
+
+---
+
+## Mind Map
+
+```mermaid
+mindmap
+  root((AI/ML Infrastructure Design))
+    LLM Serving
+      vLLM PagedAttention
+      TensorRT-LLM FP8/INT4
+      SGLang Structured Output
+    Training Frameworks
+      Ray + KubeRay
+      Kubeflow Training Operator
+      DeepSpeed ZeRO
+    Vector Databases
+      Qdrant ACORN
+      Milvus Sparse-BM25
+    AI Agents
+      L0-L4 Taxonomy
+      MCP Protocol
+    GPU Scheduling & Observability
+      MIG / Time-Slicing
+      OpenTelemetry Middleware
+    Go in AI/ML
+      LangChainGo RAG
+      MCP Client SDK
+```
+
+---
+
 ## References
 
-### Papers
+### P0: Official
 
-1. **vLLM & PagedAttention**: Kwon et al. "Efficient Memory Management for Large Language Model Serving with PagedAttention" (SOSP 2023)
-2. **TensorRT-LLM**: NVIDIA. "TensorRT-LLM User Guide" (2024)
-3. **DeepSpeed ZeRO**: Rajbhandari et al. "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models" (SC 2020)
-
-### Documentation
-
+- [pkg.go.dev — grpc-go](https://pkg.go.dev/google.golang.org/grpc)
+- [pkg.go.dev — Qdrant Go Client](https://pkg.go.dev/github.com/qdrant/go-client/qdrant)
+- [pkg.go.dev — OpenTelemetry Go](https://pkg.go.dev/go.opentelemetry.io/otel)
 - [vLLM Documentation](https://docs.vllm.ai/)
 - [TensorRT-LLM Documentation](https://nvidia.github.io/TensorRT-LLM/)
 - [Ray Documentation](https://docs.ray.io/)
 - [KubeRay Documentation](https://ray-project.github.io/kuberay/)
-- [Qdrant Documentation](https://qdrant.tech/documentation/)
-- [Milvus Documentation](https://milvus.io/docs)
 - [NVIDIA GPU Operator](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/overview.html)
 - [Model Context Protocol](https://modelcontextprotocol.io/)
 
-### Go Libraries
+### P1: Academic
 
+- Kwon et al. "Efficient Memory Management for Large Language Model Serving with PagedAttention" (SOSP 2023) — [arXiv:2309.06180](https://arxiv.org/abs/2309.06180)
+- Rajbhandari et al. "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models" (SC 2020) — [arXiv:1910.02054](https://arxiv.org/abs/1910.02054)
+
+### P2: Ecosystem
+
+- [Qdrant Documentation](https://qdrant.tech/documentation/)
+- [Milvus Documentation](https://milvus.io/docs)
 - [LangChainGo](https://github.com/tmc/langchaingo)
 - [Qdrant Go Client](https://github.com/qdrant/go-client)
 - [Ollama Go API](https://github.com/ollama/ollama/tree/main/api)

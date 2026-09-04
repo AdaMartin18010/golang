@@ -10,6 +10,9 @@
 > - [Clean Architecture](https://blog.cleancoder.com/) - Robert C. Martin
 
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L3
+> **前置概念**: [LD-007: 接口与反射内部机制](LD-007-Go-Reflection-Interface-Internals.md) · [LD-038: Go 类型系统形式化语义](LD-038-Go-Type-System-Formal-Semantics.md) · **后置概念**: [LD-022: Context 传播](LD-022-Go-Context-Propagation.md) · [LD-045: 错误处理形式化](LD-045-Go-Error-Handling-Formal.md)
+> **定理链**: Input(底层产生的 error 值) → Operation(包装 %w / 哨兵匹配 errors.Is / 类型提取 errors.As) → Output(带上下文的可判定错误链) / Invariant: 沿 Unwrap 链任意层级可判断等价性或提取具体类型
 ---
 
 ## 1. 错误处理基础
@@ -706,7 +709,86 @@ return fmt.Errorf("layer1: %w",
 
 ---
 
-## 8. 关系网络
+### 7.3 编译失败反例：错误的 Error() 方法签名
+
+```go
+package main
+
+type StatusError struct{ code int }
+
+// 编译失败: error 接口要求 Error() string，返回 int 不满足接口
+func (e StatusError) Error() int { return e.code }
+
+var _ error = StatusError{}
+```
+
+**错误信息**（确定性编译期错误）：
+
+```
+cannot use StatusError{} (value of type StatusError) as error value in variable declaration:
+	StatusError does not implement error (wrong type for method Error)
+		have Error() int
+		want Error() string
+```
+
+**解释**：error 是仅含一个方法的常规接口，但方法签名必须**逐字匹配** `Error() string`。返回类型是方法签名的一部分，返回 `int` 的 `Error` 是一个全新的方法，不覆盖接口要求。`var _ error = T{}` 这种"接口满足断言"能让此类错误在编译期暴露，应作为自定义错误类型的标配写法。
+
+### 7.4 编译失败反例：记录错误却未使用的变量
+
+```go
+package main
+
+import "fmt"
+
+func query() error { return nil }
+
+func main() {
+	if err := query(); err != nil {
+		detail := fmt.Sprintf("query failed: %v", err)
+		// 编译失败: detail 已声明但未被使用 —— 记录了错误既未处理也未传播
+	}
+}
+```
+
+**错误信息**：
+
+```
+declared and not used: detail
+```
+
+**解释**：Go 的"声明必须使用"规则在这里挡住了 §7.2 反模式 1（"忽略错误"）的变种——把错误格式化进字符串后既不返回也不输出。编译错误提示的不只是风格问题，而是真实的控制流缺陷：该分支实际上吞掉了错误。
+
+---
+
+## 8. Mermaid Mindmap
+
+```mermaid
+mindmap
+  root((Go 错误处理))
+    错误接口
+      error interface
+      errors.New / fmt.Errorf
+    哨兵与类型
+      errors.Is
+      errors.As
+      自定义错误类型
+    包装链
+      %w 包装
+      Unwrap 解包
+      分层上下文
+    处理策略
+      包装传播
+      重试与退避
+      降级容错
+    反模式
+      忽略错误
+      过度 panic
+      字符串比较判定
+```
+
+---
+
+## 9. 关系网络
 
 ```
 Go Error Handling
@@ -738,11 +820,21 @@ Go Error Handling
 
 ---
 
-## 9. 参考文献
+## 10. 参考文献
 
-1. **Neil, D.** Working with Errors in Go 1.13.
-2. **Go Authors.** Error Handling and Go.
-3. **Martin, R. C.** Clean Code: Error Handling.
+### P0 官方
+
+1. **Neil, D.** [Working with Errors in Go 1.13](https://go.dev/blog/go1.13-errors). *The Go Blog*.
+2. **Go Authors.** [Error Handling and Go](https://go.dev/blog/error-handling-and-go). *The Go Blog*.
+3. **Go Authors.** [errors package](https://pkg.go.dev/errors). *pkg.go.dev*.
+
+### P1 学术
+
+1. **Yuan, D., et al. (2014)**. [Simple Testing Can Prevent Most Critical Failures: An Analysis of Production Failures in Distributed Data-Intensive Systems](https://www.usenix.org/conference/osdi14/technical-sessions/presentation/yuan). *OSDI* —— 实证研究表明绝大多数灾难性故障由不当的错误处理（未检查的错误、空 error 分支）引发。
+
+### P2 生态
+
+1. **Martin, R. C.** Clean Code: Error Handling. *Prentice Hall*.
 
 ---
 

@@ -4,6 +4,10 @@
 > **级别**: S (102 KB)
 > **标签**: #ec
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L3
+> **前置概念**: [EC-151: Microservices Decomposition](./EC-151-Microservices-Decomposition.md) · [EC-124: Distributed Systems Fundamentals](./EC-124-Distributed-Systems-Fundamentals.md) · **后置概念**: [EC-213: Serverless Computing 2026](./EC-213-Serverless-Computing-2026.md) · [EC-214: Message Queue & Streaming 2026](./EC-214-Message-Queue-Streaming-2026.md)
+> **定理链**: Service Boundaries + Traffic → Pattern Selection (Security / Mesh / Events / Multi-Region) → Independently Deployable System / Invariant: 数据自治与失败隔离 (data autonomy and failure isolation)
+
 ## Overview
 
 Cloud-native microservices architecture continues to evolve rapidly in 2026, driven by the need for better security, observability, performance, and developer productivity. This comprehensive guide covers the latest patterns, technologies, and best practices for building scalable, resilient microservices systems.
@@ -2983,12 +2987,116 @@ Cloud-native microservices architecture in 2026 is characterized by:
 
 ---
 
+## Counter-Examples and Boundaries (Anti-Patterns)
+
+### Anti-Pattern: Shared Database Across Services
+
+```yaml
+# ANTI-PATTERN: two "independent" microservices pointing at the same schema.
+#
+# Why this is wrong: it violates the microservice invariant of data autonomy.
+#  - Schema changes couple both teams' release trains (one migration breaks
+#    the other service at RUNTIME, not build time — no compiler catches it).
+#  - A slow query in orders-service holds row locks that starve
+#    payments-service, cascading one service's failure into the other.
+#  - Neither service can choose its own storage engine, isolation level, or
+#    scaling strategy — the "microservices" share one failure domain.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-service
+spec:
+  template:
+    spec:
+      containers:
+        - name: orders
+          env:
+            - name: DB_DSN
+              value: "postgres://shared-db.internal:5432/app"  # same DSN as payments-service
+
+# Correct (per §-consistent practice): each service owns its datastore and
+# publishes data changes as events for other services to consume.
+```
+
+**Boundary**: Splitting a monolith into separately deployed binaries while keeping a shared database produces the worst of both worlds — distributed-systems failure modes *plus* monolithic coupling. The boundary test is: "can service A change its schema without coordinating a deployment with service B?" If not, they are one service with extra network hops.
+
+### Anti-Pattern: Synchronous Call Chain Across Services
+
+```go
+// ANTI-PATTERN: an HTTP handler that fans out synchronously to 4 services.
+//
+// Why this is wrong: with no timeouts, one slow dependency (inventory)
+// stalls every request; with default transport settings each hop holds a
+// connection and goroutine, so a retry storm in one backend exhausts the
+// caller's connections deterministically (the classic connection-pool
+// deadlock: A waits on B, B waits on A's free connection).
+func checkout(w http.ResponseWriter, r *http.Request) {
+    cart := getCart(r)              // sync HTTP call, no timeout
+    price := pricing(r, cart)       // sync HTTP call, no timeout
+    stock := inventory(r, cart)     // sync HTTP call, no timeout
+    pay := payments(r, price)       // sync HTTP call, no timeout
+    // total latency = sum of 4 latencies; availability = product of 4 availabilities
+    // (0.999^4 ≈ 0.996 per request, before retries amplify the load)
+    ...
+}
+
+// Correct: fan out concurrently with independent deadlines, apply circuit
+// breakers (EC-123/EC-134), and move non-critical steps onto the event bus
+// (EC-214) so the request path touches only what the response needs.
+```
+
+**Boundary**: Latency adds and availability multiplies along a synchronous chain. The number of sync hops in a user-facing request path is a hard architectural budget (typically ≤ 2–3), enforceable only by reviewing call graphs — nothing in the toolchain flags a 6-hop chain at build time.
+
+---
+
+## Knowledge Map
+
+```mermaid
+mindmap
+  root((Microservices Patterns 2026))
+    Security First
+      Distroless Images
+      Cosign Signing and SBOM
+      Non-Root Execution
+    Service Mesh Evolution
+      Istio Ambient Mode
+      Cilium eBPF Mesh
+      Linkerd
+    eBPF Cloud-Native
+      Hubble Observability
+      Network Policy
+    API Gateway Patterns
+      BFF
+      Token Exchange
+    Event-Driven Architecture
+      Kafka Exactly-Once
+      Outbox Pattern
+    Multi-Region and Emerging Tech
+      Active-Active
+      WebAssembly and Dapr
+      Backstage Platform Engineering
+```
+
+---
+
 ## References
 
-1. CNCF Annual Survey 2026
-2. Istio Ambient Mode GA Announcement (Nov 2024)
-3. Cilium 1.17 Release Notes
-4. Kafka 3.7 Documentation
-5. Dapr v1.14 Release
-6. Backstage v1.31 Documentation
-7. WebAssembly Component Model Specification
+### P0 - Official (官方)
+
+1. [Istio Ambient Mode Documentation](https://istio.io/latest/docs/ambient/) - Sidecar-less data plane mode
+2. Kubernetes Documentation - Workload and networking resources (kubernetes.io/docs)
+3. **Kafka 3.7 Documentation** - Exactly-once semantics configuration (kafka.apache.org/documentation)
+4. **Dapr v1.14 Documentation** - Distributed application runtime (docs.dapr.io)
+5. **Backstage v1.31 Documentation** - Platform engineering catalog (backstage.io/docs)
+
+### P1 - Academic (学术)
+
+1. [Borg, Omega, and Kubernetes: Lessons Learned from Three Container-Management Systems over a Decade (ACM Queue, Vol. 14 Issue 1)](https://queue.acm.org/detail.cfm?id=2898444) - Choreography-vs-orchestration and control-loop foundations
+
+### P2 - Ecosystem (生态)
+
+1. [Microservices.io Patterns Catalog](https://microservices.io/patterns/) - Database-per-service, saga, outbox, API gateway patterns
+2. [CNCF Projects](https://www.cncf.io/projects/) - Graduated/incubating projects referenced throughout (Cilium, OpenTelemetry, Backstage)
+3. **WebAssembly Component Model Specification** - (component-model.bytecodealliance.org)
+4. **Cilium 1.17 Release Notes** - eBPF dataplane performance gains
+5. CNCF Annual Survey 2026 (adoption statistics)

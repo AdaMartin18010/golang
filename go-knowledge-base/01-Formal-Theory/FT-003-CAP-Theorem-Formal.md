@@ -12,6 +12,9 @@
 > - [Consistency Tradeoffs in Modern Distributed Database Systems](https://www.comp.nus.edu.sg/~dbsystem/diesel/#/default/resources) - Abadi (2012)
 
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L4
+> **前置概念**: [FT-001 分布式系统基础](FT-001-Distributed-Systems-Foundation-Formal.md) · [FT-010 线性一致性](FT-010-Linearizability-Formal.md) · **后置概念**: [FT-016 PACELC 定理](FT-016-PACELC-Theorem-Formal.md) · [FT-013 最终一致性](FT-013-Eventual-Consistency-Formal.md)
+> **定理链**: 网络分区 π 发生 → 在一致性 C 与可用性 A 之间二选一 → 三者不可同时满足 / Invariant: P 为分布式系统必选项
 ---
 
 ## 1. CAP 定理的形式化定义
@@ -850,9 +853,70 @@ func ReconcileItems(local, remote *DataItem, resolver ConflictResolver) *DataIte
 
 ---
 
-## 8. 学术参考文献
+## 反命题与边界
 
-### 8.1 核心论文
+**反命题 1: "CAP 是三选二"**
+错误。在分布式系统中 P（分区容错）不是可选项——网络分区必然发生，真实选择只在 C 与 A 之间。"CA 系统"仅在单机或非分布式部署下成立，把它当作分布式架构的选项是概念误用。
+
+**反命题 2: "CP 系统分区时完全不可用"**
+错误。CAP 的可用性定义是"每个请求最终收到非错误响应"，多数 CP 系统只拒绝写和未确认读，仍可提供降级服务：etcd 的串行化读、ZooKeeper 的 read-only 模式、Spanner 的只读事务（利用 TrueTime 安全快照）。
+
+```go
+// 反模式: CP 系统在网络分区期间继续接受写入并当作成功
+func (s *Store) Write(ctx context.Context, key string, v Value) error {
+    if s.partitioned {
+        // ❌ 错误: 分区时仅写本地就返回成功，
+        // 恢复后必然与其他分区产生不可调和的写冲突，
+        // 直接破坏线性一致性（定义 1.6）
+        s.local[key] = v
+        return nil
+    }
+    return s.quorumWrite(ctx, key, v)
+}
+```
+
+**边界条件**:
+
+- CAP 中的 C 特指线性一致性（原子一致性）；因果一致性、最终一致性等弱模型不在 CAP 限制范围内。
+- 长时间阻塞既不违反 C 也不满足 A——CAP 不评价延迟，"分区时返回错误"与"无限等待"都满足 A 的形式定义，但只有前者是可接受的工程行为。
+- PACELC（见 [FT-016](FT-016-PACELC-Theorem-Formal.md)）指出无分区时仍存在延迟-一致性权衡，CAP 只是特例。
+- 分区是时变的：系统可在 P 期间选 A、恢复后通过 hinted handoff 收敛，即"AP + 最终一致"。
+
+---
+
+## Mermaid 思维导图
+
+```mermaid
+mindmap
+  root((CAP 定理))
+    一致性 C
+      线性一致性
+      读返回最新写
+    可用性 A
+      每请求必有响应
+      不保证内容最新
+    分区容错 P
+      分区必然发生
+      分布式必选项
+    权衡选择
+      CP etcd Spanner
+      AP Cassandra DynamoDB
+    扩展理论
+      PACELC
+      Harvest Yield
+```
+
+---
+
+## 8. 参考文献
+
+### P0 官方 (Go 官方文档)
+
+1. [pkg.go.dev: hashicorp/consul/api](https://pkg.go.dev/github.com/hashicorp/consul/api) - CP 系统 Consul（Raft 共识）的 Go 客户端 API 文档
+
+### P1 学术 (Academic)
+
+#### 8.1 核心论文
 
 1. **Brewer, E. (2000)**. Towards Robust Distributed Systems. *PODC Keynote*.
    - CAP 定理首次提出
@@ -869,7 +933,7 @@ func ReconcileItems(local, remote *DataItem, resolver ConflictResolver) *DataIte
 5. **Gilbert, S., & Lynch, N. (2012)**. Perspectives on the CAP Theorem. *IEEE Computer*, 45(2), 30-36.
    - CAP 的多角度分析
 
-### 8.2 扩展理论
+#### 8.2 扩展理论
 
 1. **Fox, A., & Brewer, E. (1999)**. Harvest, Yield, and Scalable Tolerant Systems. *HotOS*.
    - Harvest/Yield 权衡框架
@@ -879,6 +943,12 @@ func ReconcileItems(local, remote *DataItem, resolver ConflictResolver) *DataIte
 
 3. **Mahajan, P., Alvisi, L., & Dahlin, M. (2011)**. Consistency, Availability, and Convergence. *University of Texas at Austin, Tech Report*.
    - 一致性模型的系统性分析
+
+### P2 生态 (Ecosystem)
+
+1. [aphyr/distsys-class](https://github.com/aphyr/distsys-class) - Jepsen 作者 Kyle Kingsbury 的分布式系统课程材料
+2. [mit-pdos/6.824-lecture-notes](https://github.com/mit-pdos/6.824-lecture-notes) - MIT 6.824 分布式系统课程笔记
+3. [theanalyst/awesome-distributed-systems](https://github.com/theanalyst/awesome-distributed-systems) - 分布式系统资源精选列表
 
 ---
 

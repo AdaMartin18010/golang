@@ -4,6 +4,9 @@
 > **级别**: S (55 KB)
 > **标签**: #ad
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L3
+> **前置概念**: [AD-034: Microservices Decomposition Patterns](AD-034-Microservices-Decomposition-Patterns.md) · **后置概念**: [AD-036: Event-Driven Architecture Patterns](AD-036-Event-Driven-Architecture-Patterns.md)
+> **定理链**: RPC Request → Channel Reuse + Timeout + Backpressure → Bounded Latency, No Cascade Failure / Invariant: fail-fast with circuit isolation
 ## Table of Contents
 
 - [AD-003: gRPC Production Patterns](#ad-003-grpc-production-patterns)
@@ -1871,34 +1874,100 @@ func (c *ProductionChecklist) Validate() []string {
 
 ---
 
+## Anti-Patterns and Boundaries
+
+### Anti-Pattern: Client Keepalive Below Server Enforcement Minimum
+
+Servers advertise `keepalive.EnforcementPolicy.MinTime`; clients that ping more frequently are disconnected with GOAWAY (`too_many_pings`). A client pinging every second against a server enforcing the 5-minute default will have its connection torn down mid-traffic:
+
+```go
+// ANTI-PATTERN: aggressive keepalive vs. default server enforcement
+conn, _ := grpc.Dial(target,
+	grpc.WithKeepaliveParams(keepalive.ClientParameters{
+		Time:    1 * time.Second, // server MinTime default: 5 minutes
+		Timeout: 1 * time.Second,
+		PermitWithoutStream: true,
+	}),
+)
+// Deterministic result: server replies GOAWAY(ENHANCE_YOUR_CALM);
+// the client reconnects, pings again, and churns forever.
+```
+
+Correct: keep client `Time` at or above the server's `EnforcementPolicy.MinTime`, or lower the server minimum deliberately (see Keepalive Profiles).
+
+### Anti-Pattern: Retry Without a Budget
+
+```go
+// ANTI-PATTERN: fixed 3x retry with no overall deadline or retry budget
+for i := 0; i < 3; i++ {
+	resp, err = client.Call(ctx, req) // if the server is slow (not down),
+	if err == nil {                   // retries multiply its load: 1 → 3 → 9 ...
+		break
+	}
+}
+```
+
+Correct: retries must be bounded by the remaining deadline (`ApplyTimeout` above), use jittered exponential backoff, and respect `RetryInfo` hints from the server.
+
+### Boundaries
+
+- Message-size mismatches are hard failures: a server emitting 20MB responses to a client with the default 4MB receive limit fails every large reply with `ResourceExhausted`. Set `MaxCallRecvMsgSize`/`MaxCallSendMsgSize` symmetrically on both ends.
+- HTTP/3 (QUIC over UDP) is blocked by many corporate NATs/firewalls; production deployments must dual-stack with HTTP/2 fallback (see Adaptive Protocol Selection).
+- `grpc.Dial` returns before the connection is established; RPCs issued before `connectivity.Ready` are queued, not failed. Warm up channels before serving traffic (see `WarmupChannels`).
+
+---
+
+## Mind Map
+
+```mermaid
+mindmap
+  root((gRPC Production Patterns))
+    Transport
+      HTTP/3 and QUIC
+      Adaptive Protocol Selection
+    Channel Management
+      Channel Reuse
+      Connection Pooling
+      Keepalive Profiles
+    Service Mesh
+      Istio vs Linkerd
+      Ambient Mode
+    Load Balancing
+      Client-Side vs L7 Proxy
+      xDS Dynamic Config
+    Production Checklist
+      Timeouts & Backpressure
+      Circuit Breakers
+```
+
+---
+
 ## References
 
-### Official Documentation
+### P0: Official
 
 1. [gRPC Official Documentation](https://grpc.io/docs/)
 2. [QUIC Protocol RFC 9000](https://www.rfc-editor.org/rfc/rfc9000.html)
 3. [HTTP/3 RFC 9114](https://www.rfc-editor.org/rfc/rfc9114.html)
-4. [Envoy Proxy Documentation](https://www.envoyproxy.io/docs/)
-5. [Istio Documentation](https://istio.io/latest/docs/)
-6. [Linkerd Documentation](https://linkerd.io/2.14/overview/)
+4. [grpc-go on pkg.go.dev](https://pkg.go.dev/google.golang.org/grpc)
+5. [quic-go on pkg.go.dev](https://pkg.go.dev/github.com/quic-go/quic-go)
 
-### Go Libraries
+### P1: Academic
 
-1. [quic-go](https://github.com/quic-go/quic-go) - QUIC implementation for Go
-2. [grpc-go](https://github.com/grpc/grpc-go) - Go implementation of gRPC
-3. [go-grpc-middleware](https://github.com/grpc-ecosystem/go-grpc-middleware) - gRPC middleware chain
+1. Langley et al. "The QUIC Transport Protocol: Design and Internet-Scale Deployment" (ACM SIGCOMM 2017) — [doi:10.1145/3098822.3098842](https://doi.org/10.1145/3098822.3098842)
+2. Iyengar & Thomson. "QUIC: A UDP-Based Multiplexed and Secure Transport" (RFC 9000, IETF 2021)
 
-### Research Papers
+### P2: Ecosystem
 
-1. "QUIC: A UDP-Based Multiplexed and Secure Transport" (RFC 9000)
-2. "gRPC Load Balancing" - gRPC Blog, 2024
-3. "Service Mesh Performance Comparison 2025" - CNCF Benchmarks
-
-### Additional Resources
-
-1. [gRPC Load Balancing Guide](https://grpc.io/docs/guides/load-balancing/)
-2. [Istio Ambient Mesh Whitepaper](https://istio.io/latest/blog/2022/introducing-ambient-mesh/)
-3. [Linkerd Performance Tuning](https://linkerd.io/2.14/tasks/configuring-proxy-concurrency/)
+1. [Envoy Proxy Documentation](https://www.envoyproxy.io/docs/)
+2. [Istio Documentation](https://istio.io/latest/docs/)
+3. [Istio Ambient Mesh Whitepaper](https://istio.io/latest/blog/2022/introducing-ambient-mesh/)
+4. [Linkerd Documentation](https://linkerd.io/2.14/overview/)
+5. [Linkerd Performance Tuning](https://linkerd.io/2.14/tasks/configuring-proxy-concurrency/)
+6. [gRPC Load Balancing Guide](https://grpc.io/docs/guides/load-balancing/)
+7. [grpc-go](https://github.com/grpc/grpc-go)
+8. [quic-go](https://github.com/quic-go/quic-go)
+9. [go-grpc-middleware](https://github.com/grpc-ecosystem/go-grpc-middleware)
 
 ---
 

@@ -7,6 +7,9 @@
 > **维度**: Engineering & CloudNative
 > **级别**: S (69 KB)
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L3
+> **前置概念**: [EC-060: OpenTelemetry 分布式追踪生产实践](./EC-060-OpenTelemetry-Distributed-Tracing-Production.md) · [EC-044: Observability in Production](./EC-044-Observability-Production.md) · **后置概念**: [EC-062: Alerting Best Practices](./EC-062-Alerting-Best-Practices.md) · [EC-211: Observability in Production 2026](./EC-211-Observability-Production-2026.md)
+> **定理链**: Design SLO → Implement + Instrument → Observe in Production → Learn & Adapt / Invariant: 不可观测即不可发布 (If you can't observe it, you can't validate it)
 ---
 
 ## 1. Formal Definition
@@ -1721,10 +1724,93 @@ func generateRandomString(length int) string {
 
 ---
 
+## 8. Counter-Examples and Boundaries (Anti-Patterns)
+
+The following anti-patterns violate ODD principles. They compile and run, but they destroy the observability properties that ODD exists to guarantee.
+
+### 8.1 Anti-Pattern: Unbounded Cardinality in Metric Labels
+
+```go
+// ANTI-PATTERN: using an unbounded value (user ID) as a Prometheus label.
+//
+// Why this is wrong: every unique label-value combination creates a new time
+// series. With 1M users this creates 1M+ series per metric, exhausting
+// Prometheus memory and making queries time out. Prometheus documents this
+// explicitly: never use labels for dimensions with unbounded value sets
+// (user IDs, email addresses, request IDs).
+requestCount := promauto.NewCounterVec(prometheus.CounterOpts{
+    Namespace: "checkout",
+    Name:      "requests_total",
+    Help:      "Total requests",
+}, []string{"user_id"}) // user_id is UNBOUNDED — do not do this
+
+// Correct: bound the cardinality to a small, enumerated set of dimensions.
+requestCountOK := promauto.NewCounterVec(prometheus.CounterOpts{
+    Namespace: "checkout",
+    Name:      "requests_total",
+    Help:      "Total requests",
+}, []string{"operation", "status"}) // e.g. operation="create", status="5xx"
+```
+
+**Boundary**: Cardinality is a design-time decision, not an ops-time fix. Once an unbounded label ships to production, the damage (memory blow-up, churn, OOM kills of the TSDB) happens before anyone can roll back. ODD requires cardinality to be reviewed during the *design* phase, exactly like an API contract.
+
+### 8.2 Anti-Pattern: Logging Without Correlation Context
+
+```go
+// ANTI-PATTERN: unstructured printf-style logging in a request path.
+//
+// Why this is wrong: when a request fans out across 5 services, log lines
+// like these cannot be grouped by trace. Root-cause analysis degrades to
+// grep-ing timestamps across machines, which is precisely the pre-ODD world.
+log.Printf("processing order %s", orderID)          // no trace_id, no level
+log.Printf("order failed: %v", err)                 // no structured error field
+```
+
+**Boundary**: "Works on my machine" logging fails silently at scale — the code compiles, tests pass, and production diagnosis is still impossible. A log statement is only complete if it carries `trace_id`/`span_id` (or a request-scoped logger derives them from context) and a machine-readable level.
+
+---
+
+## 9. Knowledge Map
+
+```mermaid
+mindmap
+  root((Observability-Driven Development))
+    Three Pillars
+      Metrics (Counters, Gauges, Histograms)
+      Logs (Structured, Correlated)
+      Traces (Spans, Context Propagation)
+    ODD Cycle
+      Design SLOs
+      Implement plus Instrument
+      Observe in Production
+      Learn and Adapt
+    Go Instrumentation
+      zap Structured Logging
+      Prometheus Metrics
+      OpenTelemetry Tracing
+      Health Checks
+    Production Validation
+      Canary with Metric Gates
+      Alert on Symptoms
+      SLO-Driven Rollback
+```
+
+---
+
 ## References
 
-1. Google SRE Book - Monitoring Distributed Systems
-2. OpenTelemetry Specification
-3. Prometheus Best Practices
-4. Distributed Systems Observability - Cindy Sridharan
-5. The Art of Monitoring - James Turnbull
+### P0 - Official (官方)
+
+1. [Google SRE Book - Monitoring Distributed Systems](https://sre.google/sre-book/monitoring-distributed-systems/) - Symptom-vs-cause alerting, four golden signals
+2. [OpenTelemetry Specification](https://opentelemetry.io/docs/specs/otel/) - Vendor-neutral telemetry API/SDK specification
+3. [Prometheus Metric and Label Naming Best Practices](https://prometheus.io/docs/practices/naming/) - Cardinality rules referenced in §8.1
+
+### P1 - Academic (学术)
+
+1. [CrossTrace: Efficient Cross-Thread and Cross-Service Span Correlation in Distributed Tracing for Microservices (arXiv:2508.11342)](https://arxiv.org/abs/2508.11342) - Span correlation research underlying trace analysis
+
+### P2 - Ecosystem (生态)
+
+1. [uber-go/zap](https://github.com/uber-go/zap) - Production structured logging library used in §2.1
+2. Distributed Systems Observability - Cindy Sridharan (book)
+3. The Art of Monitoring - James Turnbull (book)

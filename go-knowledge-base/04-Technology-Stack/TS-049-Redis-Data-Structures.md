@@ -1,4 +1,4 @@
-# TS-002: Redis Data Structures - Internal Architecture & Go Implementation
+# TS-049: Redis Data Structures - Internal Architecture & Go Implementation
 
 > **维度**: Technology Stack
 > **级别**: S (125 KB)
@@ -14,6 +14,9 @@
 > - [Redis 8.6 Release Notes](https://redis.io/docs/latest/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.6-release-notes/)
 
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L3
+> **前置概念**: [TS-002 Redis Data Structures Internals](TS-002-Redis-Data-Structures-Internals.md) · **后置概念**: [TS-042 Redis 8 Features](TS-042-Redis-8-Features.md)
+> **定理链**: 键 + 命令 → 编码转换(listpack ⇄ hashtable)与 O(1)/O(log N) 操作 → 内存高效存取 / Invariant: 单命令执行原子，跨键原子性需 Lua 或事务
 ---
 
 ## 1. Redis Data Structures Internal Architecture
@@ -2929,19 +2932,96 @@ client := redis.NewClient(&redis.Options{
 
 ---
 
+## 反命题与边界
+
+### 反模式 1: 生产环境使用 KEYS *
+
+```redis
+# 反模式：在生产实例上全键扫描
+127.0.0.1:6379> KEYS "order:*"
+1) "order:1001"
+2) "order:1002"
+...
+```
+
+原因：`KEYS` 是 O(N) 阻塞命令，遍历整个键空间期间事件循环不处理任何其他请求；键数量大时会造成所有客户端的确定性延迟毛刺（生产事故级）。
+正解：用 `SCAN` 游标渐进遍历（`SCAN 0 MATCH "order:*" COUNT 1000`），或在应用层维护索引集合（如把订单键同时记入一个 set）。
+
+### 反模式 2: 百万级字段的大 Hash 不做拆分
+
+```redis
+# 反模式：把全站用户档案塞进一个 hash
+127.0.0.1:6379> HSET all-users "user:1000001" "{...json...}"
+# ... 持续增长到数百万 field
+127.0.0.1:6379> HGETALL all-users   # 一次返回全部，阻塞且打爆客户端内存
+```
+
+原因：单 key 在集群中只占一个 slot，大 hash 造成 slot 倾斜；`HGETALL`/`DEL` 等整结构命令对数百万元素是确定性阻塞操作；过期与淘汰也以整个 key 为粒度。
+正解：按维度拆 key（`user:1000001:profile`），需要遍历时用 `HSCAN`；集群下确保相关 key 落在同 slot（hash tag）。
+
+### 反模式 3: 用 MULTI/EXEC 误认为跨 key 原子且可回滚
+
+```go
+// 反模式：以为下面事务失败会回滚已扣减的库存
+err := rdb.Watch(ctx, func(tx *redis.Tx) error {
+    _ = tx.Decr(ctx, "stock:sku-1")       // 扣库存
+    _ = tx.Incr(ctx, "sales:sku-1")       // 加销量
+    return nil                            // 即使第二个命令参数错误，第一个也不会回滚
+}, "stock:sku-1")
+```
+
+原因：`MULTI/EXEC` 保证的是命令**顺序执行、不被穿插**，而不是关系型意义上的事务回滚——任一命令运行时错误不影响其他命令执行，也没有 undo。且集群模式下多 key 必须同 slot 否则直接被拒绝。
+正解：需要"失败即回滚"语义时用 Lua 脚本把检查与写入原子化（`EVAL`），或先用 `WATCH` 实现乐观锁并在冲突时由应用层重试补偿。
+
+## 思维导图 (Mermaid Mindmap)
+
+```mermaid
+mindmap
+  root((Redis Data Structures))
+    基础结构
+      String SDS
+      List Quicklist
+      Hash Listpack
+      Set Intset
+      ZSet Skiplist
+    高级结构
+      Bitmap / Bitfield
+      HyperLogLog
+      Stream 与消费组
+    持久化与集群
+      RDB / AOF
+      主从复制
+      Cluster 与 slot
+    Go 实践
+      go-redis 客户端
+      分布式锁
+      Cache-Aside 模式
+```
+
+---
+
 ## 12. References
 
-1. **Redis Documentation** (2024). Data Types. Redis Ltd.
-2. **Redis Documentation** (2024). Memory Optimization. Redis Ltd.
-3. **Redis Source Code** (v8.6). github.com/redis/redis
-4. **Go-Redis Documentation** (v9). github.com/redis/go-redis
-5. **Zhang, T.** (2023). Redis 5设计与源码分析. 机械工业出版社.
-6. **Josiah Carlson** (2023). Redis in Action, 2nd Edition. Manning Publications.
-7. **Redis 8.0 Release Notes** (2025). Redis Open Source 8.0 GA. Redis Ltd.
-8. **Redis 8.4 Release Notes** (2025). Redis Open Source 8.4 GA. Redis Ltd.
-9. **Redis 8.6 Release Notes** (2026). Redis Open Source 8.6 GA. Redis Ltd.
-10. **Redis Blog** (2025). Redis 8 is now GA, loaded with new features. Redis Ltd.
-11. **Redis Blog** (2026). Announcing Redis 8.6: Performance improvements. Redis Ltd.
+### P0 官方（Redis 官方文档与源码）
+
+1. **Redis Documentation** (2024). [Data Types](https://redis.io/docs/data-types/) - Redis Ltd.
+2. **Redis Documentation** (2024). Memory Optimization - Redis Ltd.
+3. **Redis Source Code** (v8.6). [github.com/redis/redis](https://github.com/redis/redis)
+4. **Go-Redis Documentation** (v9). [github.com/redis/go-redis](https://github.com/redis/go-redis)
+5. **Redis 8.0 Release Notes** (2025). Redis Open Source 8.0 GA. Redis Ltd.
+6. **Redis 8.4 Release Notes** (2025). Redis Open Source 8.4 GA. Redis Ltd.
+7. **Redis 8.6 Release Notes** (2026). Redis Open Source 8.6 GA. Redis Ltd.
+
+### P1 学术（论文）
+
+8. **Heule, S., Nunkesser, M., & Hall, A.** (2013). HyperLogLog in Practice: Algorithmic Engineering of a State of the Art Cardinality Estimation Algorithm. *EDBT 2013*, 683-692. <https://doi.org/10.1145/2452376.2452456>
+
+### P2 生态（著作与社区资料）
+
+9. **Zhang, T.** (2023). Redis 5设计与源码分析. 机械工业出版社.
+10. **Josiah Carlson** (2023). Redis in Action, 2nd Edition. Manning Publications.
+11. **Redis Blog** (2025). Redis 8 is now GA, loaded with new features. Redis Ltd.
+12. **Redis Blog** (2026). Announcing Redis 8.6: Performance improvements. Redis Ltd.
 
 ---
 

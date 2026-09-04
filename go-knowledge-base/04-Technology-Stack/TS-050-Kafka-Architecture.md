@@ -1,4 +1,4 @@
-# TS-003: Kafka Architecture - Internals & Go Implementation
+# TS-050: Kafka Architecture - Internals & Go Implementation
 
 > **维度**: Technology Stack
 > **级别**: S (108 KB)
@@ -11,6 +11,9 @@
 > - [Confluent Kafka Internals](https://www.confluent.io/blog/) - Confluent Engineering
 
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L4
+> **前置概念**: [TS-011 Kafka Internals Formal](TS-011-Kafka-Internals-Formal.md) · **后置概念**: [TS-003 Kafka 4.0 KRaft Internals](TS-003-Kafka-40-KRaft-Internals.md)
+> **定理链**: 消息 + 分区追加 → ISR 复制与 ack 确认 → 持久有序日志 / Invariant: 分区内偏移单调有序，落后超阈值的副本失去 ISR 资格
 ---
 
 ## 1. Kafka Internal Architecture
@@ -1669,13 +1672,94 @@ func (pc *ParallelConsumer) partitionWorker(ctx context.Context, topic string, p
 
 ---
 
+## 反命题与边界
+
+### 反模式 1: enable.auto.commit=true 且处理完成前提交位移
+
+```properties
+# 反模式：先自动提交位移，再处理消息
+enable.auto.commit=true
+auto.commit.interval.ms=5000
+max.poll.records=500
+```
+
+```go
+// 消费循环：poll 返回后若处理耗时超过 auto.commit.interval.ms，
+// 位移已被提交；此时崩溃 → 这 500 条消息全部丢失（at-most-once）
+for {
+    recs := client.PollRecords(ctx, 10000)
+    process(recs)   // 处理时间不可控
+}
+```
+
+原因：位移（offset）提交与消息处理不在同一原子单元，自动提交按计时器触发，必然存在"已提交未处理"窗口，崩溃即丢数据。
+正解：关闭自动提交，处理成功后手动提交（同步/异步提交位移），或用事务性消费（consume-transform-produce）实现 exactly-once。
+
+### 反模式 2: 用 acks=0 / acks=1 宣称"至少一次"语义
+
+```properties
+# 反模式：可靠性配置自相矛盾
+acks=1                 # leader 落盘即返回，不等 ISR
+retries=0              # 失败不重试
+enable.idempotence=false
+# 应用层却声称消息"不丢"
+```
+
+原因：`acks=0` 时生产者无法知道消息是否到达；`acks=1` 时 leader 写入后、副本同步前宕机即丢消息；`retries=0` 放弃任何网络错误恢复。三者叠加是确定性数据丢失场景。
+正解：不丢消息的底线是 `acks=all` + `min.insync.replicas>=2` + `retries>0`；需要幂等发送时开启 `enable.idempotence=true`。
+
+### 反模式 3: 依赖跨分区消息顺序
+
+```go
+// 反模式：假设同一订单的事件按发出顺序被消费
+produce("orders", orderID, "Created")   // 分区由 key 哈希决定
+produce("orders", orderID, "Paid")
+produce("orders", orderID, "Shipped")
+// 若某个 key 的路由/分区数变化，或重试导致消息进入不同分区，顺序保证失效
+```
+
+原因：Kafka 只保证**单分区内**有序，跨分区（含 key 分区变更、扩容分区、重试重排序）没有任何顺序保证。
+正解：需要全局有序的业务键用同一 key 路由且禁止分区变更期写入；扩容分区时停写或使用 key-state 暂存；严格全局顺序需求应改用单分区（吞吐受限）或在消费端按业务键重排序。
+
+## 思维导图 (Mermaid Mindmap)
+
+```mermaid
+mindmap
+  root((Kafka Architecture))
+    元数据与控制器
+      KRaft 共识
+      分区分配与选举
+    存储与复制
+      分区日志段
+      ISR 与 HW/LEO
+      acks 与幂等生产者
+    消费组
+      重平衡协议
+      位移管理
+      消费语义 at-most/at-least/exactly-once
+    Go 实践
+      franz-go 生产者与消费者
+      Admin 运维操作
+      性能调优参数
+```
+
+---
+
 ## 6. References
 
-1. **Kreps, J., Narkhede, N., & Rao, J.** (2011). Kafka: A Distributed Messaging System for Log Processing. *NetDB*.
-2. **Kleppmann, M.** (2017). Designing Data-Intensive Applications. O'Reilly Media.
-3. **Apache Kafka Documentation** (2024). kafka.apache.org/documentation
-4. **Confluent** (2024). Kafka Internals. confluent.io/blog
-5. **Wang, G., et al.** (2021). Building a High-Availability Distributed Streaming System. *VLDB*.
+### P0 官方（Apache Kafka 官方文档与设计资料）
+
+1. **Apache Kafka Documentation** (2024). [Apache Kafka Documentation](https://kafka.apache.org/documentation/) - Apache Software Foundation.
+2. **Kreps, J., Narkhede, N., & Rao, J.** (2011). [Kafka: A Distributed Messaging System for Log Processing](https://www.microsoft.com/en-us/research/wp-content/uploads/2017/09/Kafka.pdf). *NetDB 2011*.
+
+### P1 学术（论文）
+
+3. **Wang, G., et al.** (2021). Building a High-Availability Distributed Streaming System. *VLDB*.
+
+### P2 生态（著作与厂商资料）
+
+4. **Kleppmann, M.** (2017). Designing Data-Intensive Applications. O'Reilly Media.
+5. **Confluent** (2024). Kafka Internals. [confluent.io/blog](https://www.confluent.io/blog/)
 
 ---
 

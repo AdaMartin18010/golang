@@ -11,6 +11,9 @@
 > - [Go Scheduling Design](https://go.dev/s/go11sched) - Dmitry Vyukov
 
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L3
+> **前置概念**: [LD-001: Go 内存模型](LD-001-Go-Memory-Model-Formal.md) · [LD-002: CSP 并发形式化](LD-002-Go-Concurrency-CSP-Formal.md) · **后置概念**: [LD-006: 内存分配器内部机制](LD-006-Go-Memory-Allocator-Internals.md) · [LD-021: sync 包深度解析](LD-021-Go-Sync-Package-Deep-Dive.md)
+> **定理链**: Input(可运行 G 集合) → Operation(schedule() 本地/全局队列调度 + 网络轮询 + 工作窃取) → Output(G 绑定 M 在 P 上执行) / Invariant: 任一时刻一个 P 至多运行一个 G；M 必须绑定 P 才能执行 G
 ---
 
 ## 1. GMP 模型基础
@@ -804,7 +807,88 @@ func main() {
 
 ---
 
-## 9. 关系网络
+## 9. 反命题与边界
+
+### 9.1 编译失败反例：goroutine 函数参数缺失
+
+```go
+package main
+
+func worker(id int) {}
+
+func main() {
+	// 编译失败: worker 需要 1 个参数 (id int)，go 语句调用时未提供
+	go worker()
+}
+```
+
+**错误信息**（确定性编译期错误）：
+
+```
+not enough arguments in call to worker
+	have ()
+	want (int)
+```
+
+**解释**：`go f(args)` 的参数检查与普通调用完全一致，编译器在编译期就验证参数个数与类型。这与运行时调度形成对照——一旦通过编译，参数在**当前 goroutine** 中求值，函数体在新 goroutine 执行（参数求值 happens-before 新 goroutine 开始，对应 LD-001 公理 2.1）。
+
+### 9.2 编译失败反例：访问 runtime 未导出类型
+
+```go
+package main
+
+import "runtime"
+
+// 编译失败: g 是 runtime 包的未导出类型，包外代码不可引用
+var cur *runtime.g
+```
+
+**错误信息**：
+
+```
+undefined: runtime.g
+```
+
+**解释**：§2 展示的 `g`/`m`/`p` 结构体是 `runtime` 包的未导出实现细节。语言层面上，未导出标识符对包外不可见，因此任何"直接读取调度器内部状态"的尝试都在编译期被禁止——这也是 §8.1 采用解析 `runtime.Stack` 输出这类间接手段观测 goroutine ID 的原因。调度器状态只能通过 `runtime` 与 `runtime/pprof` 导出的 API 观测。
+
+### 9.3 边界命题
+
+- **命题**："调大 GOMAXPROCS 就能提高性能" —— 边界：`GOMAXPROCS(n)` 设置的是**并行度上限**（P 的数量）；I/O 密集型程序受益有限，超过物理核数通常带来调度开销而非收益。
+- **命题**："goroutine 很便宜，可以无限创建" —— 边界：每个 goroutine 至少占用 ~2KB 栈与 G 结构体内存；数百万 goroutine 同时阻塞仍会耗尽内存，需配合信号量等手段限流。
+- **命题**："抢占保证公平" —— 边界：异步抢占（SIGURG）只在**安全点**之间生效；纯计算循环在 Go 1.14+ 可被抢占，但 `//go:nosplit` 函数与 cgo 调用期间仍不可抢占。
+- **命题**："工作窃取使负载绝对均衡" —— 边界：窃取粒度是**本地队列的一半**且存在探测顺序；瞬时负载不均依然存在，仅在长期统计上收敛。
+
+---
+
+## 10. Mermaid Mindmap
+
+```mermaid
+mindmap
+  root((GMP 调度器))
+    G Goroutine
+      轻量执行体
+      状态机
+      可增长栈
+    M OS 线程
+      TLS 线程本地存储
+      g0 调度栈
+      自旋标记
+    P 逻辑处理器
+      本地运行队列
+      mcache 分配缓存
+      定时器堆
+    调度算法
+      runqget / globrunqget
+      网络轮询 netpoll
+      工作窃取
+    抢占机制
+      协作式安全点
+      异步 SIGURG (1.14+)
+```
+
+---
+
+## 11. 关系网络
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -846,11 +930,24 @@ func main() {
 
 ---
 
-## 10. 参考文献
+## 12. 参考文献
 
-1. **Vyukov, D.** Go Scheduler Design Document.
-2. **Kerrisk, M.** The Linux Programming Interface.
-3. **Go Authors.** runtime/proc.go, runtime/runtime2.go.
+### P0 官方
+
+1. **Vyukov, D.** [Go Preemptive Scheduler Design](https://go.dev/s/go11sched). *Go Design Documents*.
+2. **Go Authors**. [Go Runtime Source](https://github.com/golang/go/tree/master/src/runtime) —— `proc.go`、`runtime2.go` 为本文 §2/§4 结构体与算法的权威出处。
+
+### P1 学术
+
+1. **Lauer, H. C., & Needham, R. M. (1979)**. [On the Duality of Operating System Structures](https://doi.org/10.1145/850657.850658). *ACM SIGOPS*, 13(2).
+2. **Engelschall, R. S. (2000)**. Portable Multithreading: The Signal Stack Trick for User-Space Thread Creation. *USENIX*.
+3. **Kerrisk, M.** The Linux Programming Interface. *No Starch Press* —— 线程、TLS 与信号的系统级背景。
+
+### P2 生态
+
+1. **Ardan Labs (2018)**. [Scheduling In Go : Part II - Go Scheduler](https://www.ardanlabs.com/blog/2018/08/scheduling-in-go-part2.html). *ardanlabs.com*.
+2. **rakyll**. [Analysis of Go Scheduler](https://rakyll.org/scheduler/). *rakyll.org*.
+3. **Cheney, D. (2016)**. [The Go Scheduler](https://www.youtube.com/watch?v=Nvbr-1kfB4o). *dotGo*（视频，亦见 Learning Resources）。
 
 ---
 

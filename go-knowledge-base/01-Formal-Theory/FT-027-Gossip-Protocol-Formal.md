@@ -4,6 +4,7 @@
 > **Level**: S (>15KB)
 > **Tags**: #gossip #epidemic-protocols #dissemination #distributed-systems #scalability
 > **Authoritative Sources**:
+>
 > - Demers, A., et al. (1987). "Epidemic Algorithms for Replicated Database Maintenance". PODC
 > - Karp, R., et al. (2000). "Randomized Rumor Spreading". FOCS
 > - Jelasity, M., et al. (2005). "Gossip-based Aggregation in Large Dynamic Networks". ACM TOCS
@@ -13,6 +14,9 @@
 > **级别**: S (49 KB)
 > **标签**: #ft
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L4
+> **前置概念**: [FT-001 分布式系统基础](FT-001-Distributed-Systems-Foundation-Formal.md) · [FT-026 成员协议](FT-026-Membership-Protocol-Formal.md) · **后置概念**: [FT-028 反熵](FT-028-Anti-Entropy-Formal.md) · [FT-018 CRDT](FT-018-CRDT-Formal.md)
+> **定理链**: 随机 pairwise 交换 → 指数级传播 → 全节点收敛（高概率） / Invariant: O(log n) 轮，O(n log n) 消息
 ---
 
 ## 1. Theoretical Foundations
@@ -24,11 +28,13 @@
 **Formal Specification**:
 
 Given:
+
 - Set of processes $\Pi = \{p_1, p_2, ..., p_n\}$
 - Initial state: $\exists! s \in \Pi: \text{hasInfo}(s) = \text{true}$
 - Goal: $\Diamond\square(\forall p \in \Pi: \text{hasInfo}(p) = \text{true})$
 
 **Metrics**:
+
 - **Time Complexity**: Rounds until all informed
 - **Message Complexity**: Total messages sent
 - **Load Balance**: Maximum messages per node
@@ -38,23 +44,26 @@ Given:
 The gossip problem maps to epidemiological models:
 
 | Gossip Term | Epidemic Term | Definition |
-|-------------|---------------|------------|
+| ------------- | --------------- | ------------ |
 | Informed | Infectious | Node knows the information |
 | Uninformed | Susceptible | Node doesn't know the information |
 | Spread | Infection | Information transfer event |
 | Removed | Recovered | Node stops spreading |
 
 **The SI Model** (Susceptible-Infectious):
+
 - No recovery (once informed, always informed)
 - Spreading continues indefinitely
 
 **The SIR Model** (Susceptible-Infectious-Removed):
+
 - Nodes can stop spreading after some time
 - Useful for bounded communication
 
 **Theorem 1.1 (Fundamental Gossip Bound)**: Any gossip protocol requires $\Omega(\ln n)$ rounds and $\Omega(n \ln n)$ total messages to inform all $n$ nodes with high probability.
 
 *Proof*:
+
 - Consider the coupon collector problem
 - Each round, an uninformed node needs to be contacted
 - Expected time: $n \cdot H_n = n \cdot \ln n + O(n)$ contacts
@@ -69,11 +78,13 @@ $$
 $$
 
 where:
+
 - $\Pi$: Set of $n$ processes
 - $\mathcal{E} \subseteq \Pi \times \Pi$: Communication links
 - $\mathcal{T}: \mathbb{N} \rightarrow \mathcal{P}(\Pi \times \Pi)$: Time-varying topology
 
 **Network Topologies**:
+
 - Complete graph: $\forall i,j: (i,j) \in \mathcal{E}$
 - Random graph: $\mathcal{G}(n, p)$ model
 - Expander: Spectral gap $\lambda_2 > \epsilon$
@@ -114,6 +125,7 @@ On Receive(INFO, r):
 **Theorem 2.1 (Push Protocol Time)**: The push protocol informs all nodes in $O(\ln n)$ rounds with high probability.
 
 *Proof*:
+
 - Let $I_t$ be the number of informed nodes at round $t$
 - Initially: $I_0 = 1$
 - Expected new infections: $E[I_{t+1} - I_t] = I_t \cdot \frac{n - I_t}{n-1}$
@@ -135,6 +147,7 @@ Total: $O(\ln n)$ rounds ∎
 **Theorem 2.2 (Push Message Complexity)**: The push protocol sends $O(n \ln n)$ messages with high probability.
 
 *Proof*:
+
 - Each informed node sends one message per round
 - Total rounds: $O(\ln n)$
 - By linearity of expectation: $E[\text{messages}] = \sum_{t} I_t = O(n \ln n)$ ∎
@@ -202,6 +215,7 @@ On Receive(INFO, r):
 
 *Proof*:
 For $I_t \geq n/2$ (many informed nodes):
+
 - Probability a specific uninformed node remains uninformed: $(1 - \frac{I_t}{n-1}) \leq \frac{1}{2}$
 - After $k$ rounds: $(\frac{1}{2})^k$
 - Set $k = O(\ln \ln n)$ for success probability $1 - 1/n$
@@ -254,6 +268,7 @@ P(\text{select } j) = \frac{w_j}{\sum_{k \neq i} w_k}
 $$
 
 **Applications**:
+
 - Prefer well-connected nodes
 - Geographic proximity weighting
 - Load balancing
@@ -442,14 +457,14 @@ Convergence ==
 package gossip
 
 import (
-	"context"
-	"crypto/sha256"
-	"encoding/binary"
-	"fmt"
-	"math/rand"
-	"sync"
-	"sync/atomic"
-	"time"
+ "context"
+ "crypto/sha256"
+ "encoding/binary"
+ "fmt"
+ "math/rand"
+ "sync"
+ "sync/atomic"
+ "time"
 )
 
 // ============================================
@@ -458,39 +473,39 @@ import (
 
 // Node represents a gossip participant
 type Node struct {
-	ID      string
-	Address string
-	Weight  float64
+ ID      string
+ Address string
+ Weight  float64
 }
 
 // Message represents a gossip message
 type Message struct {
-	ID        string
-	Data      []byte
-	Timestamp time.Time
-	TTL       int
-	Source    string
+ ID        string
+ Data      []byte
+ Timestamp time.Time
+ TTL       int
+ Source    string
 }
 
 // DisseminationStrategy defines gossip behavior
 type DisseminationStrategy int
 
 const (
-	StrategyPush DisseminationStrategy = iota
-	StrategyPull
-	StrategyPushPull
-	StrategyAntiEntropy
+ StrategyPush DisseminationStrategy = iota
+ StrategyPull
+ StrategyPushPull
+ StrategyAntiEntropy
 )
 
 // Config holds gossip configuration
 type Config struct {
-	Strategy          DisseminationStrategy
-	Fanout            int
-	RoundInterval     time.Duration
-	MaxRounds         int
-	RetransmitMult    int
-	BootstrapNodes    []string
-	WeightFunction    func(*Node) float64
+ Strategy          DisseminationStrategy
+ Fanout            int
+ RoundInterval     time.Duration
+ MaxRounds         int
+ RetransmitMult    int
+ BootstrapNodes    []string
+ WeightFunction    func(*Node) float64
 }
 
 // ============================================
@@ -499,203 +514,203 @@ type Config struct {
 
 // PushGossip implements push-based epidemic dissemination
 type PushGossip struct {
-	config    *Config
-	transport Transport
+ config    *Config
+ transport Transport
 
-	mu        sync.RWMutex
-	nodes     map[string]*Node
-	informed  map[string]bool
-	messages  map[string]*Message
+ mu        sync.RWMutex
+ nodes     map[string]*Node
+ informed  map[string]bool
+ messages  map[string]*Message
 
-	msgCh     chan *Message
-	stopCh    chan struct{}
-	wg        sync.WaitGroup
+ msgCh     chan *Message
+ stopCh    chan struct{}
+ wg        sync.WaitGroup
 
-	round     int64
-	msgCount  int64
+ round     int64
+ msgCount  int64
 }
 
 // NewPushGossip creates a new push gossip instance
 func NewPushGossip(config *Config, transport Transport) *PushGossip {
-	return &PushGossip{
-		config:    config,
-		transport: transport,
-		nodes:     make(map[string]*Node),
-		informed:  make(map[string]bool),
-		messages:  make(map[string]*Message),
-		msgCh:     make(chan *Message, 1000),
-		stopCh:    make(chan struct{}),
-	}
+ return &PushGossip{
+  config:    config,
+  transport: transport,
+  nodes:     make(map[string]*Node),
+  informed:  make(map[string]bool),
+  messages:  make(map[string]*Message),
+  msgCh:     make(chan *Message, 1000),
+  stopCh:    make(chan struct{}),
+ }
 }
 
 // Join adds a node to the gossip network
 func (g *PushGossip) Join(node *Node) {
-	g.mu.Lock()
-	defer g.mu.Unlock()
-	g.nodes[node.ID] = node
+ g.mu.Lock()
+ defer g.mu.Unlock()
+ g.nodes[node.ID] = node
 }
 
 // Disseminate starts disseminating a message
 func (g *PushGossip) Disseminate(data []byte) (string, error) {
-	msg := &Message{
-		ID:        generateID(),
-		Data:      data,
-		Timestamp: time.Now(),
-		TTL:       g.config.MaxRounds,
-		Source:    "local",
-	}
+ msg := &Message{
+  ID:        generateID(),
+  Data:      data,
+  Timestamp: time.Now(),
+  TTL:       g.config.MaxRounds,
+  Source:    "local",
+ }
 
-	g.mu.Lock()
-	g.messages[msg.ID] = msg
-	g.informed["local"] = true
-	g.mu.Unlock()
+ g.mu.Lock()
+ g.messages[msg.ID] = msg
+ g.informed["local"] = true
+ g.mu.Unlock()
 
-	// Start dissemination
-	g.wg.Add(1)
-	go g.disseminate(msg)
+ // Start dissemination
+ g.wg.Add(1)
+ go g.disseminate(msg)
 
-	return msg.ID, nil
+ return msg.ID, nil
 }
 
 // Start begins the gossip protocol
 func (g *PushGossip) Start() error {
-	g.wg.Add(1)
-	go g.gossipLoop()
-	return nil
+ g.wg.Add(1)
+ go g.gossipLoop()
+ return nil
 }
 
 // Stop stops the gossip protocol
 func (g *PushGossip) Stop() {
-	close(g.stopCh)
-	g.wg.Wait()
+ close(g.stopCh)
+ g.wg.Wait()
 }
 
 func (g *PushGossip) disseminate(msg *Message) {
-	defer g.wg.Done()
+ defer g.wg.Done()
 
-	rounds := 0
-	for rounds < g.config.MaxRounds {
-		select {
-		case <-g.stopCh:
-			return
-		case <-time.After(g.config.RoundInterval):
-		}
+ rounds := 0
+ for rounds < g.config.MaxRounds {
+  select {
+  case <-g.stopCh:
+   return
+  case <-time.After(g.config.RoundInterval):
+  }
 
-		g.mu.RLock()
-		if !g.informed["local"] {
-			g.mu.RUnlock()
-			return
-		}
-		nodes := g.getRandomNodes(g.config.Fanout)
-		g.mu.RUnlock()
+  g.mu.RLock()
+  if !g.informed["local"] {
+   g.mu.RUnlock()
+   return
+  }
+  nodes := g.getRandomNodes(g.config.Fanout)
+  g.mu.RUnlock()
 
-		for _, node := range nodes {
-			go g.sendMessage(node, msg)
-		}
+  for _, node := range nodes {
+   go g.sendMessage(node, msg)
+  }
 
-		rounds++
-		atomic.AddInt64(&g.round, 1)
-	}
+  rounds++
+  atomic.AddInt64(&g.round, 1)
+ }
 }
 
 func (g *PushGossip) gossipLoop() {
-	defer g.wg.Done()
+ defer g.wg.Done()
 
-	for {
-		select {
-		case <-g.stopCh:
-			return
-		case msg := <-g.msgCh:
-			g.handleIncoming(msg)
-		}
-	}
+ for {
+  select {
+  case <-g.stopCh:
+   return
+  case msg := <-g.msgCh:
+   g.handleIncoming(msg)
+  }
+ }
 }
 
 func (g *PushGossip) handleIncoming(msg *Message) {
-	g.mu.Lock()
-	defer g.mu.Unlock()
+ g.mu.Lock()
+ defer g.mu.Unlock()
 
-	// Check if already received
-	if _, ok := g.messages[msg.ID]; ok {
-		return
-	}
+ // Check if already received
+ if _, ok := g.messages[msg.ID]; ok {
+  return
+ }
 
-	g.messages[msg.ID] = msg
-	g.informed["local"] = true
+ g.messages[msg.ID] = msg
+ g.informed["local"] = true
 
-	// Continue dissemination
-	if msg.TTL > 0 {
-		msg.TTL--
-		g.wg.Add(1)
-		go g.disseminate(msg)
-	}
+ // Continue dissemination
+ if msg.TTL > 0 {
+  msg.TTL--
+  g.wg.Add(1)
+  go g.disseminate(msg)
+ }
 }
 
 func (g *PushGossip) sendMessage(node *Node, msg *Message) {
-	err := g.transport.Send(node, msg)
-	if err == nil {
-		atomic.AddInt64(&g.msgCount, 1)
-	}
+ err := g.transport.Send(node, msg)
+ if err == nil {
+  atomic.AddInt64(&g.msgCount, 1)
+ }
 }
 
 func (g *PushGossip) getRandomNodes(k int) []*Node {
-	if len(g.nodes) <= k {
-		result := make([]*Node, 0, len(g.nodes))
-		for _, n := range g.nodes {
-			result = append(result, n)
-		}
-		return result
-	}
+ if len(g.nodes) <= k {
+  result := make([]*Node, 0, len(g.nodes))
+  for _, n := range g.nodes {
+   result = append(result, n)
+  }
+  return result
+ }
 
-	// Weighted random selection
-	result := make([]*Node, 0, k)
-	candidates := make([]*Node, 0, len(g.nodes))
-	weights := make([]float64, 0, len(g.nodes))
+ // Weighted random selection
+ result := make([]*Node, 0, k)
+ candidates := make([]*Node, 0, len(g.nodes))
+ weights := make([]float64, 0, len(g.nodes))
 
-	for _, n := range g.nodes {
-		candidates = append(candidates, n)
-		w := n.Weight
-		if g.config.WeightFunction != nil {
-			w = g.config.WeightFunction(n)
-		}
-		weights = append(weights, w)
-	}
+ for _, n := range g.nodes {
+  candidates = append(candidates, n)
+  w := n.Weight
+  if g.config.WeightFunction != nil {
+   w = g.config.WeightFunction(n)
+  }
+  weights = append(weights, w)
+ }
 
-	// Simple weighted selection
-	for i := 0; i < k && len(candidates) > 0; i++ {
-		totalWeight := 0.0
-		for _, w := range weights {
-			totalWeight += w
-		}
+ // Simple weighted selection
+ for i := 0; i < k && len(candidates) > 0; i++ {
+  totalWeight := 0.0
+  for _, w := range weights {
+   totalWeight += w
+  }
 
-		r := rand.Float64() * totalWeight
-		for j, w := range weights {
-			r -= w
-			if r <= 0 {
-				result = append(result, candidates[j])
-				// Remove selected
-				candidates = append(candidates[:j], candidates[j+1:]...)
-				weights = append(weights[:j], weights[j+1:]...)
-				break
-			}
-		}
-	}
+  r := rand.Float64() * totalWeight
+  for j, w := range weights {
+   r -= w
+   if r <= 0 {
+    result = append(result, candidates[j])
+    // Remove selected
+    candidates = append(candidates[:j], candidates[j+1:]...)
+    weights = append(weights[:j], weights[j+1:]...)
+    break
+   }
+  }
+ }
 
-	return result
+ return result
 }
 
 // Stats returns gossip statistics
 func (g *PushGossip) Stats() (rounds, messages int64, coverage float64) {
-	rounds = atomic.LoadInt64(&g.round)
-	messages = atomic.LoadInt64(&g.msgCount)
+ rounds = atomic.LoadInt64(&g.round)
+ messages = atomic.LoadInt64(&g.msgCount)
 
-	g.mu.RLock()
-	totalNodes := len(g.nodes) + 1
-	informedCount := len(g.informed)
-	g.mu.RUnlock()
+ g.mu.RLock()
+ totalNodes := len(g.nodes) + 1
+ informedCount := len(g.informed)
+ g.mu.RUnlock()
 
-	coverage = float64(informedCount) / float64(totalNodes)
-	return
+ coverage = float64(informedCount) / float64(totalNodes)
+ return
 }
 
 // ============================================
@@ -704,82 +719,82 @@ func (g *PushGossip) Stats() (rounds, messages int64, coverage float64) {
 
 // PullGossip implements pull-based epidemic dissemination
 type PullGossip struct {
-	config    *Config
-	transport Transport
+ config    *Config
+ transport Transport
 
-	mu        sync.RWMutex
-	nodes     map[string]*Node
-	hasInfo   bool
-	messages  map[string]*Message
+ mu        sync.RWMutex
+ nodes     map[string]*Node
+ hasInfo   bool
+ messages  map[string]*Message
 
-	stopCh    chan struct{}
-	wg        sync.WaitGroup
+ stopCh    chan struct{}
+ wg        sync.WaitGroup
 }
 
 // NewPullGossip creates a new pull gossip instance
 func NewPullGossip(config *Config, transport Transport) *PullGossip {
-	return &PullGossip{
-		config:    config,
-		transport: transport,
-		nodes:     make(map[string]*Node),
-		messages:  make(map[string]*Message),
-		stopCh:    make(chan struct{}),
-	}
+ return &PullGossip{
+  config:    config,
+  transport: transport,
+  nodes:     make(map[string]*Node),
+  messages:  make(map[string]*Message),
+  stopCh:    make(chan struct{}),
+ }
 }
 
 // Start begins the pull gossip protocol
 func (g *PullGossip) Start() error {
-	g.wg.Add(1)
-	go g.pullLoop()
-	return nil
+ g.wg.Add(1)
+ go g.pullLoop()
+ return nil
 }
 
 func (g *PullGossip) pullLoop() {
-	defer g.wg.Done()
+ defer g.wg.Done()
 
-	ticker := time.NewTicker(g.config.RoundInterval)
-	defer ticker.Stop()
+ ticker := time.NewTicker(g.config.RoundInterval)
+ defer ticker.Stop()
 
-	for {
-		select {
-		case <-g.stopCh:
-			return
-		case <-ticker.C:
-			if !g.hasInfo {
-				g.doPull()
-			}
-		}
-	}
+ for {
+  select {
+  case <-g.stopCh:
+   return
+  case <-ticker.C:
+   if !g.hasInfo {
+    g.doPull()
+   }
+  }
+ }
 }
 
 func (g *PullGossip) doPull() {
-	g.mu.RLock()
-	if len(g.nodes) == 0 {
-		g.mu.RUnlock()
-		return
-	}
+ g.mu.RLock()
+ if len(g.nodes) == 0 {
+  g.mu.RUnlock()
+  return
+ }
 
-	// Select random node
-	var target *Node
-	for _, n := range g.nodes {
-		target = n
-		break
-	}
-	g.mu.RUnlock()
+ // Select random node
+ var target *Node
+ for _, n := range g.nodes {
+  target = n
+  break
+ }
+ g.mu.RUnlock()
 
-	// Send query
-	g.transport.SendQuery(target)
+ // Send query
+ g.transport.SendQuery(target)
 }
 
 // OnInfoReceived handles received information
 func (g *PullGossip) OnInfoReceived(msg *Message) {
-	g.mu.Lock()
-	defer g.mu.Unlock()
+ g.mu.Lock()
+ defer g.mu.Unlock()
 
-	if _, ok := g.messages[msg.ID]; !ok {
-		g.messages[msg.ID] = msg
-		g.hasInfo = true
-	}
+ if _, ok := g.messages[msg.ID]; !ok {
+  g.messages[msg.ID] = msg
+  g.hasInfo = true
+ }
 }
 
 // ============================================
@@ -788,43 +803,43 @@ func (g *PullGossip) OnInfoReceived(msg *Message) {
 
 // PushPullGossip combines push and pull strategies
 type PushPullGossip struct {
-	push  *PushGossip
-	pull  *PullGossip
+ push  *PushGossip
+ pull  *PullGossip
 
-	config    *Config
-	transport Transport
+ config    *Config
+ transport Transport
 }
 
 // NewPushPullGossip creates a new hybrid gossip instance
 func NewPushPullGossip(config *Config, transport Transport) *PushPullGossip {
-	return &PushPullGossip{
-		push:      NewPushGossip(config, transport),
-		pull:      NewPullGossip(config, transport),
-		config:    config,
-		transport: transport,
-	}
+ return &PushPullGossip{
+  push:      NewPushGossip(config, transport),
+  pull:      NewPullGossip(config, transport),
+  config:    config,
+  transport: transport,
+ }
 }
 
 // Start begins the hybrid gossip protocol
 func (g *PushPullGossip) Start() error {
-	if err := g.push.Start(); err != nil {
-		return err
-	}
-	if err := g.pull.Start(); err != nil {
-		return err
-	}
-	return nil
+ if err := g.push.Start(); err != nil {
+  return err
+ }
+ if err := g.pull.Start(); err != nil {
+  return err
+ }
+ return nil
 }
 
 // Stop stops the hybrid protocol
 func (g *PushPullGossip) Stop() {
-	g.push.Stop()
-	g.pull.Stop()
+ g.push.Stop()
+ g.pull.Stop()
 }
 
 // Disseminate starts dissemination
 func (g *PushPullGossip) Disseminate(data []byte) (string, error) {
-	return g.push.Disseminate(data)
+ return g.push.Disseminate(data)
 }
 
 // ============================================
@@ -832,186 +847,241 @@ func (g *PushPullGossip) Disseminate(data []byte) (string, error) {
 // ============================================
 
 type MerkleTree struct {
-	Root  []byte
-	Leaves map[string][]byte
+ Root  []byte
+ Leaves map[string][]byte
 }
 
 // AntiEntropyGossip implements reconciliation-based dissemination
 type AntiEntropyGossip struct {
-	config    *Config
-	transport Transport
+ config    *Config
+ transport Transport
 
-	mu        sync.RWMutex
-	nodes     map[string]*Node
-	data      map[string][]byte
-	versions  map[string]uint64
-	tree      *MerkleTree
+ mu        sync.RWMutex
+ nodes     map[string]*Node
+ data      map[string][]byte
+ versions  map[string]uint64
+ tree      *MerkleTree
 
-	stopCh    chan struct{}
-	wg        sync.WaitGroup
+ stopCh    chan struct{}
+ wg        sync.WaitGroup
 }
 
 // NewAntiEntropyGossip creates a new anti-entropy gossip instance
 func NewAntiEntropyGossip(config *Config, transport Transport) *AntiEntropyGossip {
-	return &AntiEntropyGossip{
-		config:    config,
-		transport: transport,
-		nodes:     make(map[string]*Node),
-		data:      make(map[string][]byte),
-		versions:  make(map[string]uint64),
-		stopCh:    make(chan struct{}),
-	}
+ return &AntiEntropyGossip{
+  config:    config,
+  transport: transport,
+  nodes:     make(map[string]*Node),
+  data:      make(map[string][]byte),
+  versions:  make(map[string]uint64),
+  stopCh:    make(chan struct{}),
+ }
 }
 
 // Put adds data to the local store
 func (g *AntiEntropyGossip) Put(key string, value []byte) {
-	g.mu.Lock()
-	defer g.mu.Unlock()
+ g.mu.Lock()
+ defer g.mu.Unlock()
 
-	g.data[key] = value
-	g.versions[key]++
-	g.rebuildTree()
+ g.data[key] = value
+ g.versions[key]++
+ g.rebuildTree()
 }
 
 // Get retrieves data
 func (g *AntiEntropyGossip) Get(key string) ([]byte, uint64, bool) {
-	g.mu.RLock()
-	defer g.mu.RUnlock()
+ g.mu.RLock()
+ defer g.mu.RUnlock()
 
-	val, ok := g.data[key]
-	ver := g.versions[key]
-	return val, ver, ok
+ val, ok := g.data[key]
+ ver := g.versions[key]
+ return val, ver, ok
 }
 
 // GetDigest returns the root hash
 func (g *AntiEntropyGossip) GetDigest() []byte {
-	g.mu.RLock()
-	defer g.mu.RUnlock()
+ g.mu.RLock()
+ defer g.mu.RUnlock()
 
-	if g.tree == nil {
-		return nil
-	}
-	return g.tree.Root
+ if g.tree == nil {
+  return nil
+ }
+ return g.tree.Root
 }
 
 // ComputeDiff returns differences between local and remote digest
 func (g *AntiEntropyGossip) ComputeDiff(remoteDigest []byte, remoteVersions map[string]uint64) ([]string, []string) {
-	g.mu.RLock()
-	defer g.mu.RUnlock()
+ g.mu.RLock()
+ defer g.mu.RUnlock()
 
-	missingLocally := make([]string, 0)
-	missingRemotely := make([]string, 0)
+ missingLocally := make([]string, 0)
+ missingRemotely := make([]string, 0)
 
-	// Find keys we don't have or have older versions of
-	for key, remoteVer := range remoteVersions {
-		localVer, ok := g.versions[key]
-		if !ok || localVer < remoteVer {
-			missingLocally = append(missingLocally, key)
-		} else if localVer > remoteVer {
-			missingRemotely = append(missingRemotely, key)
-		}
-	}
+ // Find keys we don't have or have older versions of
+ for key, remoteVer := range remoteVersions {
+  localVer, ok := g.versions[key]
+  if !ok || localVer < remoteVer {
+   missingLocally = append(missingLocally, key)
+  } else if localVer > remoteVer {
+   missingRemotely = append(missingRemotely, key)
+  }
+ }
 
-	// Find keys only we have
-	for key := range g.versions {
-		if _, ok := remoteVersions[key]; !ok {
-			missingRemotely = append(missingRemotely, key)
-		}
-	}
+ // Find keys only we have
+ for key := range g.versions {
+  if _, ok := remoteVersions[key]; !ok {
+   missingRemotely = append(missingRemotely, key)
+  }
+ }
 
-	return missingLocally, missingRemotely
+ return missingLocally, missingRemotely
 }
 
 func (g *AntiEntropyGossip) rebuildTree() {
-	// Simple hash tree rebuild
-	hashes := make([][]byte, 0, len(g.data))
-	for key, value := range g.data {
-		h := sha256.New()
-		h.Write([]byte(key))
-		h.Write(value)
-		hashes = append(hashes, h.Sum(nil))
-	}
+ // Simple hash tree rebuild
+ hashes := make([][]byte, 0, len(g.data))
+ for key, value := range g.data {
+  h := sha256.New()
+  h.Write([]byte(key))
+  h.Write(value)
+  hashes = append(hashes, h.Sum(nil))
+ }
 
-	if len(hashes) == 0 {
-		g.tree = nil
-		return
-	}
+ if len(hashes) == 0 {
+  g.tree = nil
+  return
+ }
 
-	// Compute root
-	root := hashes[0]
-	for i := 1; i < len(hashes); i++ {
-		h := sha256.New()
-		h.Write(root)
-		h.Write(hashes[i])
-		root = h.Sum(nil)
-	}
+ // Compute root
+ root := hashes[0]
+ for i := 1; i < len(hashes); i++ {
+  h := sha256.New()
+  h.Write(root)
+  h.Write(hashes[i])
+  root = h.Sum(nil)
+ }
 
-	g.tree = &MerkleTree{
-		Root:   root,
-		Leaves: g.data,
-	}
+ g.tree = &MerkleTree{
+  Root:   root,
+  Leaves: g.data,
+ }
 }
 
 // Start begins anti-entropy rounds
 func (g *AntiEntropyGossip) Start() error {
-	g.wg.Add(1)
-	go g.entropyLoop()
-	return nil
+ g.wg.Add(1)
+ go g.entropyLoop()
+ return nil
 }
 
 func (g *AntiEntropyGossip) entropyLoop() {
-	defer g.wg.Done()
+ defer g.wg.Done()
 
-	ticker := time.NewTicker(g.config.RoundInterval)
-	defer ticker.Stop()
+ ticker := time.NewTicker(g.config.RoundInterval)
+ defer ticker.Stop()
 
-	for {
-		select {
-		case <-g.stopCh:
-			return
-		case <-ticker.C:
-			g.doAntiEntropyRound()
-		}
-	}
+ for {
+  select {
+  case <-g.stopCh:
+   return
+  case <-ticker.C:
+   g.doAntiEntropyRound()
+  }
+ }
 }
 
 func (g *AntiEntropyGossip) doAntiEntropyRound() {
-	g.mu.RLock()
-	if len(g.nodes) == 0 {
-		g.mu.RUnlock()
-		return
-	}
+ g.mu.RLock()
+ if len(g.nodes) == 0 {
+  g.mu.RUnlock()
+  return
+ }
 
-	// Select random node
-	var target *Node
-	for _, n := range g.nodes {
-		target = n
-		break
-	}
-	digest := g.GetDigest()
-	versions := make(map[string]uint64)
-	for k, v := range g.versions {
-		versions[k] = v
-	}
-	g.mu.RUnlock()
+ // Select random node
+ var target *Node
+ for _, n := range g.nodes {
+  target = n
+  break
+ }
+ digest := g.GetDigest()
+ versions := make(map[string]uint64)
+ for k, v := range g.versions {
+  versions[k] = v
+ }
+ g.mu.RUnlock()
 
-	// Send digest
-	g.transport.SendDigest(target, digest, versions)
+ // Send digest
+ g.transport.SendDigest(target, digest, versions)
 }
 
 // Transport interface
 type Transport interface {
-	Send(node *Node, msg *Message) error
-	SendQuery(node *Node) error
-	SendDigest(node *Node, digest []byte, versions map[string]uint64) error
+ Send(node *Node, msg *Message) error
+ SendQuery(node *Node) error
+ SendDigest(node *Node, digest []byte, versions map[string]uint64) error
 }
 
 // Helper functions
 func generateID() string {
-	buf := make([]byte, 8)
-	binary.BigEndian.PutUint64(buf, uint64(time.Now().UnixNano()))
-	return fmt.Sprintf("%x", sha256.Sum256(buf))
+ buf := make([]byte, 8)
+ binary.BigEndian.PutUint64(buf, uint64(time.Now().UnixNano()))
+ return fmt.Sprintf("%x", sha256.Sum256(buf))
 }
+```
+
+---
+
+## Counter-Propositions and Boundaries
+
+**Counter-Proposition 1: "Gossip is unreliable because it is probabilistic."**
+Misleading. While individual message delivery is probabilistic, the aggregate convergence guarantee is rigorous: with high probability (1 - O(1/n)) all nodes are informed within O(log n) rounds, and the failure probability can be driven arbitrarily low by increasing fanout or rounds. The real cost of the probabilistic design is redundant messages, not correctness.
+
+**Counter-Proposition 2: "Higher fanout always speeds up dissemination."**
+False beyond a point. With fanout f, per-round message cost is O(n·f) while the marginal round reduction is sub-linear; beyond f ≈ log n, the last few uninformed nodes (the coupon-collector tail) dominate completion time regardless of fanout. Blindly raising fanout wastes bandwidth and can starve the transport layer.
+
+```go
+// Anti-pattern: unbounded fanout and no TTL — turns gossip into a
+// broadcast storm instead of a converging epidemic.
+func (g *Gossip) spread(msg *Message) {
+    // BAD: every node forwards every message to ALL peers forever.
+    // Message count grows as O(n^2 * rounds); with no TTL or seen-set,
+    // the same message loops indefinitely and saturates the network.
+    for _, peer := range g.allPeers() {
+        g.transport.Send(peer, msg)
+    }
+}
+```
+
+**Boundaries**:
+
+- The O(log n) round bound assumes a complete or expander topology; on a pure ring, naive gossip needs O(n) rounds (see Section 7.3 of this page).
+- Push alone is slow in the final phase (coupon collector), pull alone is wasteful in the early phase — hence the push-pull hybrid.
+- Gossip guarantees eventual convergence, not bounded staleness; applications that need a staleness bound require anti-entropy with version vectors (see [FT-028](FT-028-Anti-Entropy-Formal.md)) or a stronger protocol.
+- Membership churn breaks degree assumptions: effective fanout must be re-evaluated as nodes join and leave (see [FT-026](FT-026-Membership-Protocol-Formal.md)).
+
+---
+
+## Mermaid Mindmap
+
+```mermaid
+mindmap
+  root((Gossip Protocol))
+    Strategies
+      Push informed spreads
+      Pull query for info
+      Push-Pull hybrid
+    Complexity
+      Time O(log n) rounds
+      Messages O(n log n)
+      Late phase coupon collector
+    Variants
+      Weighted gossip
+      Adaptive fanout
+      Anti-entropy
+    Applications
+      Membership detection
+      Data dissemination
+      Aggregation
 ```
 
 ---
@@ -1227,7 +1297,13 @@ func generateID() string {
 
 ---
 
-## 8. Academic References
+## 8. References
+
+### P0 (Official Go Documentation)
+
+1. [pkg.go.dev: hashicorp/memberlist](https://pkg.go.dev/github.com/hashicorp/memberlist) - API docs for HashiCorp's Go gossip/SWIM library, the de facto gossip implementation in Go.
+
+### P1 (Academic)
 
 1. **Demers, A., et al. (1987)**. "Epidemic Algorithms for Replicated Database Maintenance". *PODC*.
 
@@ -1238,6 +1314,11 @@ func generateID() string {
 4. **Boyd, S., Ghosh, A., Prabhakar, B., & Shah, D. (2006)**. "Randomized Gossip Algorithms". *IEEE TIT*.
 
 5. **Kempe, D., Dobra, A., & Gehrke, J. (2003)**. "Gossip-Based Computation of Aggregate Information". *FOCS*.
+
+### P2 (Ecosystem)
+
+1. [hashicorp/memberlist](https://github.com/hashicorp/memberlist) - The de facto gossip/SWIM implementation in Go (used by Consul and Serf).
+2. [hashicorp/serf](https://github.com/hashicorp/serf) - Decentralized cluster membership built on memberlist gossip.
 
 ---
 

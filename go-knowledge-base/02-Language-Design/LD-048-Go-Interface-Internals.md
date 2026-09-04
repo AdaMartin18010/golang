@@ -1,4 +1,4 @@
-# LD-009: Go 接口内部原理与动态分发 (Go Interface Internals & Dynamic Dispatch)
+# LD-048: Go 接口内部原理与动态分发 (Go Interface Internals & Dynamic Dispatch)
 
 > **维度**: Language Design
 > **级别**: S (36 KB)
@@ -12,6 +12,9 @@
 > - [Fast Dynamic Casting](https://dl.acm.org/doi/10.1145/263690.263821) - Gibbs & Stroustrup (2006)
 
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L4   <!-- L4 形式化层：结构子类型 + itab 定理 -->
+> **前置概念**: [LD-038 Go 类型系统形式语义](LD-038-Go-Type-System-Formal-Semantics.md) · **后置概念**: [LD-037 Go 1.27 泛型方法](LD-037-Go-1.27-Generic-Methods.md) · [LD-044 Go 反射形式化](LD-044-Go-Reflection-Formal.md)
+> **定理链**: 接口值 (tab, data) → itab 生成与缓存 → O(1) 动态分发 / 结构子类型实现关系（定义 1.3）
 ---
 
 ## 1. 形式化基础
@@ -806,7 +809,103 @@ func BenchmarkSmallValueDirect(b *testing.B) {
 
 ---
 
-## 8. 关系网络
+## 8. 反命题与边界
+
+以下反例均为**确定性编译期错误**——由类型检查器在编译阶段拒绝，不依赖运行期行为。
+
+### 8.1 方法集必须覆盖接口的全部方法
+
+```go
+package interfaces
+
+import "io"
+
+type ReaderOnly struct{}
+
+func (r *ReaderOnly) Read(p []byte) (int, error) { return 0, io.EOF }
+
+// 编译失败: *ReaderOnly 缺少 Write 方法，不满足 io.Writer
+var _ io.Writer = (*ReaderOnly)(nil)
+```
+
+编译器报错（大意）：`(*ReaderOnly) does not implement io.Writer (missing method Write)`。
+
+**原因**：Go 的隐式实现是静态的结构子类型检查——`T <: I` 当且仅当 `methods(T) ⊇ methods(I)`（§1.1 定义 1.3）。编译器逐项比对接口方法表，缺一个方法即拒绝；`var _ I = (*T)(nil)` 这一编译期断言（§7.1）正是为了让这类错误在定义点暴露，而不是拖到使用点。
+
+### 8.2 非空接口不能断言为未实现它的具体类型
+
+```go
+package interfaces
+
+import "io"
+
+// 编译失败: io.Reader 不可能持有 string 动态类型，断言在类型检查期即被拒绝
+func BadAssert(r io.Reader) string {
+	return r.(string)
+}
+```
+
+编译器报错（大意）：`impossible type assertion: r.(string) (string does not implement io.Reader (missing method Read))`。
+
+**原因**：对非空接口值 `x.(T)`（T 为具体类型）要求 `T` 实现 `x` 的接口类型，否则该断言永不成功，编译器直接判为不可能（§4.1 定义 4.1 的未检查形式 panic 分支在这里连运行期都到不了）。合法做法是断言为实现该接口的类型，或先断言为 `interface{}`/其他接口。
+
+### 8.3 内嵌接口的方法签名冲突在定义点即失败
+
+```go
+package interfaces
+
+type IntM interface{ M() int }
+type StrM interface{ M() string }
+
+// 编译失败: 内嵌合并后 M 重复且签名不一致
+type Conflicted interface {
+	IntM
+	StrM
+}
+```
+
+编译器报错（大意）：`duplicate method M`。
+
+**原因**：接口内嵌的方法集是并集，但同名方法必须签名一致才能合并（§7.2 的组合接口）。签名冲突时**接口类型本身**在声明处就编译失败，错误早于任何使用点——这与具体类型缺失方法（8.1 在使用点报错）的失败位置不同。
+
+### 8.4 边界说明
+
+- **nil 接口值调用方法必 panic**：接口值为 nil（`tab == nil`）时调用其方法触发空指针解引用 panic，而不是"默认实现"；需要 nil 安全时应使用 `*T` 为 nil 的接口值或直接判空。
+- **接口调用阻止内联**：间接调用（§3.3 定理 3.2）使编译器无法内联方法体，热路径应优先具体类型或泛型（§6.4 决策树）。
+- **类型断言失败分支不可省**：未检查断言 `v.(T)` 在动态类型不匹配时 panic（§4.1）；从 `interface{}` 恢复的代码必须给出 `ok` 分支或使用 type switch。
+
+---
+
+## 9. Mermaid 思维导图
+
+```mermaid
+mindmap
+  root((Go 接口内部原理))
+    类型理论
+      结构子类型
+      方法集包含
+      空接口万能类型
+    内部表示
+      iface tab data
+      eface _type data
+      itab 与 fun 方法表
+    动态分发
+      itab 生成与缓存
+      汇编级间接调用
+      接口到接口转换
+    类型断言
+      具体类型断言 O(1)
+      接口到接口断言
+      type switch
+    工程优化
+      小接口设计
+      避免热路径装箱
+      泛型替代热路径接口
+```
+
+---
+
+## 10. 关系网络
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -844,23 +943,26 @@ func BenchmarkSmallValueDirect(b *testing.B) {
 
 ---
 
-## 9. 参考文献
+## 11. 参考文献
 
-### Go 实现
+### P0 官方（Official）
 
-1. **Cox, R. (2009)**. Go Data Structures: Interfaces.
-2. **Griesemer, R. et al. (2020)**. Featherweight Go. *OOPSLA*.
-3. **Go Authors**. runtime/iface.go
+1. **Go Authors**. runtime/iface.go — Interface implementation. [github.com/golang/go](https://github.com/golang/go/blob/master/src/runtime/iface.go)
+2. **Go Authors**. A Tour of Go: Methods and Interfaces. [go.dev/tour/methods/1](https://go.dev/tour/methods/1)
 
-### 类型理论
+### P1 学术（Academic）
 
-1. **Pierce, B.C. (2002)**. Types and Programming Languages. *MIT Press*.
-2. **Cook, W.R. (2009)**. On Understanding Data Abstraction, Revisited. *OOPSLA*.
+1. **Griesemer, R. et al. (2020)**. Featherweight Go. *OOPSLA*. [arxiv.org/abs/2005.11710](https://arxiv.org/abs/2005.11710)
+2. **Pierce, B.C. (2002)**. Types and Programming Languages. *MIT Press*.
+3. **Cook, W.R. (2009)**. On Understanding Data Abstraction, Revisited. *OOPSLA*.
+4. **Tarditi, D. et al. (1990)**. Efficient Implementation of Polymorphism. *FPCA*.
+5. **Gibbs, M. & Stroustrup, B. (2006)**. Fast Dynamic Casting. *Software: Practice and Experience*.
 
-### 动态分发
+### P2 生态（Ecosystem）
 
-1. **Tarditi, D. et al. (1990)**. Efficient Implementation of Polymorphism. *FPCA*.
-2. **Gibbs, M. & Stroustrup, B. (2006)**. Fast Dynamic Casting. *Software: Practice and Experience*.
+1. **Cox, R. (2009)**. Go Data Structures: Interfaces. [research.swtch.com/interfaces](https://research.swtch.com/interfaces)
+2. **Donovan, A.A. & Kernighan, B.W. (2015)**. *The Go Programming Language* (Chapter 7). Addison-Wesley.
+3. [go101/go101](https://github.com/go101/go101) — Go fundamentals.
 
 ---
 

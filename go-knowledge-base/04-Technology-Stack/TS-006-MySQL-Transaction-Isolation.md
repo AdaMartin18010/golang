@@ -10,6 +10,9 @@
 > - [High Performance MySQL](https://www.oreilly.com/library/view/high-performance-mysql/) - O'Reilly Media
 
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L4
+> **前置概念**: [TS-001 PostgreSQL Transaction Internals](TS-001-PostgreSQL-Transaction-Internals.md) · **后置概念**: [TS-037 MySQL 9 Features](TS-037-MySQL-9-Features.md)
+> **定理链**: 事务 + ReadView(up_limit_id / low_limit_id / trx_ids) → undo 版本链可见性判断 → 一致性读 / Invariant: RC/RR 下任何事务不读到未提交版本
 ---
 
 ## 1. InnoDB Storage Architecture
@@ -1485,12 +1488,87 @@ max_heap_table_size = 64M
 
 ---
 
+## 反命题与边界
+
+### 反模式 1: 假设 Read Committed 下有间隙锁保护范围
+
+```sql
+-- 反模式：RC 下做范围扣款，依赖"间隙不被并发插入"
+BEGIN;
+UPDATE accounts SET amount = amount - 100
+WHERE user_id BETWEEN 1000 AND 2000;   -- RC 只锁已存在的记录
+-- 并发会话此时 INSERT user_id = 1500 的新行完全合法
+COMMIT;
+```
+
+原因：InnoDB 的间隙锁（Gap Lock）与 Next-Key Lock 只在 Repeatable Read 下生效；Read Committed 中锁定读只锁存在的记录（semi-consistent read），范围条件不阻止并发插入幻影行。
+正解：需要阻止范围内新行插入时显式使用 `REPEATABLE READ`，或把不变量写进唯一约束/原子条件更新，而非依赖范围锁。
+
+### 反模式 2: 无索引列上的锁定读
+
+```sql
+-- 反模式：对非索引列加锁
+BEGIN;
+SELECT * FROM orders WHERE status = 'pending' FOR UPDATE;
+-- status 无索引 → 全表扫描并锁定所有扫描到的记录
+COMMIT;
+```
+
+原因：锁加在索引记录上，非索引列的锁定读会扫描并锁定大量（甚至全表）记录，并发度归零且极易触发死锁。
+正解：为过滤列建索引，让锁定读只触及目标行。
+
+### 反模式 3: 长事务导致 undo 日志堆积
+
+```sql
+-- 反模式：事务内做慢速外部调用
+BEGIN;
+SELECT * FROM huge_table;              -- 持有多版本读视图
+CALL slow_external_api();              -- 几十秒不提交
+COMMIT;
+```
+
+原因：ReadView 存在期间，其可见性判定所需的 undo 版本链不能被 purge 线程清理，`SHOW ENGINE INNODB STATUS` 中 `History list length` 持续上升，导致查询回滚段遍历变慢、undo 表空间膨胀。
+正解：事务内只做数据库操作并保持短促，外部调用移到事务外；监控 `information_schema.innodb_trx` 与 history list length。
+
+## 思维导图 (Mermaid Mindmap)
+
+```mermaid
+mindmap
+  root((MySQL Transaction Isolation))
+    存储架构
+      Buffer Pool
+      B+ Tree 索引
+      redo / undo log
+    MVCC
+      版本链与隐藏列
+      ReadView 可见性
+      隔离级别对比
+    锁机制
+      Record / Gap / Next-Key Lock
+      锁与索引的关系
+    Go 实践
+      连接池配置
+      事务模式
+      批量操作
+```
+
+---
+
 ## 7. References
 
-1. **Schwartz, B., et al.** (2012). High Performance MySQL, 3rd Edition. O'Reilly Media.
-2. **MySQL 8.0 Reference Manual** (2024). dev.mysql.com/doc/refman/8.0/en/
-3. **InnoDB Internals** (2024). MySQL Source Code Documentation.
-4. **Mikael Ronstrom** (2013). MySQL Internals Manual. Oracle.
+### P0 官方（MySQL 官方文档与源码资料）
+
+1. **MySQL 8.0 Reference Manual** (2024). [MySQL 8.0 Reference Manual](https://dev.mysql.com/doc/refman/8.0/en/) - Oracle.
+2. **InnoDB Internals** (2024). MySQL Source Code Documentation.
+
+### P1 学术（论文）
+
+3. **Berenson, H., Bernstein, P., Gray, J., Melton, J., O'Neil, E., & O'Neil, P.** (1995). A Critique of ANSI SQL Isolation Levels. *Proceedings of ACM SIGMOD 1995*, 1-10. <https://doi.org/10.1145/223784.223785>
+
+### P2 生态（著作与社区资料）
+
+4. **Schwartz, B., et al.** (2012). High Performance MySQL, 3rd Edition. O'Reilly Media.
+5. **Mikael Ronstrom** (2013). MySQL Internals Manual. Oracle.
 
 ---
 

@@ -4,6 +4,9 @@
 > **级别**: S (55 KB)
 > **标签**: #ad
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L3
+> **前置概念**: [AD-037: Event-Driven Architecture](AD-037-Event-Driven-Architecture.md) · **后置概念**: [AD-039: Security Patterns Formal](AD-039-Security-Patterns-Formal.md)
+> **定理链**: Event → Stateless Function Execution → Auto-Scaled Response / Invariant: handler statelessness & idempotent processing
 ## 1. Architecture Overview
 
 ### 1.1 Definition and Philosophy
@@ -1405,6 +1408,87 @@ graph TB
 | **Fat Functions** | Large deployment packages | Lambda layers, container images |
 | **No Dead Letter Queue** | Lost failed events | Always configure DLQ |
 | **Hardcoded Config** | Environment-specific configs | Environment variables, Parameter Store |
+
+---
+
+## 9. Anti-Pattern Examples and Boundaries
+
+### 9.1 Anti-Pattern: SDK Client Initialization Inside the Handler
+
+Creating cloud SDK clients inside the handler re-pays config loading and connection setup on every invocation, and under burst scaling it multiplies connection churn and risks SDK rate limiting:
+
+```go
+// ANTI-PATTERN: per-invocation initialization
+func handler(ctx context.Context, req Request) (Response, error) {
+	cfg, err := config.LoadDefaultConfig(ctx) // repeated on every call
+	if err != nil {
+		return nil, err
+	}
+	db := dynamodb.NewFromConfig(cfg) // new connection pool per call
+	_ = db
+	// ...
+	return Response{}, nil
+}
+```
+
+Correct: initialize once per container at package level (`init()` or lazy `sync.Once`), as shown in §2.2.1 — the cold-start cost is paid once and reused across warm invocations.
+
+### 9.2 Anti-Pattern: Unbounded Retries on SQS Batches
+
+Returning a plain `error` from an SQS handler marks the entire batch as failed, so one poison message causes successful messages to be reprocessed repeatedly; wrapping the call in a tight retry loop holds the batch until the visibility timeout expires, duplicating work. Correct: partial batch responses (§2.3) with exponential backoff and a dead-letter queue.
+
+### 9.3 Boundaries
+
+- Execution time is hard-capped (15 minutes on AWS Lambda); long workloads must checkpoint progress and requeue rather than run to completion.
+- `/tmp` and in-memory state are ephemeral per container; never assume they survive between invocations.
+- Concurrency limits (§4.2) are account/region quotas; upstream fan-out must be shaped to the burst limit or invocations will throttle.
+
+---
+
+## 10. Mind Map
+
+```mermaid
+mindmap
+  root((Serverless Architecture))
+    Compute Models
+      FaaS
+      Container Serverless
+      BaaS
+    Event-Driven Patterns
+      S3 / DynamoDB / SQS Triggers
+      Step Functions Orchestration
+    Design Patterns
+      Function Chaining
+      Fan-Out / Fan-In
+      Circuit Breaker
+    Scalability
+      Cold Start Optimization
+      Concurrency Limits
+    Technology Stack
+      AWS / Azure / GCP
+      Multi-Cloud Comparison
+```
+
+---
+
+## 11. References
+
+### P0: Official
+
+- [AWS Lambda Developer Guide](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html)
+- [Azure Functions Documentation](https://learn.microsoft.com/en-us/azure/azure-functions/)
+- [Google Cloud Run Documentation](https://cloud.google.com/run/docs)
+- [pkg.go.dev — aws-lambda-go](https://pkg.go.dev/github.com/aws/aws-lambda-go/lambda)
+
+### P1: Academic
+
+- Jonas et al. "Cloud Programming Simplified: A Berkeley View on Serverless Computing" (2019) — [arXiv:1902.03383](https://arxiv.org/abs/1902.03383)
+- Baldini et al. "Serverless Computing: Current Trends and Open Problems" (2017) — [arXiv:1706.03178](https://arxiv.org/abs/1706.03178)
+
+### P2: Ecosystem
+
+- [Serverless Framework](https://www.serverless.com/)
+- [AWS Serverless Application Model (SAM)](https://aws.amazon.com/serverless/sam/)
 
 ---
 

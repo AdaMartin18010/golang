@@ -4,6 +4,10 @@
 > **级别**: S (87 KB)
 > **标签**: #ec
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L3
+> **前置概念**: [EC-074: Zero-Trust Security](./EC-074-Zero-Trust-Security.md) · [EC-079: Security & Cryptography 2026](./EC-079-Security-Cryptography-2026.md) · **后置概念**: [EC-215: Site Reliability Engineering 2026](./EC-215-Site-Reliability-Engineering-2026.md) · [EC-194: Chaos Engineering](./EC-194-Chaos-Engineering.md)
+> **定理链**: Artifact/Workload Input → Signing Verification + Policy Admission + Runtime Isolation → Verifiable Workload / Invariant: 默认拒绝，最小权限 (default-deny, least privilege)
+
 ## Table of Contents
 
 - [EC-020: Kubernetes Security in Production (2025-2026 Edition)](#ec-020-kubernetes-security-in-production-2025-2026-edition)
@@ -3085,31 +3089,129 @@ spec:
 
 ---
 
+## Counter-Examples and Boundaries (Anti-Patterns)
+
+### Anti-Pattern: Privileged Workload with Mutable Tags
+
+```yaml
+# ANTI-PATTERN: the exact workload shape Pod Security Standards "Restricted"
+# exists to forbid. Each field alone is dangerous; together they hand the
+# container near-root control of the node.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: legacy-app
+spec:
+  template:
+    spec:
+      hostPID: true                    # shares the host PID namespace
+      containers:
+        - name: app
+          image: registry.example.com/legacy:latest   # WRONG: mutable tag
+          securityContext:
+            privileged: true           # all capabilities + device access
+            runAsUser: 0               # root inside the container
+            allowPrivilegeEscalation: true
+          # Missing: readOnlyRootFilesystem, seccompProfile, dropped caps
+
+# Deterministic consequences:
+#  1. A pod with privileged:true + hostPID:true is rejected by any PSA
+#     "Baseline"/"Restricted" enforcement level at ADMISSION time
+#     (violations: hostPID, privileged, allowPrivilegeEscalation, runAsUser=0).
+#  2. If admission does not enforce PSA, the container can read /proc of all
+#     host processes and ptrace them — full node compromise from one workload.
+#  3. ":latest" makes the deployed artifact non-reproducible: cosign/SLSA
+#     verification and rollback both require an immutable digest reference.
+```
+
+**Boundary**: Security posture is decided at pod-spec authoring time. PSA enforcement can only reject violations it is told to watch for — a cluster running PSA in "audit" or without enforcement plugins (OPA/Kyverno) silently admits the workload above. The invariant "default-deny" must be enforced by admission policy, not assumed from documentation.
+
+### Anti-Pattern: Secrets in Environment Variables
+
+```yaml
+# ANTI-PATTERN: mounting a secret as env vars instead of a volume.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  template:
+    spec:
+      containers:
+        - name: api
+          image: api:1.4.2
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-creds
+                  key: password
+# Why this is wrong (deterministic, documented Kubernetes behavior):
+#  - env vars are readable by ANY process in the container (no per-process ACL)
+#  - they are captured in crash dumps, error reports, and `kubectl describe`
+#  - a child process inherits them across exec — leaked by any subprocess
+# Volumes allow per-file 0400 permissions owned by the app UID and support
+# rotation via kubelet updates; env vars are immutable for the container's
+# entire lifetime, forcing a restart (and new exposure window) on rotation.
+```
+
+---
+
+## Knowledge Map
+
+```mermaid
+mindmap
+  root((Kubernetes Security in Production))
+    Post-Quantum Cryptography
+      NIST FIPS 203 204 205
+      Hybrid X25519MLKEM768
+      Migration Roadmap
+    Supply Chain Security
+      SLSA v1.1 Provenance
+      Sigstore Cosign Keyless
+      SBOM CISA 2025
+    Runtime Security
+      eBPF Tetragon
+      Falco Rules
+      TracingPolicy
+    Workload Identity
+      Istio Ambient mTLS
+      SPIFFE and SPIRE
+    Hardening
+      Pod Security Standards
+      RBAC Hardening
+      Network Segmentation Cilium
+```
+
+---
+
 ## References
 
-### Standards and Specifications
+### P0 - Official (官方)
 
-1. **NIST FIPS 203/204/205** - Post-Quantum Cryptography Standards (August 2024)
-2. **SLSA v1.1** - Supply Chain Levels for Software Artifacts
-3. **Sigstore** - Software signing and transparency
-4. **CISA SBOM Requirements 2025** - Software Bill of Materials
-5. **CIS Kubernetes Benchmark v1.8** - Security best practices
+1. [SLSA v1.1 Specification](https://slsa.dev/spec/v1.1/) - Supply chain levels and provenance format
+2. **NIST FIPS 203/204/205** - Post-Quantum Cryptography Standards (August 2024), see P1
+3. **CIS Kubernetes Benchmark v1.8** - Security best practices (cisecurity.org)
+4. **Sigstore** - Software signing and transparency (sigstore.dev)
+5. **CISA SBOM Requirements 2025** - Software Bill of Materials requirements
+6. **NIST SP 800-204B** - Attribute-based Access Control for Microservices
 
-### Tools and Projects
+### P1 - Academic (学术)
 
-1. **Tetragon** - eBPF-based security observability (github.com/cilium/tetragon)
-2. **Falco** - Runtime security (falco.org)
-3. **Cosign** - Container signing (github.com/sigstore/cosign)
-4. **Istio Ambient** - Service mesh (istio.io)
-5. **SPIRE** - Workload identity (spiffe.io/spire)
-6. **Cilium** - eBPF networking and security (cilium.io)
+1. [NIST FIPS 203 - ML-KEM Standard](https://csrc.nist.gov/pubs/fips/203/final) - Module-Lattice-Based Key-Encapsulation Mechanism
+2. [NIST SP 800-61 Rev. 2 - Computer Security Incident Handling Guide](https://csrc.nist.gov/pubs/sp/800/61/r2/final) - Incident response lifecycle used in the Incident Response section
 
-### Further Reading
+### P2 - Ecosystem (生态)
 
-- NSA/CISA Kubernetes Hardening Guide 2024
-- NIST SP 800-204B: Attribute-based Access Control for Microservices
-- OWASP Kubernetes Top 10 2024
-- Cloud Native Security Whitepaper v2
+1. [OWASP Kubernetes Top Ten](https://owasp.org/www-project-kubernetes-top-ten/) - Prioritized Kubernetes risk list
+2. **Tetragon** - eBPF-based security observability (github.com/cilium/tetragon)
+3. **Falco** - Runtime security (falco.org)
+4. **Cosign** - Container signing (github.com/sigstore/cosign)
+5. **Cilium** - eBPF networking and security (cilium.io)
+6. **Istio Ambient** - Service mesh (istio.io)
+7. **SPIRE** - Workload identity (spiffe.io/spire)
+8. NSA/CISA Kubernetes Hardening Guide 2024 (further reading)
+9. Cloud Native Security Whitepaper v2 (further reading)
 
 ---
 

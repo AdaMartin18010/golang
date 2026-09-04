@@ -4,6 +4,9 @@
 > **级别**: S (66 KB)
 > **标签**: #ad
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L3
+> **前置概念**: [AD-032: Microservices Patterns — CQRS & Event Sourcing](AD-032-Microservices-Patterns-CQRS-Event-Sourcing.md) · **后置概念**: [AD-034: Microservices Decomposition Patterns](AD-034-Microservices-Decomposition-Patterns.md)
+> **定理链**: Business Domain → Service Decomposition (Bounded Context) → Independently Deployable Services / Invariant: service autonomy & loose coupling
 ## 1. Architecture Overview
 
 ### 1.1 Definition and Philosophy
@@ -1577,26 +1580,76 @@ graph TB
 | **Data Inconsistency** | No strategy for eventual consistency | Saga pattern, event sourcing |
 | **Over-engineering** | Too many services for small domain | Start with monolith, extract gradually |
 
+### 9.1 Anti-Pattern Code Examples
+
+#### Shared Database Anti-Pattern
+
+```go
+// ANTI-PATTERN: two services reading/writing one shared schema
+// - Any schema migration couples both deployment pipelines
+// - A long transaction in Order Service locks rows Reporting Service needs
+// - One service's N+1 query degrades the other service's latency
+```
+
+Correct: database per service (§3.2.1). The Reporting Service consumes `OrderCreated` / `OrderConfirmed` events and maintains its own read model (§3.2.2).
+
+#### Synchronous Call Chain Anti-Pattern
+
+```go
+// ANTI-PATTERN: gateway → order → payment → inventory, all sequential
+// End-to-end latency becomes the SUM of every hop's P99, and overall
+// failure probability multiplies across hops (0.999^3 ≈ 0.997 per request,
+// before retries amplify load on the failing hop).
+```
+
+Correct: publish `OrderCreated` and let Payment/Inventory react asynchronously (§2.3.2), with Saga compensation for cross-service failure (§3.2.3).
+
+### 9.2 Mind Map
+
+```mermaid
+mindmap
+  root((Microservices Architecture))
+    Service Decomposition
+      Domain-Driven Design
+      Bounded Contexts
+    Communication
+      Synchronous REST/gRPC
+      Asynchronous Messaging
+    Data Management
+      Database per Service
+      CQRS
+      Saga Pattern
+    Resilience
+      Circuit Breaker
+      Bulkhead
+      Timeouts & Retries
+    Operations
+      Service Mesh
+      Observability Stack
+      CI/CD per Service
+```
+
 ---
 
 ## 10. References and Resources
 
-### Books
+### P0: Official
 
-- "Building Microservices" by Sam Newman
-- "The Phoenix Project" by Gene Kim
-- "Domain-Driven Design" by Eric Evans
-- "Release It!" by Michael Nygard
+- [12 Factor App](https://12factor.net) - Methodology
+- [CNCF Cloud Native Landscape](https://landscape.cncf.io) - Cloud-native technologies
+- [pkg.go.dev — gRPC-Go](https://pkg.go.dev/google.golang.org/grpc)
+- [Go kit](https://github.com/go-kit/kit) - Go microservices toolkit
 
-### Online Resources
+### P1: Academic
+
+- Alshuqayran, Ali, Evans. "A Systematic Mapping Study in Microservice Architecture" (IEEE SOCA 2016) — [doi:10.1109/SOCA.2016.15](https://doi.org/10.1109/SOCA.2016.15)
+- Foundational books: Newman, "Building Microservices" (O'Reilly, 2015); Evans, "Domain-Driven Design" (Addison-Wesley, 2003); Nygard, "Release It!" (Pragmatic Bookshelf, 2018)
+
+### P2: Ecosystem
 
 - [Microservices.io](https://microservices.io) - Patterns and practices
-- [12 Factor App](https://12factor.net) - Methodology
-- [CNCF Trail Map](https://landscape.cncf.io) - Cloud-native technologies
-
-### Tools and Frameworks
-
-- **Go**: Go kit, Micro, Gin, Echo
+- "The Phoenix Project" by Gene Kim
+- **Go**: Micro, Gin, Echo
 - **Java**: Spring Boot, Spring Cloud, Micronaut
 - **Python**: FastAPI, Flask, Nameko
 - **Node.js**: NestJS, Express, Seneca

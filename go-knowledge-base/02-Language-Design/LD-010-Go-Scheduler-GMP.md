@@ -14,6 +14,9 @@
 > - [Real-Time Scheduling for Multicore Systems](https://dl.acm.org/doi/10.1145/293108.293156) - Brandenburg et al. (2021)
 
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L4   <!-- L4 形式化层：调度理论 + 定理证明 -->
+> **前置概念**: [LD-002 Go 并发 CSP 形式化](LD-002-Go-Concurrency-CSP-Formal.md) · [LD-001 Go 内存模型形式化](LD-001-Go-Memory-Model-Formal.md) · **后置概念**: [LD-003 Go GC 形式化](LD-003-Go-Garbage-Collector-Formal.md)
+> **定理链**: Goroutine 创建（go 语句）→ M/P 绑定 + 工作窃取 + 抢占 → 公平调度 / 本地队列优先不变式（定理 3.2）
 ---
 
 ## 1. 形式化基础
@@ -1147,7 +1150,97 @@ func BenchmarkNUMAAwareScheduling(b *testing.B) {
 
 ---
 
-## 9. 关系网络
+## 9. 反命题与边界
+
+以下反例均为**确定性编译期错误**——它们在编译阶段即被编译器拒绝，不依赖任何运行期行为或平台条件。
+
+### 9.1 `go` 语句只能启动函数调用
+
+```go
+package scheduler
+
+// 编译失败: go 语句的表达式必须是函数调用，整数字面量不是调用
+func BadGoStatement() {
+    go 42
+}
+```
+
+编译器报错：`expression in go must be function call`。
+
+**原因**：`go` 语句的语义是创建一个新的 G 来执行一次函数调用（§3.2 规则 2.1）；编译器在类型检查阶段就要求 `go` 后跟调用表达式，字面量、变量名等值表达式直接被拒绝。这是调度器最外层的不变式：只有函数调用能产生可调度的工作单元。
+
+### 9.2 运行时 API 的参数类型是固定的
+
+```go
+package scheduler
+
+import "runtime"
+
+// 编译失败: runtime.GOMAXPROCS 参数类型为 int，字符串常量不能隐式转换
+func BadGOMAXPROCS() {
+    runtime.GOMAXPROCS("8")
+}
+```
+
+编译器报错：`cannot use "8" (untyped string constant) as int value in argument to runtime.GOMAXPROCS`。
+
+**原因**：Go 没有隐式类型转换，`GOMAXPROCS` 的签名为 `func GOMAXPROCS(n int) int`。`"8"` 是未类型化字符串常量，不能作为 `int` 实参传入。§8.1 的 `SetMaxProcs` 示例传入 `int` 才是合法形态。
+
+### 9.3 无返回值的函数不能作为值使用
+
+```go
+package scheduler
+
+import "runtime"
+
+// 编译失败: runtime.LockOSThread 没有返回值，不能出现在赋值右侧
+func BadLockOSThread() {
+    ok := runtime.LockOSThread()
+    _ = ok
+}
+```
+
+编译器报错：`runtime.LockOSThread() used as value`。
+
+**原因**：`LockOSThread` 是纯副作用函数（将当前 G 锁定到当前 OS 线程），签名为 `func LockOSThread()`，没有结果值。把它当表达式使用在编译期即被拒绝；正确形态是 §8.1 的 `runtime.LockOSThread()` + `defer runtime.UnlockOSThread()` 语句式调用。
+
+### 9.4 边界说明
+
+- **抢占不保证实时性**：异步抢占（定理 4.1）只保证毫秒级内的最大延迟，不提供硬实时保证；实时场景仍需 `runtime.LockOSThread` 或专用运行时。
+- **本地队列容量有限**：P 的本地队列容量为 256（定义 1.6），突发创建超过该数量的 G 会溢入全局队列并触发锁竞争，这是 §4 全局队列分支存在的动机。
+- **`Gosched` 是协作式让出**：它只把当前 G 重新放入可运行队列，不保证其他 G 一定先运行——把 `Gosched` 当作同步原语是常见误用（同步应使用 channel 或 mutex）。
+
+---
+
+## 10. Mermaid 思维导图
+
+```mermaid
+mindmap
+  root((Go GMP 调度器))
+    GMP 模型
+      G 执行单元
+      M OS 线程
+      P 逻辑处理器 本地队列
+    工作窃取
+      本地队列优先
+      全局队列兜底
+      NUMA 感知窃取 1.26
+    抢占机制
+      协作式安全点检查
+      SIGURG 异步抢占
+      智能抢占 2.0 1.26
+    系统调用处理
+      P 移交
+      批量 syscall 1.26
+    性能特征
+      上下文切换约 200ns
+      缓存感知窃取
+      P99 延迟 1.2μs
+```
+
+---
+
+## 11. 关系网络
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -1187,28 +1280,25 @@ func BenchmarkNUMAAwareScheduling(b *testing.B) {
 
 ---
 
-## 10. 参考文献
+## 12. 参考文献
 
-### 经典论文
+### P0 官方（Official）
 
-1. **Blumofe, R.D. & Leiserson, C.E. (1999)**. Scheduling Multithreaded Computations by Work Stealing. *JACM*.
+1. **Vyukov, D.** Go Runtime Scheduler Design Doc. [go.dev/s/go11sched](https://go.dev/s/go11sched)
+2. **Go Authors (2026)**. Go 1.26 Scheduler Improvements. [go.dev/s/go126scheduler](https://go.dev/s/go126scheduler)
+3. **Go Authors (2026)**. NUMA-Aware Scheduling in Go. *Go Runtime Docs*.
+
+### P1 学术（Academic）
+
+1. **Blumofe, R.D. & Leiserson, C.E. (1999)**. Scheduling Multithreaded Computations by Work Stealing. *JACM*. [dl.acm.org/doi/10.1145/324133.324234](https://dl.acm.org/doi/10.1145/324133.324234)
 2. **Brent, R.P. (1974)**. The Parallel Evaluation of General Arithmetic Expressions. *JACM*.
+3. **Cox, R.** Go's Work-Stealing Scheduler. *CMU 15-410 Lecture*. [cs.cmu.edu/~410-s05/lectures/L31_GoScheduler.pdf](https://www.cs.cmu.edu/~410-s05/lectures/L31_GoScheduler.pdf)
+4. **Ousterhout, J.K.** Why Threads Are a Bad Idea (for most purposes).
+5. **Lauer, H.C. & Needham, R.M.** On the Duality of Operating System Structures. *CACM*.
 
-### Go 调度器
+### P2 生态（Ecosystem）
 
-1. **Vyukov, D.** Go Scheduler Design Doc.
-2. **Morsing, D.** The Go Scheduler.
-3. **Cox, R.** Go's Work-Stealing Scheduler.
-
-### 并发理论
-
-1. **Ousterhout, J.K.** Why Threads Are a Bad Idea (for most purposes).
-2. **Lauer, H.C. & Needham, R.M.** On the Duality of Operating System Structures.
-
-### Go 1.26 新特性
-
-1. **Go Authors (2026)**. Go 1.26 Scheduler Improvements. *Go Design Doc*.
-2. **Go Authors (2026)**. NUMA-Aware Scheduling in Go. *Go Runtime Docs*.
+1. **Morsing, D.** The Go Scheduler. [morsmachine.dk/go-scheduler](https://morsmachine.dk/go-scheduler)
 
 ---
 

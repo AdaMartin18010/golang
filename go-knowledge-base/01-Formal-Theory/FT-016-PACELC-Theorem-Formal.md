@@ -4,6 +4,9 @@
 > **级别**: S (40 KB)
 > **标签**: #ft
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L4
+> **前置概念**: [FT-003 CAP 定理](FT-003-CAP-Theorem-Formal.md) · [FT-013 最终一致性](FT-013-Eventual-Consistency-Formal.md) · **后置概念**: [FT-018 CRDT](FT-018-CRDT-Formal.md) · [FT-010 线性一致性](FT-010-Linearizability-Formal.md)
+> **定理链**: 分区检测 → PAC 分支选择（A xor C）；正常运行 → ELC 分支选择（L xor C） / Invariant: 强一致性需要协调，协调必然增加延迟
 ## Overview
 
 PACELC is an extension of the CAP theorem that unifies the trade-off between consistency and latency. It states that in a distributed system:
@@ -993,6 +996,59 @@ func (s *PACELCStore) queueDeferredWrite(key string, value []byte, nodes []strin
 }
 ```
 
+---
+
+## Counter-Propositions and Boundaries
+
+**Counter-Proposition 1: "PACELC can be engineered away with better implementation."**
+False. The ELC half is a theorem-level result: strong consistency requires cross-replica coordination (quorum reads, consensus, or synchronous replication), and coordination inherently adds latency on the order of network RTT. Engineering can only move the operating point along the trade-off curve, never remove it.
+
+**Counter-Proposition 2: "PA/EL means the system has no consistency at all."**
+False. PA/EL systems (Dynamo, Cassandra at `ONE`) still guarantee eventual convergence and typically provide session guarantees (read-your-writes, monotonic reads). The choice is about which guarantee is relaxed *when* — during or after a write — not the absence of consistency.
+
+```go
+// Anti-pattern: silently degrade consistency below the application's
+// minimum requirement, with no signal to the caller.
+func (s *Store) Get(ctx context.Context, key string) (*Item, error) {
+    // BAD: latency pressure silently switches the read to ONE, but the
+    // caller expects read-your-writes; a write acknowledged seconds ago
+    // may be invisible — no error, no staleness bound is reported.
+    level := s.selectConsistencyLevel() // may return ONE under load
+    return s.read(ctx, key, level)
+}
+```
+
+**Boundaries**:
+
+- The P branch of PACELC reduces exactly to CAP; PACELC adds no new impossibility, it extends the trade-off to normal operation.
+- The L/C trade-off is quantitative, not absolute: quorum reads add ~1 RTT, consensus adds ~2 RTTs. "Low latency" is always relative to the application's latency budget.
+- Classification is per-configuration, not per-system: Cassandra becomes PA/EC with `QUORUM` writes; the label depends on the consistency level actually in force.
+- Clock assumptions matter: last-write-wins conflict resolution (the default in PA/EL systems) is only meaningful with tightly synchronized clocks; see [FT-010](FT-010-Linearizability-Formal.md) and [FT-005](FT-005-Vector-Clocks-Formal.md) for logical alternatives.
+
+---
+
+## Mermaid Mindmap
+
+```mermaid
+mindmap
+  root((PACELC))
+    Partition branch
+      PA Availability first
+      PC Consistency first
+    Else branch
+      EL Low latency
+      EC Consistency
+    Representative systems
+      PA EL Dynamo Cassandra
+      PC EC Spanner HBase CockroachDB
+    Mechanisms
+      Hinted handoff deferred writes
+      Conflict resolution LWW CRDT
+      Adaptive consistency routing
+```
+
+---
+
 ## System Comparison Matrix
 
 | System | P Scenario | E Scenario | Replica Factor | Conflict Resolution |
@@ -1127,8 +1183,20 @@ func (s *PACELCStore) queueDeferredWrite(key string, value []byte, nodes []strin
 
 ## References
 
+### P0 (Official Go Documentation)
+
+1. [pkg.go.dev: gocql — Go driver for Apache Cassandra](https://pkg.go.dev/github.com/gocql/gocql) - API docs for the Go client of a representative PA/EL system.
+
+### P1 (Academic)
+
 1. Abadi, D. J. (2012). "Consistency tradeoffs in modern distributed database system design." IEEE Computer.
 2. Brewer, E. (2012). "CAP twelve years later: How the 'rules' have changed." IEEE Computer.
 3. Vogels, W. (2009). "Eventually consistent." ACM Queue.
 4. Bailis, P., & Ghodsi, A. (2013). "Eventual consistency today: Limitations, extensions, and beyond." ACM Queue.
 5. DeCandia, G., et al. (2007). "Dynamo: Amazon's highly available key-value store." ACM SOSP.
+
+### P2 (Ecosystem)
+
+1. [gocql/gocql](https://github.com/gocql/gocql) - Go driver for Cassandra, the representative configurable PA/EL system.
+2. [cockroachdb/cockroach](https://github.com/cockroachdb/cockroach) - Go implementation of a PC/EC system (serializable default).
+3. [hashicorp/consul](https://github.com/hashicorp/consul) - Go implementation of a PC/EC consensus-based coordination service.

@@ -12,6 +12,9 @@
 > - [Paxos vs Raft](https://www.cl.cam.ac.uk/~ms705/pub/papers/2015-paxosraft.pdf) - Cambridge (2015)
 
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L4
+> **前置概念**: [FT-001 分布式系统基础](FT-001-Distributed-Systems-Foundation-Formal.md) · [FT-017 Quorum 共识形式化](FT-017-Quorum-Consensus-Formal.md) · [FT-015 FLP 不可能性](FT-015-FLP-Impossibility-Formal.md) · **后置概念**: [FT-007 Multi-Paxos](FT-007-Multi-Paxos-Formal.md) · [FT-002 Raft 形式化](FT-002-Raft-Consensus-Formal.md)
+> **定理链**: Prepare/Promise（发现已接受值） → AcceptRequest/Accepted（多数派接受） → 唯一值被选定 / Invariant: 任意两个多数派必相交
 ---
 
 ## 1. 形式化问题定义
@@ -684,9 +687,70 @@ func (p *Proposer) HandleMessage(msg Message) error {
 
 ---
 
-## 7. 学术参考文献
+## 反命题与边界
 
-### 7.1 核心论文
+**反命题 1: "Paxos 保证终止"**
+错误。基础 Paxos 只保证安全（不会选出不一致的值），不保证终止：两个 proposer 不断用更高 ballot 互相抢占（dueling proposer）时系统活锁。终止依赖部分同步假设或唯一 Leader（即 Multi-Paxos，见 [FT-007](FT-007-Multi-Paxos-Formal.md)）。
+
+**反命题 2: "Acceptor 可以接受任意提案"**
+错误。Acceptor 一旦对 ballot n 发出 Promise，就不得接受任何 ballot < n 的 AcceptRequest；且 Phase 2a 要求 proposer 采用响应中最高 ballot 的已接受值。两者任一被破坏，定理 3.1 的安全性证明即失效。
+
+```go
+// 反模式: 忽略已承诺的 ballot 直接接受更低的 AcceptRequest
+func (a *Acceptor) handleAccept(msg Message) error {
+    // ❌ 错误: 未比较 msg.Ballot 与 a.maxBal 就接受，
+    // 破坏了 "promise 后不接受更低 ballot" 的核心不变式，
+    // 可能导致两个不同值都被多数派接受（安全性丧失）
+    a.maxVBal = msg.Ballot
+    a.maxVal = msg.Value
+    return nil
+}
+```
+
+**边界条件**:
+
+- Quorum 交集性质（定理 1.1）是全部安全性证明的基石：只有使用多数派 quorum，或满足 Flexible Paxos 的 Q1∩Q2=∅ 条件时，安全性才成立。
+- ballot 号必须全局唯一且单调（通常由〈轮次， 节点ID〉字典序构成）；简单的本地自增计数在多 proposer 场景下会碰撞。
+- 消息可能重复、乱序到达：Acceptor 必须幂等处理同一 ballot 的重复 AcceptRequest。
+- 值被选定 ≠ 值被学到：Learner 需要显式学习机制（轮询 acceptor 或广播 Accepted），否则可能出现值已选定却无人知晓的边界场景。
+
+---
+
+## Mermaid 思维导图
+
+```mermaid
+mindmap
+  root((Paxos 共识))
+    角色
+      Proposer 提案者
+      Acceptor 接受者
+      Learner 学习者
+    两阶段协议
+      Phase1 Prepare Promise
+      Phase2 AcceptRequest Accepted
+    安全基石
+      多数派相交
+      承诺单调性
+    活性条件
+      部分同步假设
+      唯一 Leader
+    变体
+      Multi-Paxos
+      Fast Paxos
+      Flexible Paxos
+```
+
+---
+
+## 7. 参考文献
+
+### P0 官方 (Go 官方文档)
+
+1. [pkg.go.dev: go.etcd.io/raft/v3](https://pkg.go.dev/go.etcd.io/raft/v3) - Paxos 家族（Multi-Paxos 工程等价物 Raft）在 Go 生态中最广泛使用的生产实现之 API 文档
+
+### P1 学术 (Academic)
+
+#### 7.1 核心论文
 
 1. **Lamport, L. (1998)**. The Part-Time Parliament. *ACM Transactions on Computer Systems*, 16(2), 133-169.
    - Paxos 原始论文，以寓言故事形式描述
@@ -697,7 +761,7 @@ func (p *Proposer) HandleMessage(msg Message) error {
 3. **Lamport, L. (2006)**. Fast Paxos. *Distributed Computing*, 19(2), 79-103.
    - Fast Paxos 变体，减少延迟
 
-### 7.2 实现与优化
+#### 7.2 实现与优化
 
 1. **Chandra, T. D., Griesemer, R., & Redstone, J. (2007)**. Paxos Made Live: An Engineering Perspective. *PODC*.
    - Google Chubby 的 Paxos 实现经验
@@ -707,6 +771,12 @@ func (p *Proposer) HandleMessage(msg Message) error {
 
 3. **van Renesse, R., & Altinbuken, D. (2015)**. Paxos Made Moderately Complex. *ACM Computing Surveys*, 47(3).
    - Paxos 的综合教程
+
+### P2 生态 (Ecosystem)
+
+1. [cockroachdb/cockroach](https://github.com/cockroachdb/cockroach) - 生产级 Paxos 家族共识（Raft/Multi-Paxos 等价）的 Go 实现
+2. [etcd-io/etcd](https://github.com/etcd-io/etcd) - 生产级 Raft 实现（Go），含 raftexample 参考实现
+3. [hashicorp/consul](https://github.com/hashicorp/consul) - 基于 Raft 共识的服务发现与配置系统（Go）
 
 ---
 

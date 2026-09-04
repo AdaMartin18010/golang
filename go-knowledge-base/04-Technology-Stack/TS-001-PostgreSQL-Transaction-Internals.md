@@ -6,6 +6,9 @@
 > **权威来源**: [PostgreSQL Docs](https://www.postgresql.org/docs/current/transaction-iso.html), [PostgreSQL Internals](https://www.interdb.jp/pg/), [The Internals of PostgreSQL](http://www.interdb.jp/pg/pgsql01.html)
 
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L4
+> **前置概念**: [TS-045 PostgreSQL Internals MVCC](TS-045-PostgreSQL-Internals-MVCC.md) · **后置概念**: [TS-047 PostgreSQL Transaction Formal](TS-047-PostgreSQL-Transaction-Formal.md)
+> **定理链**: 并发事务集合 + 快照(xmin/xmax/xip) → MVCC 可见性判定 → 一致读视图 / Invariant: 事务只读到其快照建立时已提交的数据
 ---
 
 ## MVCC 核心架构
@@ -221,13 +224,85 @@ typedef struct XLogRecord {
 
 ---
 
+## 反命题与边界
+
+### 反模式 1: Read Committed 下"先读后写"不加锁（丢失更新）
+
+```sql
+-- 反模式：两个会话并发执行同一扣款逻辑
+BEGIN;
+SELECT balance FROM accounts WHERE id = 1;       -- 读到 100
+-- 应用层计算: 100 - 30 = 70
+UPDATE accounts SET balance = 70 WHERE id = 1;   -- 覆盖并发会话的扣款结果!
+COMMIT;
+```
+
+原因：Read Committed 下每条语句获取新快照，`SELECT` 与 `UPDATE` 之间其他事务可以提交修改，后写直接覆盖先写（lost update）。
+正解：`SELECT ... FOR UPDATE` 加行锁、单条原子条件更新（`UPDATE ... WHERE balance >= 30` 并检查受影响行数），或提升隔离级别到 Serializable。
+
+### 反模式 2: 用 COUNT 先查后插实现唯一性约束
+
+```sql
+-- 反模式：注册用户名唯一性检查
+BEGIN;
+SELECT COUNT(*) FROM users WHERE name = 'alice';  -- 两个并发会话都查到 0
+INSERT INTO users(name) VALUES ('alice');         -- 两个会话都插入成功
+COMMIT;
+```
+
+原因：检查与插入是两个语句，快照/判断结果在并发下立即失效，存在确定的时间窗口竞态。
+正解：创建唯一索引 `UNIQUE(name)`，插入冲突时报错，或使用 `INSERT ... ON CONFLICT DO NOTHING`。
+
+### 反模式 3: 长事务长期不提交
+
+```sql
+BEGIN;
+SELECT * FROM big_table;   -- 开启事务后执行耗时业务逻辑，几十分钟不提交
+-- pg_stat_activity 中 state = 'idle in transaction'
+```
+
+原因：事务持有的快照会阻止 VACUUM 清理死元组，导致表和索引膨胀、事务 ID 回卷风险；快照越旧，需要保留的元组版本越多。
+正解：事务保持短促，把业务计算移到事务之外；监控 `idle in transaction` 会话与 `xmin` 年龄（`vacuum_freeze_min_age`）。
+
+## 思维导图 (Mermaid Mindmap)
+
+```mermaid
+mindmap
+  root((PostgreSQL 事务内部机制))
+    MVCC
+      元组版本 xmin / xmax
+      快照可见性规则
+      死元组与 VACUUM
+    隔离级别
+      Read Committed
+      Repeatable Read
+      Serializable SSI
+    WAL
+      先写日志再刷页
+      崩溃恢复
+    分布式 SQL
+      CockroachDB
+      TiDB
+      YugabyteDB
+```
+
+---
+
 ## 参考文献
 
+### P0 官方（PostgreSQL 官方文档与资料）
+
 1. [PostgreSQL Documentation - Transaction Isolation](https://www.postgresql.org/docs/current/transaction-iso.html)
-2. [The Internals of PostgreSQL](http://www.interdb.jp/pg/) - Hironobu Suzuki
-3. [PostgreSQL 14 Internals](https://postgrespro.com/community/books/internals) - Egor Rogov
-4. [A Tour of PostgreSQL Internals](https://www.postgresql.org/files/developer/tour.pdf) - Bruce Momjian
-5. [Serializable Snapshot Isolation in PostgreSQL](https://dr2pp.uhh2.org/berenson95analysis.pdf) - Berenson et al.
+2. [A Tour of PostgreSQL Internals](https://www.postgresql.org/files/developer/tour.pdf) - Bruce Momjian
+
+### P1 学术（论文）
+
+3. [Serializable Snapshot Isolation in PostgreSQL](https://dr2pp.uhh2.org/berenson95analysis.pdf) - Berenson et al.
+
+### P2 生态（社区著作与厂商资料）
+
+4. [The Internals of PostgreSQL](http://www.interdb.jp/pg/) - Hironobu Suzuki
+5. [PostgreSQL 14 Internals](https://postgrespro.com/community/books/internals) - Egor Rogov
 
 ---
 

@@ -14,6 +14,9 @@
 > - [AVX-512 for Memory Intensive Workloads](https://dl.acm.org/doi/10.1145/3307650.3322228) - IEEE (2020)
 
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L4   <!-- L4 形式化层：可达性/三色不变式 + 定理证明 -->
+> **前置概念**: [LD-010 Go GMP 调度器](LD-010-Go-Scheduler-GMP.md) · [LD-006 Go 内存分配器内部](LD-006-Go-Memory-Allocator-Internals.md) · **后置概念**: [LD-036 Go 1.26 Green Tea GC 形式模型](LD-036-Go-1.26-Green-Tea-GC-Formal-Model.md)
+> **定理链**: 根集合扫描 → 三色并发标记 + 混合写屏障 → 仅回收不可达对象 / 三色不变式（Black 不引用 White，定理 1.2）
 ---
 
 ## 1. 形式化基础
@@ -1044,7 +1047,96 @@ func BenchmarkGreenTeaPageScan(b *testing.B) {
 
 ---
 
-## 8. 关系网络
+## 8. 反命题与边界
+
+以下反例均为**确定性编译期错误**——不依赖运行期行为或平台条件。
+
+### 8.1 GC 控制 API 在 `runtime/debug`，不在 `runtime`
+
+```go
+package gc
+
+import "runtime"
+
+// 编译失败: runtime 包中不存在 SetGCPercent，该 API 位于 runtime/debug
+func BadSetGCPercent() {
+    runtime.SetGCPercent(50)
+}
+```
+
+编译器报错：`undefined: runtime.SetGCPercent`。
+
+**原因**：控制 GC 触发节奏的 API（`SetGCPercent`、`SetMemoryLimit`）属于 `runtime/debug` 包；`runtime` 包只暴露底层设施（`runtime.GC()`、`ReadMemStats` 等）。§5.3 的调优示例使用 `debug.SetGCPercent` 才是正确路径。
+
+### 8.2 运行时 API 的参数类型是固定的
+
+```go
+package gc
+
+import "runtime/debug"
+
+// 编译失败: debug.SetGCPercent 参数类型为 int，字符串常量不能隐式转换
+func BadSetGCPercentType() {
+    debug.SetGCPercent("50")
+}
+```
+
+编译器报错：`cannot use "50" (untyped string constant) as int value in argument to debug.SetGCPercent`。
+
+**原因**：Go 没有隐式类型转换，未类型化字符串常量不能作为 `int` 实参传入；`GOGC` 语义上是百分比数值，签名为 `func SetGCPercent(percent int) int`。
+
+### 8.3 `ReadMemStats` 必须传指针
+
+```go
+package gc
+
+import "runtime"
+
+// 编译失败: runtime.ReadMemStats 需要 *runtime.MemStats，不能传结构体值
+func BadReadMemStats() {
+    var m runtime.MemStats
+    runtime.ReadMemStats(m)
+}
+```
+
+编译器报错：`cannot use m (variable of type runtime.MemStats) as *runtime.MemStats value in argument to runtime.ReadMemStats`。
+
+**原因**：`ReadMemStats` 通过指针原地填充统计信息（包含 256 个历史停顿样本等大字段），按值传递既错误又昂贵。§7.1 的 `GCTuningExample` 使用 `&m` 是合法形态。
+
+### 8.4 边界说明
+
+- **finalizer 不保证执行时机**：`runtime.SetFinalizer` 注册的函数可能在对象成为垃圾后很久才运行，甚至不运行；依赖 finalizer 释放稀缺资源（fd、锁）是反模式，应使用显式 `Close`。
+- **`runtime.GC()` 是协作建议而非同步点**：它会触发一轮完整的标记-清扫，但不保证所有垃圾都被回收——跨 goroutine 的栈扫描与写屏障缓冲区存在固有延迟。
+- **同步 Pool 与 GC 的相互作用**：`sync.Pool` 中的对象可能在新一轮 GC 后被清空（§6.2 决策树），把它当作跨 GC 周期的缓存是确定会丢数据的误用。
+
+---
+
+## 9. Mermaid 思维导图
+
+```mermaid
+mindmap
+  root((Go GC 与内存管理))
+    三色标记
+      三色不变式
+      并发标记
+      混合写屏障
+    Green Tea GC 1.26
+      AVX-512 SIMD 扫描
+      页级元数据
+      无锁工作队列
+    内存分配
+      mcache 分级分配
+      mcentral 与 mheap
+      逃逸分析
+    触发与调优
+      GOGC 目标 CPU
+      SetMemoryLimit
+      sync.Pool 复用
+```
+
+---
+
+## 10. 关系网络
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -1088,26 +1180,28 @@ func BenchmarkGreenTeaPageScan(b *testing.B) {
 
 ---
 
-## 9. 参考文献
+## 11. 参考文献
 
-### 经典 GC 文献
+### P0 官方（Official）
+
+1. **Hudson, R. (2015)**. Go 1.5 Concurrent Garbage Collector. [go.dev/s/go15gc](https://go.dev/s/go15gc)
+2. **Go Authors**. Go GC Guide. [go.dev/doc/gc-guide](https://go.dev/doc/gc-guide)
+3. **Go Authors**. runtime/mgc.go. [github.com/golang/go](https://github.com/golang/go/blob/master/src/runtime/mgc.go)
+4. **Go Authors (2026)**. Green Tea GC: Accelerating Go Garbage Collection with SIMD. [go.dev/s/greenteagc](https://go.dev/s/greenteagc)
+
+### P1 学术（Academic）
 
 1. **McCarthy, J. (1960)**. Recursive Functions of Symbolic Expressions. *CACM*.
-2. **Dijkstra, E.W. et al. (1978)**. On-the-fly Garbage Collection: An Exercise in Cooperation. *CACM*.
-3. **Jones, R. & Lins, R. (1996)**. Garbage Collection: Algorithms for Automatic Dynamic Memory Management.
-4. **Jones, R. et al. (2012)**. The Garbage Collection Handbook. *CRC Press*.
+2. **Dijkstra, E.W. et al. (1978)**. On-the-fly Garbage Collection: An Exercise in Cooperation. *CACM*. [dl.acm.org/doi/10.1145/359580.359587](https://dl.acm.org/doi/10.1145/359580.359587)
+3. **Jones, R. & Lins, R. (1996)**. Garbage Collection: Algorithms for Automatic Dynamic Memory Management. *Wiley*.
+4. **Jones, R. et al. (2012)**. The Garbage Collection Handbook. *CRC Press*. [gchandbook.org](https://gchandbook.org/)
+5. **Abel, A. & Reineke, J. (2019)**. uops.info: Characterizing Latency, Throughput, and Port Usage. *ASPLOS*.
 
-### Go GC 相关
+### P2 生态（Ecosystem）
 
-1. **Hudson, R. (2015)**. Go 1.5 Concurrent Garbage Collector.
-2. **Go Authors**. Go GC Guide.
-3. **Go Authors**. runtime/mgc.go
-4. **Go Authors (2026)**. Green Tea GC: Accelerating Go Garbage Collection with SIMD. *Go Design Doc*.
-
-### SIMD 与性能
-
-1. **Intel (2023)**. Intel AVX-512 Instruction Set Architecture.
-2. **Abel, A. & Reineke, J. (2019)**. uops.info: Characterizing Latency, Throughput, and Port Usage. *ASPLOS*.
+1. **Hudson, R. (2018)**. Go GC: Prioritizing low latency and simplicity. *Go Blog*. [go.dev/blog/ismmkeynote](https://go.dev/blog/ismmkeynote)
+2. **CMU 15-411**. Concurrent Garbage Collection. *Lecture Notes*. [cs.cmu.edu/~fp/courses/15411-f14/lectures/23-gc.pdf](https://www.cs.cmu.edu/~fp/courses/15411-f14/lectures/23-gc.pdf)
+3. **Intel (2023)**. Intel AVX-512 Instruction Set Architecture. *Intel Developer Zone*.
 
 ---
 

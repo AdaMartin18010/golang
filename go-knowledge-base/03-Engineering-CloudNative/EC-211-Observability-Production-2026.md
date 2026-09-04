@@ -7,6 +7,9 @@
 > **级别**: S (87 KB)
 > **标签**: #ec
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L3
+> **前置概念**: [EC-044: Observability in Production](./EC-044-Observability-Production.md) · [EC-060: OpenTelemetry Distributed Tracing in Production](./EC-060-OpenTelemetry-Distributed-Tracing-Production.md) · [EC-170: Cloud-Native Observability Stack](./EC-170-Cloud-Native-Observability-Stack.md) · **后置概念**: [EC-062: Alerting Best Practices](./EC-062-Alerting-Best-Practices.md) · [EC-215: Site Reliability Engineering 2026](./EC-215-Site-Reliability-Engineering-2026.md)
+> **定理链**: Telemetry Signals (Metrics/Logs/Traces/Profiles) → Collection, Sampling, Correlation → Actionable Insight / Invariant: 数据必须能回答未知的未知 (data must answer unknown-unknown questions)
 ---
 
 ## Executive Summary
@@ -2267,29 +2270,124 @@ Overhead                    60%        80%       80%
 
 ---
 
+## Counter-Examples and Boundaries (Anti-Patterns)
+
+### Anti-Pattern: Unbounded-Cardinality Span Attributes
+
+```go
+// ANTI-PATTERN: attaching an unbounded value (user ID, request ID, raw URL)
+// as a span attribute.
+//
+// Why this is wrong (deterministic cost model): most tracing backends index
+// attribute values for search. N unique values per second create N index
+// entries; at 10K rps with request_id as an attribute, the trace store's
+// index grows by 10K entries/second *for one service*. This is the leading
+// cause of trace-backend instability documented in §10's "High cardinality"
+// row (10K spans/sec ceiling, 4GB memory).
+ctx, span := tracer.Start(ctx, "process-order")
+defer span.End()
+
+span.SetAttributes(
+    attribute.String("request.id", r.Header.Get("X-Request-ID")), // unbounded
+    attribute.String("user.id", userID),                          // unbounded
+    attribute.String("http.url", r.URL.String()),                 // unbounded (query params)
+)
+
+// Correct: bounded, enumerated dimensions on attributes; unbounded values
+// only as log fields (which are not indexed) or via exemplars.
+span.SetAttributes(
+    attribute.String("http.route", "/orders/{id}"),  // bounded route template
+    attribute.String("http.method", r.Method),       // bounded enum
+    attribute.Int("order.count", len(orders)),       // numeric, aggregatable
+)
+span.AddEvent("request.detail", trace.WithAttributes(
+    attribute.String("request.id", r.Header.Get("X-Request-ID")), // event attr: not indexed
+))
+```
+
+**Boundary**: Cardinality is a backend-wide resource, not a per-service one. A single misinstrumented service can exhaust the shared trace store for every team. Cardinality budgets must be defined before instrumentation ships — retroactive removal of an indexed attribute is a data-migration project, not a config change.
+
+### Anti-Pattern: Tail Sampling with `decision_wait` Below Longest Span Latency
+
+```yaml
+# ANTI-PATTERN: tail sampling that drops traces before slow spans complete.
+#
+# Why this is wrong (deterministic): a tail sampler buffers spans until
+# decision_wait expires, then decides keep/drop for the whole trace. If
+# decision_wait (10s) < p99 span latency (30s), every slow trace is
+# fragmented: the root span arrives after the decision and is discarded, so
+# the system keeps fast traces and DROPS exactly the slow ones it was
+# configured to capture (latency-threshold keep policy).
+processors:
+  tail_sampling:
+    decision_wait: 10s            # WRONG: shorter than the latency threshold
+    policies:
+      - name: slow-traces
+        type: latency
+        latency:
+          threshold_ms: 30000     # keeps traces with spans > 30s...
+                                    # ...but they were already dropped at 10s
+
+# Correct: decision_wait must exceed the keep-policy's latency threshold
+# plus clock skew margin:
+#   decision_wait: 60s  (> 30s threshold + margin)
+```
+
+**Boundary**: Tail sampling correctness is a queueing inequality, not a tuning preference. `decision_wait` must dominate the longest span latency you intend to capture; undersizing it deterministically inverts the sampler's purpose (keeping the interesting traces) without any error message.
+
+---
+
+## Knowledge Map
+
+```mermaid
+mindmap
+  root((Observability in Production 2026))
+    OpenTelemetry Standard
+      Collector Pipelines
+      Enterprise Adoption
+      Beyla eBPF Auto-Instrumentation
+    eBPF Revolution
+      Cilium Hubble
+      Pixie PxL Scripts
+      Tetragon Runtime Traces
+    Prometheus at Scale
+      Thanos Long-Term Storage
+      Cardinality Management
+    Tracing and Profiling
+      Jaeger v2 ClickHouse
+      Continuous Profiling Parca
+    SRE and Cost
+      SLO Error Budgets
+      Tail Sampling
+      Multi-Region Pipelines
+```
+
+---
+
 ## 11. References & Further Reading
 
-### Official Documentation
+### P0 - Official (官方)
 
 - [OpenTelemetry Specification](https://opentelemetry.io/docs/specs/otel/)
 - [Jaeger Documentation](https://www.jaegertracing.io/docs/)
 - [Prometheus Documentation](https://prometheus.io/docs/)
 - [Parca Documentation](https://www.parca.dev/docs/)
 
-### CNCF Projects
+### P1 - Academic (学术)
 
-- [OpenTelemetry (Graduated)](https://www.cncf.io/projects/opentelemetry/)
-- [Jaeger (Graduated)](https://www.cncf.io/projects/jaeger/)
-- [Prometheus (Graduated)](https://www.cncf.io/projects/prometheus/)
-- [Cilium (Graduated)](https://www.cncf.io/projects/cilium/)
-- [Falco (Incubating)](https://www.cncf.io/projects/falco/)
-- [Pixie (Sandbox)](https://www.cncf.io/projects/pixie/)
-
-### Research Papers
-
+- [CrossTrace: Efficient Cross-Thread and Cross-Service Span Correlation in Distributed Tracing for Microservices (arXiv:2508.11342)](https://arxiv.org/abs/2508.11342)
 - "eBPF: A New Approach to Cloud-Native Observability" (USENIX 2024)
 - "Tracezip: Compression for Distributed Traces" (ACM SOSP 2024)
 - "The True Cost of Observability" (Google SRE Research 2025)
+
+### P2 - Ecosystem (生态)
+
+- [OpenTelemetry (CNCF Graduated)](https://www.cncf.io/projects/opentelemetry/)
+- [Jaeger (CNCF Graduated)](https://www.cncf.io/projects/jaeger/)
+- [Prometheus (CNCF Graduated)](https://www.cncf.io/projects/prometheus/)
+- [Cilium (CNCF Graduated)](https://www.cncf.io/projects/cilium/)
+- [Falco (CNCF Incubating)](https://www.cncf.io/projects/falco/)
+- [Pixie (CNCF Sandbox)](https://www.cncf.io/projects/pixie/)
 
 ---
 

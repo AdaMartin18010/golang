@@ -4,6 +4,9 @@
 > **级别**: S (62 KB)
 > **标签**: #ad
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L3
+> **前置概念**: [AD-036: Event-Driven Architecture Patterns](AD-036-Event-Driven-Architecture-Patterns.md) · **后置概念**: [AD-038: Serverless Architecture](AD-038-Serverless-Architecture.md)
+> **定理链**: Domain State Change → Event Persistence → Projections & Reactions / Invariant: per-aggregate ordering & at-least-once delivery
 ## 1. Architecture Overview
 
 ### 1.1 Definition and Philosophy
@@ -1871,6 +1874,90 @@ graph TB
    - Batch event writes
    - Use snapshots for fast aggregate loading
    - Scale partitions appropriately
+
+---
+
+## 9. Anti-Pattern Examples and Boundaries
+
+### 9.1 Anti-Pattern: Non-Idempotent Consumer with At-Least-Once Delivery
+
+Brokers guarantee at-least-once delivery: an event is redelivered whenever a consumer crashes after committing its side effect but before acknowledging. Handlers that mutate external state without deduplication double-apply events:
+
+```go
+// ANTI-PATTERN: handler mutates external state without an idempotency key
+func (h *PaymentHandler) Handle(ctx context.Context, e OrderConfirmedEvent) error {
+	// If this event is redelivered (side effect done, ack lost),
+	// the customer is charged twice.
+	return h.gateway.Charge(e.CustomerID, e.Total)
+}
+
+// Correct: idempotency key derived from the event identity
+func (h *PaymentHandler) Handle(ctx context.Context, e OrderConfirmedEvent) error {
+	key := fmt.Sprintf("charge:%s:v%d", e.AggregateID(), e.EventVersion())
+	return h.gateway.ChargeIdempotent(e.CustomerID, e.Total, key)
+}
+```
+
+### 9.2 Anti-Pattern: Synchronous Call per Event
+
+A consumer that calls back to the producer's REST API for every event reintroduces the runtime coupling EDA was meant to remove: the consumer's availability now depends on the producer's API, event processing inherits HTTP latency, and retry semantics get duplicated in two places. Events should carry enough context (see §1.3 Event Anatomy) for consumers to act without a callback.
+
+### 9.3 Boundaries
+
+- Ordering holds per partition / per aggregate only (§4.1); cross-aggregate sequencing must be enforced through the event store, not assumed from the broker.
+- Projections are eventually consistent by design; a query that requires read-your-writes must read from the command side.
+- Event schema changes must be additive within a version; breaking changes require a new event type (plus an upcaster when replaying old streams).
+
+---
+
+## 10. Mind Map
+
+```mermaid
+mindmap
+  root((Event-Driven Architecture))
+    Event Taxonomy
+      Domain Events
+      Integration Events
+      System / Temporal Events
+    Communication Patterns
+      Pub/Sub
+      Event Sourcing
+      CQRS
+    Processing Patterns
+      Ordered Processing per Aggregate
+      Competing Consumers
+      Replay & PIT Recovery
+    Scalability
+      Partitioning Strategies
+      Performance Targets
+    Technology Stack
+      Kafka / NATS / Pulsar
+      EventStoreDB / PostgreSQL
+      Go Libraries
+```
+
+---
+
+## 11. References
+
+### P0: Official
+
+- [Apache Kafka Documentation](https://kafka.apache.org/documentation/)
+- [NATS Documentation](https://docs.nats.io/)
+- [Apache Pulsar Documentation](https://pulsar.apache.org/docs/)
+- [pkg.go.dev — kafka-go](https://pkg.go.dev/github.com/segmentio/kafka-go)
+- [pkg.go.dev — nats.go](https://pkg.go.dev/github.com/nats-io/nats.go)
+
+### P1: Academic
+
+- Kreps, Narkhede, Rao. "Kafka: a Distributed Messaging System for Log Processing" (NetDB 2011) — [Microsoft Research PDF](https://www.microsoft.com/en-us/research/wp-content/uploads/2017/09/Kafka.pdf)
+
+### P2: Ecosystem
+
+- [Watermill — Go event-driven library](https://github.com/ThreeDotsLabs/watermill)
+- [Event Horizon — CQRS/ES framework for Go](https://github.com/looplab/eventhorizon)
+- [Martin Fowler: Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html)
+- [Microservices.io: Event-Driven Architecture](https://microservices.io/patterns/data/event-driven-architecture.html)
 
 ---
 

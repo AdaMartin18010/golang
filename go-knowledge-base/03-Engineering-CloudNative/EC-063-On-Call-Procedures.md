@@ -7,6 +7,9 @@
 > **维度**: Engineering & CloudNative
 > **级别**: S (74 KB)
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L3
+> **前置概念**: [EC-062: Alerting Best Practices](./EC-062-Alerting-Best-Practices.md) · [EC-064: Incident Management](./EC-064-Incident-Management.md) · **后置概念**: [EC-065: Post-Mortem Analysis](./EC-065-Post-Mortem-Analysis.md) · [EC-066: Runbooks & Documentation](./EC-066-Runbooks-Documentation.md)
+> **定理链**: Alert/Page Input → Acknowledge & Triage → Mitigate / Escalate / Resolve → Postmortem & Runbook Update / Invariant: 每个告警必须可行动且有人负责 (Every page must be actionable and owned)
 ---
 
 ## 1. Formal Definition
@@ -1697,10 +1700,127 @@ func generateSecureToken() (string, error) {
 
 ---
 
+## 8. Counter-Examples and Boundaries (Anti-Patterns)
+
+### 8.1 Anti-Pattern: Escalation Policy With No Secondary
+
+```yaml
+# ANTI-PATTERN: a single-level escalation policy.
+#
+# Why this is wrong: when the primary on-call is asleep, in transit, or their
+# phone is on silent, the alert has nowhere to go. The SLA breach timer keeps
+# running with zero human awareness. Google SRE derives a hard minimum team
+# size (8 engineers for single-site 24/7) precisely so that a primary AND a
+# secondary always exist.
+escalation_policy:
+  levels:
+    - level: 1
+      notify_after: 0s
+      targets: ["engineer-a"]   # single point of failure: no fallback level
+      contact_methods: ["push"]
+
+# Correct: a second level that fires when the primary does not acknowledge.
+escalation_policy_ok:
+  levels:
+    - level: 1
+      notify_after: 0s
+      targets: ["engineer-a"]
+      contact_methods: ["push"]
+    - level: 2
+      notify_after: 5m          # matches the acknowledge SLA
+      targets: ["engineer-b"]   # secondary on-call
+      contact_methods: ["push", "sms", "phone"]
+```
+
+**Boundary**: An escalation chain is only as strong as its second link. If level N+1 does not exist, level N's missed-page is indistinguishable from "nobody is coming." This is a deterministic failure of the procedure, not of any individual engineer.
+
+### 8.2 Anti-Pattern: Paging on Non-Actionable Alerts
+
+```yaml
+# ANTI-PATTERN: paging a human for a condition that requires no human action.
+#
+# Why this is wrong: every non-actionable page trains the on-call engineer to
+# distrust pages (alert fatigue). Google SRE's rule: a page must be urgent,
+# actionable, and user-visible; anything else belongs on a ticket or a
+# dashboard. This page fails all three criteria.
+groups:
+  - name: noisy-disk-forecast
+    rules:
+      - alert: DiskWillFillEventually
+        expr: predict_linear(node_filesystem_avail_bytes[6h], 30 * 24 * 3600) < 0
+        for: 5m
+        labels:
+          severity: page        # WRONG: forecast is not an incident
+        annotations:
+          summary: "disk full in ~30 days"
+
+# Correct: route forecasts to tickets, reserve pages for symptoms.
+groups_ok:
+  - name: disk-forecast
+    rules:
+      - alert: DiskWillFillEventually
+        expr: predict_linear(node_filesystem_avail_bytes[6h], 30 * 24 * 3600) < 0
+        for: 1h
+        labels:
+          severity: ticket      # a human reviews it during business hours
+      - alert: DiskFullNow
+        expr: node_filesystem_avail_bytes / node_filesystem_size_bytes < 0.05
+        for: 5m
+        labels:
+          severity: page        # urgent, actionable, user-visible
+```
+
+**Boundary**: "More alerting" is not "more reliability." The on-call engineer has a fixed budget of urgency responses per day; spending it on noise guarantees a slow response when the real page arrives.
+
+---
+
+## 9. Knowledge Map
+
+```mermaid
+mindmap
+  root((On-Call Procedures))
+    Rotation Models
+      Follow-the-Sun
+      Weekly Rotation
+      Daily Rotation
+      Hybrid
+    Roles
+      Primary On-Call
+      Secondary On-Call
+      Shadow Engineer
+      Incident Commander
+    Response Flow
+      Page Received
+      Acknowledge under 5 min
+      Triage and Mitigate
+      Escalate or Resolve
+      Postmortem
+    Go Tooling
+      Schedule Manager
+      Incident State Machine
+      Handoff Report Generator
+    Sustainability
+      Balanced Workload
+      Alert Fatigue Control
+      Wellness and Compensation
+```
+
+---
+
 ## References
 
-1. Google SRE Book - Being On-Call
-2. PagerDuty Incident Response Guide
-3. Atlassian Incident Management Handbook
-4. The Phoenix Project - Gene Kim
-5. Site Reliability Workbook - On-Call Practices
+### P0 - Official (官方)
+
+1. [Google SRE Book - Being On-Call](https://sre.google/sre-book/being-on-call/) - Rotation sizing (25% rule), escalation, alert fatigue
+2. [Google SRE Book - Monitoring Distributed Systems](https://sre.google/sre-book/monitoring-distributed-systems/) - "Every page must be actionable" principle used in §8.2
+3. [PagerDuty Incident Response Documentation](https://response.pagerduty.com/) - Incident roles (IC, scribe, deputy) and postmortem process
+
+### P1 - Academic (学术)
+
+1. [NIST SP 800-61 Rev. 2 - Computer Security Incident Handling Guide](https://csrc.nist.gov/pubs/sp/800/61/r2/final) - Formal incident response lifecycle (preparation → detection → containment → recovery)
+
+### P2 - Ecosystem (生态)
+
+1. [Google SRE Workbook - Postmortem Culture](https://sre.google/workbook/postmortem-culture/) - Blameless postmortem practice referenced in §7
+2. The Phoenix Project - Gene Kim (book)
+3. Atlassian Incident Management Handbook (book)

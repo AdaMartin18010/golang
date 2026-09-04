@@ -12,6 +12,9 @@
 > - [Session Types for Go](https://arxiv.org/abs/1305.6467) - Honda et al. (2025更新)
 
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L4
+> **前置概念**: [LD-001: Go 内存模型](LD-001-Go-Memory-Model-Formal.md) · [LD-038: Go 类型系统形式化语义](LD-038-Go-Type-System-Formal-Semantics.md) · **后置概念**: [LD-004: GMP 调度器](LD-004-Go-Runtime-GMP-Deep-Dive.md) · [LD-042: Channel 形式化](LD-042-Go-Channels-Formal.md)
+> **定理链**: Input(进程表达式 P + 环境事件序列) → Operation(迹语义 / 失败语义求值) → Output(精化关系 P ⊑ Q 与死锁检测) / Invariant: channel 通信天然同步，select 是环境决定的外部选择
 ---
 
 ## 1. CSP 进程代数基础
@@ -372,7 +375,84 @@ $$\text{WorkerPool}(n) = \parallel_{i=1}^{n} \text{Worker}_i$$
 
 ---
 
-## 6. 与 CSP 的关系与差异
+## 6. 反命题与边界
+
+### 6.1 编译失败反例：向 receive-only channel 发送
+
+```go
+package main
+
+// 编译失败: 不能向 receive-only channel (<-chan int) 发送数据
+func emit(ch <-chan int) {
+	ch <- 42
+}
+```
+
+**错误信息**（确定性编译期错误）：
+
+```
+invalid operation: ch <- 42 (send to receive-only type <-chan int)
+```
+
+**解释**：channel 方向类型（`<-chan T` / `chan<- T`）把 CSP 的"暴露最小通信界面"原则固化进类型系统。方向不是运行期装饰，而是编译期契约：接收端拿到 `<-chan int` 就**物理上不可能**发送。这正是精化关系 $P \sqsubseteq Q$ 的工程体现——实现（$Q$）提供的通信面不得超出规约（$P$）。
+
+### 6.2 编译失败反例：close send-only channel
+
+```go
+package main
+
+// 编译失败: close 不能用于 send-only channel (chan<- int)
+func produce(out chan<- int) {
+	close(out)
+}
+```
+
+**错误信息**：
+
+```
+invalid operation: close(out) (cannot close send-only channel)
+```
+
+**解释**：`close` 的语义是向所有接收者广播终止信号（公理 2.2），因此只有**同时拥有接收权**的 channel 才能被关闭。生产方持有 `chan<- int` 时，关闭权被类型系统剥夺，避免了"发送方与接收方都认为自己拥有关闭权"这一经典 channel 归属权竞争。
+
+### 6.3 边界命题（运行期边界，非编译错误）
+
+- **nil channel**：向 nil channel 发送/接收永久阻塞；select 中 nil channel 的 case 永远不会就绪（等价于该分支被删除）。
+- **向已关闭 channel 发送**：触发 **panic**（"send on closed channel"）；从已关闭 channel 接收返回 `(零值, false)`。
+- **select 无 default 且无就绪 case**：goroutine 永久阻塞（对应 CSP 的 STOP）——这与死锁不同，可能是合理的等待，需结合上下文判断。
+- **命题**："Go 的 channel 就是 CSP 的 channel" —— 反命题：Go 的 buffered channel、select-with-default、nil channel 行为在经典 CSP 中不存在（见 §8），不能直接套用 FDR 等 CSP 验证工具。
+
+---
+
+## 7. Mermaid Mindmap
+
+```mermaid
+mindmap
+  root((Go 并发 CSP 形式化))
+    CSP 进程代数
+      语法与迹语义
+      失败语义与死锁
+      精化关系
+    Channel
+      Unbuffered 同步
+      Buffered 异步
+      Select 外部选择
+    Goroutine 组合
+      并行组合 go
+      WaitGroup
+      Mutex 互斥
+    并发模式
+      Pipeline
+      Worker Pool
+      Fan-in / Fan-out
+    与 CSP 差异
+      Buffered / Default 分支
+      无形式验证工具
+```
+
+---
+
+## 8. 与 CSP 的关系与差异
 
 ```
 CSP Theory (Hoare 1978)
@@ -411,17 +491,29 @@ Go (2009)
 
 ---
 
-## 7. 参考文献
+## 9. 参考文献
 
-1. **Hoare, C.A.R. (1978)**. Communicating Sequential Processes. *CACM*.
+### P0 官方
+
+1. **The Go Programming Language Specification — Channel types & Select statements**. [go.dev/ref/spec](https://go.dev/ref/spec#Select_statements). *Go Authors*.
+2. **Go Authors**. [The Go Memory Model](https://go.dev/ref/mem). *Official Documentation* —— channel happens-before 规则的官方定义。
+
+### P1 学术
+
+1. **Hoare, C.A.R. (1978)**. [Communicating Sequential Processes](https://dl.acm.org/doi/10.1145/359576.359585). *CACM*.
 2. **Hoare, C.A.R. (2015)**. Communicating Sequential Processes (Book). *Prentice Hall*.
 3. **Roscoe, A.W. (1997)**. The Theory and Practice of Concurrency. *Prentice Hall*.
-4. **Pike, R. (2012)**. Go Concurrency Patterns. *Google I/O*.
-5. **Honda, K., et al. (2016)**. Coarse-Grained Session Types. *PLACES*.
+4. **Honda, K., et al. (2016)**. [Coarse-Grained Session Types](https://arxiv.org/abs/1305.6467). *PLACES*.
+5. **INMOS (1984)**. [The Occam Programming Language](https://dl.acm.org/doi/10.1145/236299.236366). *ACM*.
+
+### P2 生态
+
+1. **Pike, R. (2012)**. [Go Concurrency Patterns](https://talks.golang.org/2012/concurrency.slide). *Google I/O*.
+2. **Ajmani, S. (2013)**. [Advanced Go Concurrency Patterns](https://talks.golang.org/2013/advconc.slide). *Google I/O*.
 
 ---
 
-## 8. 检查清单
+## 10. 检查清单
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -457,7 +549,7 @@ Go (2009)
 
 ---
 
-## 10. Performance Benchmarking
+## 11. Performance Benchmarking
 
 ### 10.1 Go Runtime Benchmarks
 

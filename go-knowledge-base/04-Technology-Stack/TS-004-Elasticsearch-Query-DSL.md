@@ -10,6 +10,9 @@
 > - [Elasticsearch: The Definitive Guide](https://www.elastic.co/guide/en/elasticsearch/guide/current/index.html)
 
 > **Go 版本**: 1.27+
+> **Bloom 层级**: L3
+> **前置概念**: [TS-012 Elasticsearch Internals](TS-012-Elasticsearch-Internals.md) · **后置概念**: [TS-044 Database Sharding & Partitioning](TS-044-Database-Sharding-Partitioning.md)
+> **定理链**: 查询 DSL + 倒排索引 → 分片 scatter-gather 与相关性评分 → 有序命中集 / Invariant: filter 上下文不计算相关性、结果可缓存
 ---
 
 ## 1. Elasticsearch Internal Architecture
@@ -1744,12 +1747,97 @@ func executeSearch(client *elasticsearch.Client, index string, query map[string]
 
 ---
 
+## 反命题与边界
+
+### 反模式 1: 对 keyword / 数值字段使用 match 全文查询
+
+```json
+// 反模式：status 是 keyword 字段，match 查询会经分析器处理
+{
+  "query": {
+    "match": {
+      "status": "Order Shipped"
+    }
+  }
+}
+```
+
+原因：`match` 查询把输入文本交给分析器分词，`status` 为 `keyword` 时索引中存的是完整原始字符串，分词后的词条必然匹配不到任何文档（查询结果恒为空，且不报错）。
+正解：结构化字段用 `term`（或 `terms`）查询：`{"term": {"status": "Order Shipped"}}`。
+
+### 反模式 2: 深度分页 from + size 超阈值
+
+```json
+// 反模式：每页 100 条翻到第 10 万页
+{
+  "from": 10000000,
+  "size": 100,
+  "query": { "match_all": {} }
+}
+```
+
+原因：`from + size` 超过 `index.max_result_window`（默认 10000）时查询直接抛出异常；即使调大该值，每个分片必须构建并排序前 `from + size` 条结果，内存与延迟随页数线性恶化。
+正解：使用 `search_after` + PIT（Point in Time）做游标式深分页，需要跳页总数时改用 `track_total_hits` 或滚动查询。
+
+### 反模式 3: 在 filter 上下文中使用脚本评分
+
+```json
+// 反模式：把脚本评分塞进 filter 上下文
+{
+  "query": {
+    "bool": {
+      "filter": {
+        "script": {
+          "script": "doc['price'].value > 100"   // filter 应只做是非判断
+        }
+      }
+    }
+  }
+}
+```
+
+原因：`filter` 上下文的约定是"只做匹配、不参与相关性评分、结果可缓存"；用 `script_score` 或脚本查询混入 filter 会破坏缓存语义（脚本结果不可缓存），每次查询都重新执行脚本，代价远高于 `range` 查询。
+正解：可结构化表达的过滤一律用 `term`/`range`/`exists` 等查询放进 filter；确需打分时把脚本放在 `function_score` 的 query 上下文。
+
+## 思维导图 (Mermaid Mindmap)
+
+```mermaid
+mindmap
+  root((Elasticsearch Query DSL))
+    集群架构
+      主节点与数据节点
+      分片与副本
+      协调节点 scatter-gather
+    查询上下文
+      query 全文与评分
+      filter 缓存与非评分
+    查询类型
+      match / multi_match
+      term / terms / range
+      bool 复合查询
+    聚合分析
+      bucket 分桶
+      metric 指标
+      pipeline 管道
+```
+
+---
+
 ## 6. References
 
-1. **Gormley, C., & Tong, Z.** (2015). Elasticsearch: The Definitive Guide. O'Reilly Media.
-2. **McCandless, M., Hatcher, E., & Gospodnetic, O.** (2010). Lucene in Action, Second Edition. Manning Publications.
-3. **Elastic Documentation** (2024). elasticsearch.org
-4. **Baeza-Yates, R., & Ribeiro-Neto, B.** (2011). Modern Information Retrieval. Addison-Wesley.
+### P0 官方（Elastic / Lucene 官方文档）
+
+1. **Elastic Documentation** (2024). [Elasticsearch Reference](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html) - Elastic.
+
+### P1 学术（论文）
+
+2. **Robertson, S., & Zaragoza, H.** (2009). The Probabilistic Relevance Framework: BM25 and Beyond. *Foundations and Trends in Information Retrieval, 3*(4), 333-389. <https://doi.org/10.1561/1500000019>
+3. **Baeza-Yates, R., & Ribeiro-Neto, B.** (2011). Modern Information Retrieval. Addison-Wesley.
+
+### P2 生态（著作与社区资料）
+
+4. **Gormley, C., & Tong, Z.** (2015). Elasticsearch: The Definitive Guide. O'Reilly Media.
+5. **McCandless, M., Hatcher, E., & Gospodnetic, O.** (2010). Lucene in Action, Second Edition. Manning Publications.
 
 ---
 
